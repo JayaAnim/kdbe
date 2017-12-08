@@ -1,0 +1,5 @@
+name|age|title
+kurtis|26|CEO
+dave|23|Scumbag
+ryan|12|Intern
+Tyler|18|barback
