@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(name="kbde",
       version="0.1",
-      url="https://git.kbuilds.com/kbde/kbde",
+      url="https://gitlab.com/kbGit/kbde",
       author="kbuilds, LLC",
       author_email="k@kbuilds.com",
       description="Development environment library. Foundational python library.",
