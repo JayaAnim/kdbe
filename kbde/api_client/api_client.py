@@ -31,27 +31,27 @@ class ApiClient:
             session.auth = (username,password)
         return session
 
-    def get(self,**parameter_dict):
-        url = self.makeUrl(**parameter_dict)
+    def get(self,*path_list,**parameter_dict):
+        url = self.makeUrl(*path_list,**parameter_dict)
         return self.makeRequest(self.session.get,url)
 
-    def post(self,**parameter_dict):
-        url = self.makeUrl()
+    def post(self,*path_list,**parameter_dict):
+        url = self.makeUrl(*path_list)
         return self.makeRequest(self.session.post,url,parameter_dict)
 
-    def put(self,**parameter_dict):
-        url = self.makeUrl()
+    def put(self,*path_list,**parameter_dict):
+        url = self.makeUrl(*path_list)
         return self.makeRequest(self.session.put,url,parameter_dict)
         
-    def delete(self,**parameter_dict):
-        url = self.makeUrl(**parameter_dict)
+    def delete(self,*path_list,**parameter_dict):
+        url = self.makeUrl(*path_list,**parameter_dict)
         return self.makeRequest(self.session.delete,url)
 
-    def makeUrl(self,**query_dict):
+    def makeUrl(self,*path_list,**query_dict):
         #Add the api_key
         if self.api_key:
             query_dict[self.API_KEY_PARAMETER] = self.api_key
-        return makeUrl(self.BASE_PATH,self.OBJECT_NAME,**query_dict)
+        return makeUrl(self.BASE_PATH,self.OBJECT_NAME,*path_list,**query_dict)
 
     def makeRequest(self,request_function,url,data=None):
         kwargs = {}
