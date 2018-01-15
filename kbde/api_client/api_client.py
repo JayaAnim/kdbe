@@ -1,5 +1,9 @@
+try:
+    import requests
+except ImportError:
+    raise Exception("must install `requests`")
+
 import json
-import requests
 import time
 import urllib
 from ..data import Deserializer, Serializer
