@@ -48,11 +48,6 @@ MIDDLEWARE += [
     ]
 
 
-#WSGI config
-
-WSGI_APPLICATION = "kbde.default.django.wsgi"
-
-
 #Databases set up
 
 db_from_env = dj_database_url.config()
