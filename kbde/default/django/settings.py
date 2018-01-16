@@ -10,6 +10,11 @@ try:
 except ImportError:
     raise Exception("must install dj_database_url")
 
+try:
+    import storages
+except ImportError:
+    raise Exception("must install django-storages")
+
 import os
 
 
