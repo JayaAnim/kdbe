@@ -22,6 +22,9 @@ import os
 
 APP_NAME = os.getenv("APP_NAME")
 
+if APP_NAME is None:
+    raise Exception("must define APP_NAME environement variable")
+
 
 #Debug
 
