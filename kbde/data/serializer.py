@@ -38,6 +38,7 @@ class ListSerializer(TypeSerializer):
         tuple,
         set,
         range,
+        frozenset,
         )
 
     def serialize(self,data_list):
