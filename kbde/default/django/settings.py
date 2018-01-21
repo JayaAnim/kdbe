@@ -39,7 +39,7 @@ if SETTINGS_PROD:
 EMAIL_HOST = "smtp.sendgrid.net"
 EMAIL_PORT = "587"
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("EMAIL_PASSWORD")
+EMAIL_HOST_USER = os.getenv("EMAIL_USERNAME")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
 SERVER_EMAIL = "{0}_system@kbuilds.com".format(APP_NAME)
 ADMINS = [("Kurtis Jensen","k@kbuilds.com"),]
