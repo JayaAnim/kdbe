@@ -6,6 +6,7 @@ except ImportError:
 import json
 import time
 import urllib
+import io
 from ..data import Deserializer, Serializer
 
 from requests.exceptions import ConnectionError
@@ -60,11 +61,20 @@ class ApiClient:
     def makeRequest(self,request_function,url,data=None):
         kwargs = {}
         if data is not None:
+            #Serialize each field in the data
+            new_data = {}
+            files = {}
             for key,value in data.items():
+                if isinstance(value,io.IOBase):
+                    files[key] = value
+                    continue
+
                 value = serializer.serialize(value)
                 value = json.dumps(value)
-                data[key] = value
-            kwargs['data'] = data
+                new_data[key] = value
+            #Feed the data into multipart form
+            kwargs["data"] = new_data
+            kwargs["files"] = files
 
         attempt_count = 0
         while True:
