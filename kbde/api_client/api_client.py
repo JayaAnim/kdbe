@@ -89,9 +89,6 @@ class ApiClient:
                 if response.status_code == 500:
                     raise self.ServerException("internal server error")
 
-                if response.status_code == 400:
-                    raise self.RequestException("bad request: {0}".format(kwargs))
-
                 if response.status_code in [502,503]:
                     if attempt_count >= self.MAX_RETRIES:
                         raise self.ServerException("service unavailable")
@@ -111,7 +108,7 @@ class ApiClient:
         try:
             response_data = self.loadData(response.text)
         except ValueError:
-            raise self.ResponseException("could not parse response: {0}".format(response.text))
+            raise self.ResponseException("could not parse response. status: {0}".format(response.status_code))
 
         return response_data
 
