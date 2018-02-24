@@ -77,12 +77,22 @@ class DictionarySerializer(TypeSerializer):
         return result
 
 
+class BytesSerializer(TypeSerializer):
+    TYPES = (
+        bytes,
+        )
+
+    def serialize(self,data):
+        return data.decode("utf-8")
+
+
 class Serializer:
     SERIALIZERS = (
         ListSerializer,
         DatetimeSerializer,
         DecimalSerializer,
         DictionarySerializer,
+        BytesSerializer,
         )
 
     def __init__(self):
