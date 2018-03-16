@@ -1,12 +1,34 @@
 from json import JSONEncoder
+import decimal
+import datetime
 
 
 class Encoder(JSONEncoder):
-    TO_JSON_METHOD_NAME = "to_json"
+    SERIALIZE_METHOD_NAME = "serialize"
+    DECIMAL_TYPES = (
+        decimal.Decimal,
+        )
+    DATETIME_TYPES = (
+        datetime.datetime,
+        datetime.date,
+        datetime.time,
+        )
 
     def default(self,obj):
-        to_json = getattr(obj,self.TO_JSON_METHOD_NAME,None)
-        if callable(to_json):
-            return to_json()
-        else:
-            return super().default(obj)
+        serialize = getattr(obj,self.SERIALIZE_METHOD_NAME,None)
+        if callable(serialize):
+            return serialize()
+
+        if isinstance(obj,self.DECIMAL_TYPES):
+            return self.handleDecimal(obj)
+
+        if isinstance(obj,self.DATETIME_TYPES):
+            return self.handleDatetime(obj)
+        
+        return super().default(obj)
+
+    def handleDecimal(self,obj):
+        return str(obj)
+
+    def handleDatetime(self,obj):
+        return obj.isoformat()
