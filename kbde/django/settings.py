@@ -31,10 +31,6 @@ except ImportError:
 try:
     import dj_database_url
 
-    INSTALLED_APPS += [
-        "storages",
-        ]
-
     db_from_env = dj_database_url.config()
     DATABASES['default'].update(db_from_env)
 
@@ -46,6 +42,10 @@ except ImportError:
 
 try:
     import storages
+
+    INSTALLED_APPS += [
+        "storages",
+        ]
 
     AWS_ACCESS_KEY_ID = os.getenv("AWS_KEY")
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET")
