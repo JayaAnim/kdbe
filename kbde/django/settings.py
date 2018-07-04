@@ -53,7 +53,7 @@ try:
     AWS_S3_ENDPOINT_URL = os.getenv("AWS_BUCKET_URL")
     AWS_QUERYSTRING_AUTH = False
     DEFAULT_FILE_STORAGE = 'kbde.django.storage_backends.MediaStorage'
-    MEDIA_URL = "{0}/{1}/".format(AWS_S3_ENDPOINT_URL,"media")
+    MEDIA_URL = "{}/{}/".format(AWS_S3_ENDPOINT_URL,"media")
 
 except ImportError:
     pass
@@ -69,12 +69,12 @@ if NO_DEBUG:
 
 #Email
 
-EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_PORT = "587"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.sendgrid.net")
+EMAIL_PORT = os.getenv("EMAIL_PORT", "587")
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("EMAIL_USERNAME")
+EMAIL_HOST_USER = os.getenv("EMAIL_USERNAME", "apikey")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
-SERVER_EMAIL = "{0}@kbuilds.com".format(APP_NAME)
+SERVER_EMAIL = os.getenv("SERVER_EMAIL", "{}@kbuilds.com".format(APP_NAME))
 ADMINS = [("Kurtis Jensen","k@kbuilds.com"),]
 
 
