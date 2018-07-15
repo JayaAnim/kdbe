@@ -1,0 +1,58 @@
+{%load static%}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  {%if title%}
+    <title>{{title}}</title>
+  {%endif%}
+
+  {%if icon%}
+      <link rel="icon" href="{%if 'https://' in icon%}{{icon}}{%else%}{%static icon%}{%endif%}">
+  {%endif%}
+
+  {%for css in css_list%}
+    <link href="{%if 'https://' in css%}{{css}}{%else%}{%static css%}{%endif%}" rel="stylesheet">
+  {%endfor%}
+
+  <!-- js -->
+  {%for js in js_list%}
+    <script src="{%if 'https://' in js%}{{js}}{%else%}{%static js%}{%endif%}"></script>
+  {%endfor%}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"></script>
+
+</head>
+
+<body>
+
+{%block navbar%}
+{%endblock%}
+
+    <div class="container">
+        {%block content%}
+        {%endblock%}
+    </div>
+
+<script>
+$(function(){
+    var set_timezone_cookie = function(){
+        var current_tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+        var set_tz = Cookies.get("kb_tz")
+        if (current_tz !== set_tz){
+            // Set the tz cookie
+            Cookies.set("kb_tz", current_tz)
+            //Reload the page
+            window.location.reload()
+            }
+        }
+
+    set_timezone_cookie()
+    })
+</script>
+
+</body>
+</html>
