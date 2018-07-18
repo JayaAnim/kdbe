@@ -1,6 +1,9 @@
 {%load static%}
 
 <!DOCTYPE html>
+
+<!-- kbuilds, LLC -->
+
 <html>
 
 <head>
@@ -29,30 +32,13 @@
 
 <body>
 
-{%block navbar%}
+{%block content%}
 {%endblock%}
 
-    <div class="container">
-        {%block content%}
-        {%endblock%}
-    </div>
+{%include 'kbde/timezone.html'%}
+{%include 'kbde/device_id.html'%}
 
-<script>
-$(function(){
-    var set_timezone_cookie = function(){
-        var current_tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-        var set_tz = Cookies.get("kb_tz")
-        if (current_tz !== set_tz){
-            // Set the tz cookie
-            Cookies.set("kb_tz", current_tz)
-            //Reload the page
-            window.location.reload()
-            }
-        }
-
-    set_timezone_cookie()
-    })
-</script>
+{%include 'kbde/analytics.html'%}
 
 </body>
 </html>

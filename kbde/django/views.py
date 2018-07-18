@@ -9,16 +9,17 @@ class BaseView(TemplateView):
     bootstrap_css_path = "https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.1/materia/bootstrap.css"
     bootstrap_js_path = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"
     jquery_path = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+    tracking_ids = []
 
     def get_context_data(self, **kwargs):
         self.set_timezone()
         context = super().get_context_data(**kwargs)
         context["title"] = self.title
-        context["user"] = self.request.user
-        context["url_name"] = self.request.resolver_match.url_name
+        context["request"] = self.request
         context["icon"] = self.icon
         context["css_list"] = self.get_css_list()
         context["js_list"] = self.get_js_list()
+        context["tracking_ids"] = ["UA-89983744-1"] + self.tracking_ids
         return context
 
     def set_timezone(self):

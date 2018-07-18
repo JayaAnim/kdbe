@@ -1,0 +1,30 @@
+<script>
+"use_strict"
+
+$(function(){
+    var device_id_name = "kb_device_id"
+    var device_id_digits = 10
+
+    if (!Cookies.enabled){
+        return
+        }
+
+    // Try to get the id from cookies
+    var cookie_id = Cookies.get(device_id_name)
+    // Try to get the id from local storage
+    var storage_id = localStorage.getItem(device_id_name)
+
+    if (storage_id === null){
+        // Generate a new id
+        storage_id = Math.floor(Math.random() * Math.pow(10, device_id_digits))
+        // Set the local storage
+        localStorage.setItem(device_id_name, storage_id)
+        }
+
+    if (storage_id !== cookie_id){
+        // Set the cookie id
+        Cookies.set(device_id_name, storage_id)
+        window.location.reload()
+        }
+    })
+</script>

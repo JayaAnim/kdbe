@@ -1,0 +1,24 @@
+<script>
+"use_strict"
+
+$(function(){
+    var cookie_name = "kb_tz"
+
+    if (!Cookies.enabled){
+        return
+        }
+
+    var set_timezone_cookie = function(){
+        var current_tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+        var set_tz = Cookies.get(cookie_name)
+        if (current_tz !== set_tz){
+            // Set the tz cookie
+            Cookies.set(cookie_name, current_tz)
+            //Reload the page
+            window.location.reload()
+            }
+        }
+
+    set_timezone_cookie()
+    })
+</script>
