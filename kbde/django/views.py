@@ -4,9 +4,10 @@ from pytz import UnknownTimeZoneError
 
 
 class BaseView(TemplateView):
+    template_name = "kbde/page.html"
     title = None
     icon = None
-    bootstrap_css_path = "https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.1.1/materia/bootstrap.css"
+    bootstrap_css_path = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css"
     bootstrap_js_path = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"
     jquery_path = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
     tracking_ids = []

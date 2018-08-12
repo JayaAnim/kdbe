@@ -1,1 +1,1 @@
-from .serializable import Serializable
+from .serialize import Serializable
