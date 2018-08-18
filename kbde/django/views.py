@@ -16,7 +16,6 @@ class BaseView(TemplateView):
         self.set_timezone()
         context = super().get_context_data(**kwargs)
         context["title"] = self.title
-        context["request"] = self.request
         context["icon"] = self.icon
         context["css_list"] = self.get_css_list()
         context["js_list"] = self.get_js_list()
