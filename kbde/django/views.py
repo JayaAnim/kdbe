@@ -10,6 +10,7 @@ class BaseView(TemplateView):
     bootstrap_css_path = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css"
     bootstrap_js_path = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"
     jquery_path = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+    cookies_js_path = "https://cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"
     tracking_ids = []
 
     def get_context_data(self, **kwargs):
@@ -36,4 +37,9 @@ class BaseView(TemplateView):
         return [self.bootstrap_css_path]
 
     def get_js_list(self):
-        return [self.jquery_path, self.bootstrap_js_path]
+        js_list = [
+            self.jquery_path,
+            self.bootstrap_js_path,
+            self.cookies_js_path,
+            ]
+        return js_list
