@@ -1,15 +1,10 @@
-try:
-    import requests
-except ImportError:
-    raise Exception("must install `requests`")
-
+import requests
 import json
 import time
 import urllib
 import io
-from ..data import Deserializer, Serializer
 
-from requests.exceptions import ConnectionError
+from requests import exceptions as requests_exceptions
 
 deserializer = Deserializer()
 serializer = Serializer()
