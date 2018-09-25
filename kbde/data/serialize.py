@@ -1,7 +1,7 @@
 
 
 class Serializable:
-    SERIALIZE_FIELDS = []
+    serialize_fields = []
 
     def serialize(self):
         """
