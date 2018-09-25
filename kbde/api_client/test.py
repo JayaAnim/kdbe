@@ -6,21 +6,21 @@ class ApiClientTest(unittest.TestCase):
     
     def setUp(self):
         class TestClient(ApiClient):
-            BASE_PATH = "https://jsonplaceholder.typicode.com"
-            OBJECT_NAME = "posts"
+            base_path = "https://jsonplaceholder.typicode.com"
+            object_name = "posts"
         self.TestClient = TestClient
 
         class BadHost(self.TestClient):
-            BASE_PATH = "https://badurl.notld"
+            base_path = "https://badurl.notld"
         self.BadHost = BadHost
 
         class BadResource(self.TestClient):
-            OBJECT_NAME = "bananas"
+            object_name = "bananas"
         self.BadResource = BadResource
 
         class BadServer(ApiClient):
-            BASE_PATH = "http://httpstat.us"
-            OBJECT_NAME = "500"
+            base_path = "http://httpstat.us"
+            object_name = "500"
         self.BadServer = BadServer
 
 
