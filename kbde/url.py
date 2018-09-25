@@ -1,4 +1,4 @@
-def getUrl(data):
+def get_url(data):
     """
     Takes a dictionary
     Returns a url querystring

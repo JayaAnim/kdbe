@@ -8,7 +8,7 @@ class ManagerBase:
 
     def add(self,obj):
         for index_key,index in self.index_dict.items():
-            self.addToIndex(index,obj,index_key)
+            self.add_to_index(index,obj,index_key)
         self.object_list.append(obj)
 
     def get(self,**args):
@@ -56,30 +56,28 @@ class ManagerBase:
         #Make sure we haven't indexed by this key yet
         if key in self.index_dict:
             raise self.IndexException("key `{0}` has already been indexed".format(key))
-        new_index = self.makeIndex(self.object_list,key)
+        new_index = self.make_index(self.object_list,key)
         self.index_dict[key] = new_index
 
-    def makeIndex(self,object_list,key):
+    def make_index(self,object_list,key):
         new_index = {}
         for obj in object_list:
-            self.addToIndex(new_index,obj,key)
+            self.add_to_index(new_index,obj,key)
         return new_index
 
-    def addToIndex(self,index,obj,key):
-        value = self.getValue(obj,key)
+    def add_to_index(self,index,obj,key):
+        value = self.get_value(obj,key)
         value_list = index.get(value,[])
         value_list.append(obj)
         index[value] = value_list
         
-
-    def getValue(self,obj,key):
+    def get_value(self,obj,key):
         """
         Takes an object and a key
         Accesses object at key
         Returns value of object at key
         """
         raise NotImplementedError
-
 
     class IndexException(Exception):
         pass
@@ -93,11 +91,11 @@ class ManagerBase:
 
 class DictManager(ManagerBase):
 
-    def getValue(self,obj,key):
+    def get_value(self,obj,key):
         return obj[key]
 
 
 class ObjectManager(ManagerBase):
 
-    def getValue(self,obj,key):
+    def get_value(self,obj,key):
         return getattr(obj,key)

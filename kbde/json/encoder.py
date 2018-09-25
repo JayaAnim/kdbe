@@ -4,31 +4,31 @@ import datetime
 
 
 class Encoder(JSONEncoder):
-    SERIALIZE_METHOD_NAME = "serialize"
-    DECIMAL_TYPES = (
+    serialize_method_name = "serialize"
+    decimal_types = (
         decimal.Decimal,
         )
-    DATETIME_TYPES = (
+    datetime_types = (
         datetime.datetime,
         datetime.date,
         datetime.time,
         )
 
     def default(self,obj):
-        serialize = getattr(obj,self.SERIALIZE_METHOD_NAME,None)
+        serialize = getattr(obj,self.serialize_method_name,None)
         if callable(serialize):
             return serialize()
 
-        if isinstance(obj,self.DECIMAL_TYPES):
-            return self.handleDecimal(obj)
+        if isinstance(obj,self.decimal_types):
+            return self.handle_decimal(obj)
 
-        if isinstance(obj,self.DATETIME_TYPES):
-            return self.handleDatetime(obj)
+        if isinstance(obj,self.datetime_types):
+            return self.handle_datetime(obj)
         
         return super().default(obj)
 
-    def handleDecimal(self,obj):
+    def handle_decimal(self,obj):
         return str(obj)
 
-    def handleDatetime(self,obj):
+    def handle_datetime(self,obj):
         return obj.isoformat()

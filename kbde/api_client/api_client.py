@@ -6,9 +6,6 @@ import io
 
 from requests import exceptions as requests_exceptions
 
-deserializer = Deserializer()
-serializer = Serializer()
-
 
 class ApiClient:
     BASE_PATH = None
@@ -64,7 +61,6 @@ class ApiClient:
                     files[key] = value
                     continue
 
-                value = serializer.serialize(value)
                 value = json.dumps(value)
                 new_data[key] = value
             #Feed the data into multipart form
@@ -109,7 +105,6 @@ class ApiClient:
 
     def loadData(self,data):
         data = json.loads(data)
-        data = deserializer.deserialize(data)
         return data
 
 

@@ -3,8 +3,8 @@ import json
 
 
 class NewlineJsonReader(FileReader):
-    def getLine(self):
-        line = FileReader.getLine(self)
+    def get_line(self):
+        line = FileReader.get_line(self)
         if line is None:
             return None
         return json.loads(line)

@@ -3,6 +3,6 @@ import json
 
 
 class NewlineJsonWriter(FileWriter):
-    def putLine(self,data):
+    def put_line(self,data):
         json_data = json.dumps(data)
-        FileWriter.putLine(self,json_data)
+        FileWriter.put_line(self,json_data)

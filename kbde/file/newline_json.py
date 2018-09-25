@@ -10,7 +10,7 @@ class NewlineJson:
         self.file_reader = FileReader(file_path)
         
     def get(self):
-        line = self.file_reader.getLine()
+        line = self.file_reader.get_line()
         if line is None:
             return None
         line_dict = json.loads(line)
@@ -18,4 +18,4 @@ class NewlineJson:
 
     def put(self,line_dict):
         line = json.dumps(line_dict)
-        self.file_writer.putLine(line)
+        self.file_writer.put_line(line)

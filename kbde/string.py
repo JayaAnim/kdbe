@@ -1,4 +1,4 @@
-def convertToUnderscoreCase(string):
+def convert_to_underscore_case(string):
     new_string = ""
     string_len = len(string)
     for index,char in enumerate(string):
