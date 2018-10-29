@@ -11,6 +11,8 @@ class BaseView(TemplateView):
     bootstrap_js_path = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"
     jquery_path = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
     cookies_js_path = "https://cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"
+    css_list = []
+    js_list = []
     tracking_ids = []
 
     def get_context_data(self, **kwargs):
@@ -34,7 +36,9 @@ class BaseView(TemplateView):
             timezone.deactivate()
 
     def get_css_list(self):
-        return [self.bootstrap_css_path]
+        css_list = [self.bootstrap_css_path]
+        css_list += self.css_list
+        return css_list
 
     def get_js_list(self):
         js_list = [
@@ -42,4 +46,5 @@ class BaseView(TemplateView):
             self.bootstrap_js_path,
             self.cookies_js_path,
             ]
+        js_list += self.js_list
         return js_list
