@@ -109,5 +109,11 @@ except NameError:
 
 #Staticfiles config
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+try:
+    STATIC_URL
+except NameError:
+    STATIC_URL = '/static/'
+try:
+    STATIC_ROOT
+except NameError:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
