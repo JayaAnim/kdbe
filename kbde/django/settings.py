@@ -41,19 +41,6 @@ except ImportError:
 # Media storage config
 
 try:
-    import storages
-
-    INSTALLED_APPS += [
-        "storages",
-        ]
-
-    DEFAULT_FILE_STORAGE = 'kbde.django.storage_backends.MediaStorage'
-    MEDIA_URL = "{}/{}/".format(AWS_S3_ENDPOINT_URL,"media")
-
-except ImportError:
-    pass
-
-try:
     AWS_ACCESS_KEY_ID
 except NameError:
     AWS_ACCESS_KEY_ID = os.getenv("AWS_KEY")
@@ -69,6 +56,25 @@ try:
     AWS_QUERYSTRING_AUTH
 except NameError:
     AWS_QUERYSTRING_AUTH = False
+
+try:
+    import storages
+
+    INSTALLED_APPS += [
+        "storages",
+        ]
+
+    try:
+        DEFAULT_FILE_STORAGE
+    except NameError:
+        DEFAULT_FILE_STORAGE = 'kbde.django.storage_backends.MediaStorage'
+    try:
+        MEDIA_URL
+    except NameError:
+        MEDIA_URL = "{}/{}/".format(AWS_S3_ENDPOINT_URL, "media")
+
+except ImportError:
+    pass
 
 
 #Debug
