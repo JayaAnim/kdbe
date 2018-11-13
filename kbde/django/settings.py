@@ -2,11 +2,13 @@ from config.settings import *
 import os
 
 
+config = globals()
+
+
 #App name
 
 APP_NAME = os.getenv("APP_NAME")
-if not APP_NAME:
-    raise Exception("must define APP_NAME environement variable")
+assert APP_NAME, "must define APP_NAME environement variable"
 
 
 # Whitenoise config
@@ -40,22 +42,11 @@ except ImportError:
 
 # Media storage config
 
-try:
-    AWS_ACCESS_KEY_ID
-except NameError:
-    AWS_ACCESS_KEY_ID = os.getenv("AWS_KEY")
-try:
-    AWS_SECRET_ACCESS_KEY
-except NameError:
-    AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET")
-try:
-    AWS_STORAGE_BUCKET_NAME = APP_NAME
-except NameError:
-    AWS_S3_ENDPOINT_URL = os.getenv("AWS_BUCKET_URL")
-try:
-    AWS_QUERYSTRING_AUTH
-except NameError:
-    AWS_QUERYSTRING_AUTH = False
+AWS_ACCESS_KEY_ID = config.get("AWS_ACCESS_KEY_ID", os.getenv("AWS_KEY"))
+AWS_SECRET_ACCESS_KEY = config.get("AWS_SECRET_ACCESS_KEY", os.getenv("AWS_SECRET"))
+AWS_STORAGE_BUCKET_NAME = config.get("AWS_STORAGE_BUCKET_NAME", APP_NAME)
+AWS_S3_ENDPOINT_URL = config.get("AWS_S3_ENDPOINT_URL", os.getenv("AWS_BUCKET_URL"))
+AWS_QUERYSTRING_AUTH = config.get("AWS_QUERYSTRING_AUTH", False)
 
 try:
     import storages
@@ -64,14 +55,9 @@ try:
         "storages",
         ]
 
-    try:
-        DEFAULT_FILE_STORAGE
-    except NameError:
-        DEFAULT_FILE_STORAGE = 'kbde.django.storage_backends.MediaStorage'
-    try:
-        MEDIA_URL
-    except NameError:
-        MEDIA_URL = "{}/{}/".format(AWS_S3_ENDPOINT_URL, "media")
+    DEFAULT_FILE_STORAGE = config.get("DEFAULT_FILE_STORAGE",
+                                      "kbde.django.storage_backends.MediaStorage")
+    MEDIA_URL = config.get("MEDIA_URL", "{}/{}/".format(AWS_S3_ENDPOINT_URL, "media"))
 
 except ImportError:
     pass
@@ -87,39 +73,16 @@ if NO_DEBUG:
 
 #Email
 
-try:
-    EMAIL_HOST
-except NameError:
-    EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.sendgrid.net")
-try:
-    EMAIL_PORT
-except NameError:
-    EMAIL_PORT = os.getenv("EMAIL_PORT", "587")
-try:
-    EMAIL_USE_TLS
-except NameError:
-    EMAIL_USE_TLS = True
-try:
-    EMAIL_HOST_USER
-except NameError:
-    EMAIL_HOST_USER = os.getenv("EMAIL_USERNAME", "apikey")
-try:
-    EMAIL_HOST_PASSWORD
-except NameError:
-    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
-try:
-    SERVER_EMAIL
-except NameError:
-    SERVER_EMAIL = os.getenv("SERVER_EMAIL", "{}@kbuilds.com".format(APP_NAME))
+EMAIL_HOST = config.get("EMAIL_HOST", os.getenv("EMAIL_HOST", "smtp.sendgrid.net"))
+EMAIL_PORT = config.get("EMAIL_PORT", os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = config.get("EMAIL_USE_TLS", True)
+EMAIL_HOST_USER = config.get("EMAIL_HOST_USER", os.getenv("EMAIL_USERNAME", "apikey"))
+EMAIL_HOST_PASSWORD = config.get("EMAIL_HOST_PASSWORD", os.getenv("EMAIL_PASSWORD"))
+SERVER_EMAIL = config.get("SERVER_EMAIL",
+                          os.getenv("SERVER_EMAIL", "{}@kbuilds.com".format(APP_NAME)))
 
 
 #Staticfiles config
 
-try:
-    STATIC_URL
-except NameError:
-    STATIC_URL = '/static/'
-try:
-    STATIC_ROOT
-except NameError:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = config.get("STATIC_URL", '/static/')
+STATIC_ROOT = config.get("STATIC_ROOT", os.path.join(BASE_DIR, 'staticfiles'))
