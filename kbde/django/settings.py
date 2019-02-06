@@ -1,4 +1,4 @@
-from config.settings import *
+from config.settings_base import *
 import os
 
 
