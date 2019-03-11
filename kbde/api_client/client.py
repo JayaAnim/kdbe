@@ -16,7 +16,7 @@ class Client:
     CONTENT_TYPE_TEXT = "text"
     CONTENT_TYPE_JSON = "json"
 
-    request_content_type = CONTENT_TYPE_TEXT
+    request_content_type = CONTENT_TYPE_JSON
 
     # Headers that will be added to every request
     # Can be templatized strings
