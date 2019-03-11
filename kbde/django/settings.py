@@ -42,10 +42,10 @@ except ImportError:
 
 # Media storage config
 
-AWS_ACCESS_KEY_ID = config.get("AWS_ACCESS_KEY_ID", os.getenv("AWS_KEY"))
-AWS_SECRET_ACCESS_KEY = config.get("AWS_SECRET_ACCESS_KEY", os.getenv("AWS_SECRET"))
+AWS_ACCESS_KEY_ID = config.get("AWS_ACCESS_KEY_ID", os.getenv("AWS_ACCESS_KEY_ID"))
+AWS_SECRET_ACCESS_KEY = config.get("AWS_SECRET_ACCESS_KEY", os.getenv("AWS_SECRET_ACCESS_KEY"))
 AWS_STORAGE_BUCKET_NAME = config.get("AWS_STORAGE_BUCKET_NAME", APP_NAME)
-AWS_S3_ENDPOINT_URL = config.get("AWS_S3_ENDPOINT_URL", os.getenv("AWS_BUCKET_URL"))
+AWS_S3_ENDPOINT_URL = config.get("AWS_S3_ENDPOINT_URL", os.getenv("AWS_S3_ENDPOINT_URL"))
 AWS_QUERYSTRING_AUTH = config.get("AWS_QUERYSTRING_AUTH", False)
 
 try:
@@ -65,8 +65,9 @@ except ImportError:
 
 #Debug
 
-NO_DEBUG = os.getenv("NO_DEBUG")
-if NO_DEBUG:
+DEBUG = os.getenv("DEBUG", "1")
+if DEBUG:
+    #
     DEBUG = False
     TEMPLATE_DEBUG = DEBUG
 

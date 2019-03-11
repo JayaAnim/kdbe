@@ -1,8 +1,12 @@
-def get_url(data):
+def make_url(*args, **kwargs):
     """
-    Takes a dictionary
-    Returns a url querystring
+    Returns a url with querystring
     """
-    arg_list = ["{0}={1}".format(key,data[key]) for key in data]
-    url = "&".join(arg_list)
+    url = "/".join(args)
+
+    if kwargs:
+        query_list = ["{}={}".format(key, value) for key, value in kwargs.items()]
+        query = "&".join(query_list)
+        url += "?" + query
+
     return url
