@@ -65,11 +65,13 @@ except ImportError:
 
 #Debug
 
-DEBUG = os.getenv("DEBUG", "1")
-if DEBUG:
-    #
-    DEBUG = False
-    TEMPLATE_DEBUG = DEBUG
+DEBUG = os.getenv("DEBUG", "0")
+try:
+    DEBUG = bool(int(DEBUG))
+except ValueError:
+    raise Exception("DEBUG must be an int")
+
+TEMPLATE_DEBUG = DEBUG
 
 
 #Email
