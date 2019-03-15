@@ -7,3 +7,4 @@ KBDE
 - `v9`:
   - Changes API client lib
   - Changes AWS variable names in Django settings
+  - Django `DEBUG` default `False`
