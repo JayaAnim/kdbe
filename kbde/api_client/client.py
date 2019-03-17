@@ -133,8 +133,8 @@ class Client:
         for p in format_param_list:
             value = params.pop(p, no_key)
             if value == no_key:
-                raise self.RequestException("param `{}` was not given to format string `{}`"
-                                            "".format(p, s))
+                raise self.ApiClientException("param `{}` was not given to format string `{}`"
+                                              "".format(p, s))
             format_params[p] = value
 
         return s.format(**format_params)
@@ -165,3 +165,6 @@ class Client:
 
     def get_params(self, **params):
         return self.params.copy()
+
+    class ApiClientException(Exception):
+        pass
