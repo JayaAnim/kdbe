@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.conf import settings
 from pytz import UnknownTimeZoneError
 
 
@@ -22,6 +23,7 @@ class Base:
         context["css_list"] = self.get_css_list()
         context["js_list"] = self.get_js_list()
         context["tracking_ids"] = ["UA-89983744-1"] + self.tracking_ids
+        context["html_validate_forms"] = getattr(settings, "HTML_VALIDATE_FORMS", False)
         return context
 
     def set_timezone(self):
