@@ -1,6 +1,7 @@
 *.swp
 db.sqlite*
 *.swo
+t.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
