@@ -14,17 +14,17 @@ class DetailView(mixins.Base, views.generic.DetailView):
     pass
 
 
-class FormView(mixins.Base, views.generic.FormView):
+class FormView(mixins.Base, mixins.Edit, views.generic.FormView):
     pass
 
 
-class CreateView(mixins.Base, views.generic.CreateView):
+class CreateView(mixins.Base, mixins.Edit, views.generic.CreateView):
     pass
 
 
-class UpdateView(mixins.Base, views.generic.UpdateView):
+class UpdateView(mixins.Base, mixins.Edit, views.generic.UpdateView):
     pass
 
 
-class DeleteView(mixins.Base, views.generic.DeleteView):
+class DeleteView(mixins.Base, mixins.Edit, views.generic.DeleteView):
     pass

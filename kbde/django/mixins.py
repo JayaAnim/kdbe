@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.conf import settings
+from django.contrib import messages
 from pytz import UnknownTimeZoneError
 
 
@@ -49,3 +50,13 @@ class Base:
             ]
         js_list += self.js_list
         return js_list
+
+
+class Edit:
+    success_message = None
+    success_message_method = messages.info
+
+    def get_success_url(self):
+        if self.success_message is not None:
+           type(self).success_message_method(self.request, self.success_message)
+        return super().get_success_url()
