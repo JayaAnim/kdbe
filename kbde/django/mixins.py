@@ -1,6 +1,8 @@
 from django.utils import timezone
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.staticfiles import finders
+from django.templatetags import static
 from pytz import UnknownTimeZoneError
 
 
@@ -14,6 +16,7 @@ class Base:
     cookies_js_path = "https://cdnjs.cloudflare.com/ajax/libs/Cookies.js/1.2.1/cookies.min.js"
     css_list = []
     js_list = []
+    open_graph = {}
     tracking_ids = []
 
     def get_context_data(self, **kwargs):
@@ -25,6 +28,7 @@ class Base:
         context["js_list"] = self.get_js_list()
         context["tracking_ids"] = ["UA-89983744-1"] + self.tracking_ids
         context["html_validate_forms"] = getattr(settings, "HTML_VALIDATE_FORMS", False)
+        context["open_graph"] = self.get_open_graph()
         return context
 
     def set_timezone(self):
@@ -50,6 +54,17 @@ class Base:
             ]
         js_list += self.js_list
         return js_list
+
+    def get_open_graph(self, open_graph=None):
+        open_graph = open_graph or self.open_graph
+
+        for prop, content in open_graph.items():
+            # Try getting the static content for the content
+            new_content = finders.find(content)
+            if new_content is not None:
+                open_graph[prop] = static.static(content)
+
+        return open_graph
 
 
 class Edit:

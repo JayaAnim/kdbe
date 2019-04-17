@@ -26,6 +26,10 @@
     <script src="{%if 'https://' in js%}{{js}}{%else%}{%static js%}{%endif%}"></script>
   {%endfor%}
 
+  {%for property, content in open_graph.items%}
+    <meta property="og:{{property}}" content="{{content}}" />
+  {%endfor%}
+
 </head>
 
 <body>
