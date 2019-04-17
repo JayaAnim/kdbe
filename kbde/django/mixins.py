@@ -55,16 +55,18 @@ class Base:
         js_list += self.js_list
         return js_list
 
-    def get_open_graph(self, open_graph=None):
-        open_graph = open_graph or self.open_graph
+    def get_open_graph(self):
+        open_graph = self.open_graph.copy()
 
         for prop, content in open_graph.items():
-            # Try getting the static content for the content
-            new_content = finders.find(content)
-            if new_content is not None:
-                open_graph[prop] = static.static(content)
+            open_graph[prop] = self.get_static_url(content)
 
         return open_graph
+
+    def get_static_url(self, path):
+        if finders.find(path):
+            path = static.static(path)
+        return path
 
 
 class Edit:
