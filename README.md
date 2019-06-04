@@ -4,7 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
-- `v10`
+- `v11`:
+  - Adds a Django model for users which are identified via email address, instead of a username.
+- `v10`:
   - Adds a Django model for scheduling.
 - `v9`:
   - Changes API client lib.
