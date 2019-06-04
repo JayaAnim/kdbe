@@ -44,6 +44,7 @@ class EmailUserManager(base_user.BaseUserManager):
 
 class EmailUser(User):
     email = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, unique=True)
+    username = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
 
     objects = EmailUserManager()
 
