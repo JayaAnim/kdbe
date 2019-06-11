@@ -15,6 +15,14 @@ class Client:
     # Request content types
     CONTENT_TYPE_TEXT = "text"
     CONTENT_TYPE_JSON = "json"
+    CONTENT_TYPE_MULTIPART = "multipart"
+
+    # Requests params mapping
+    REQUEST_BODY_PARAM_MAP = {
+        CONTENT_TYPE_TEXT: "data",
+        CONTENT_TYPE_JSON: "json",
+        CONTENT_TYPE_MULTIPART: "files",
+        }
 
     request_content_type = CONTENT_TYPE_JSON
 
@@ -101,12 +109,10 @@ class Client:
         """
         request_content_type = self.get_request_content_type(**params)
 
-        if request_content_type == self.CONTENT_TYPE_TEXT:
-            request_params = {"data": params}
-        elif request_content_type == self.CONTENT_TYPE_JSON:
-            request_params = {"json": params}
-        else:
-            raise Exception("request_content_type `{}` not supported".format(request_content_type))
+        request_param_key = self.REQUEST_BODY_PARAM_MAP.get(request_content_type)
+        assert request_param_key, "request_content_type `{}` not supported".format(request_content_type)
+
+        request_params = {request_param_key: params}
 
         return request_params
 
