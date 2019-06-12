@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v12`:
+  - Adds multipart/form-data as a content type in the API client.
 - `v11`:
   - Adds a Django model for users which are identified via email address, instead of a username.
 - `v10`:
