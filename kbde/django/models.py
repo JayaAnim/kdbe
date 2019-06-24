@@ -160,11 +160,11 @@ class Schedule(models.Model):
         # Time
 
         if self.start_time is not None:
-            if self.start_time < now.time():
+            if self.start_time > now.time():
                 raise self.BeforeStart
 
         if self.end_time is not None:
-            if self.end_time >= now.time():
+            if self.end_time <= now.time():
                 raise self.AfterEnd
 
 
