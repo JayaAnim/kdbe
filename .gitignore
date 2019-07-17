@@ -2,6 +2,8 @@
 db.sqlite*
 *.swo
 t.py
+.DS_Store
+._.DS_Stire
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
