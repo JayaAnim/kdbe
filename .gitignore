@@ -3,7 +3,7 @@ db.sqlite*
 *.swo
 t.py
 .DS_Store
-._.DS_Stire
+._.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

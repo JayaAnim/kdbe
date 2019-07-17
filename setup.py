@@ -8,8 +8,4 @@ setup(name="kbde",
       description="Development environment library. Foundational python library.",
       packages=find_packages(),
       include_package_data=True,
-      install_requires=[
-        "requests==2.21.0",
-        "python-dateutil==2.8.0",
-        ],
       )
