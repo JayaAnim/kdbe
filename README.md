@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v13`:
+  - Adds OpenCV image quality analysis.
 - `v12`:
   - Adds multipart/form-data as a content type in the API client.
 - `v11`:
