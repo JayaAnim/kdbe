@@ -73,6 +73,8 @@ except ValueError:
 
 TEMPLATE_DEBUG = DEBUG
 
+DEBUG_EMAIL = os.getenv("DEBUG_EMAIL")
+
 
 #Email
 
@@ -81,8 +83,7 @@ EMAIL_PORT = config.get("EMAIL_PORT", os.getenv("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = config.get("EMAIL_USE_TLS", True)
 EMAIL_HOST_USER = config.get("EMAIL_HOST_USER", os.getenv("EMAIL_USERNAME", "apikey"))
 EMAIL_HOST_PASSWORD = config.get("EMAIL_HOST_PASSWORD", os.getenv("EMAIL_PASSWORD"))
-SERVER_EMAIL = config.get("SERVER_EMAIL",
-                          os.getenv("SERVER_EMAIL", "{}@kbuilds.com".format(APP_NAME)))
+EMAIL_SUBJECT_PREFIX = "[{}] ".format(config.get("EMAIL_SUBJECT_PREFIX", APP_NAME))
 
 
 #Staticfiles config
