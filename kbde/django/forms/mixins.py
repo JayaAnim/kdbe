@@ -26,15 +26,16 @@ class EmailForm:
         text_message = self.get_text_message()
         html_message = self.get_html_message()
 
-        # Attachments
-        attachment_list = self.get_attachments()
+        # From email
+        from_email = self.get_from_email()
 
         # Recipients
-        to_email_list = self.get_to_emails()
-        cc_email_list = self.get_cc_emails()
-        bcc_email_list = self.get_bcc_emails()
+        to_email_list = self.get_to_email_list()
+        cc_email_list = self.get_cc_email_list()
+        bcc_email_list = self.get_bcc_email_list()
 
-        from_email = self.get_from_email()
+        # Attachments
+        attachment_list = self.get_attachment_list()
 
         utils.send_email(to_email_list,
                          subject,
@@ -46,7 +47,7 @@ class EmailForm:
                          attachment_list=attachment_list)
 
 
-    def get_to_emails(self):
+    def get_to_email_list(self):
         """
         Returns a list of email addresses to which this form will send emails
         """
@@ -55,7 +56,7 @@ class EmailForm:
 
         return self.to_email_list
 
-    def get_cc_emails(self):
+    def get_cc_email_list(self):
         """
         Returns a list of cc email addresses
         """
@@ -64,7 +65,7 @@ class EmailForm:
 
         return self.cc_email_list
 
-    def get_bcc_emails(self):
+    def get_bcc_email_list(self):
         """
         Returns a list of bcc emails addresses
         """
@@ -99,7 +100,91 @@ class EmailForm:
         """
         raise NotImplementedError
 
-    def get_attachments(self):
+    def get_attachment_list(self):
+        """
+        Returns an iterable of attachments
+        See attachments: https://docs.djangoproject.com/en/2.2/topics/email/#emailmessage-objects
+        """
+        return []
+
+
+class SendToTrelloForm:
+    """
+    A form which when submitted will create a Trello card via email
+    Presents the same interface as `EmailForm`
+    """
+    board_email = None
+    title = None
+    member_list = []
+    label_list = []
+    attachment_list = []
+    
+    def send_email(self):
+        """
+        Gathers information from the form fields to produce:
+            - board_email
+            - title
+            - description
+            - members
+            - labels
+        Uses the Trello "email to board" feature
+        """
+
+        board_email = self.get_board_email()
+        title = self.get_title()
+        description = self.get_description()
+
+        assert isinstance(description, str), "self.get_description must return a string"
+
+        member_list = self.get_member_list()
+        label_list = self.get_label_list()
+        attachment_list = self.get_attachment_list()
+
+        utils.send_to_trello(board_email,
+                             title,
+                             description,
+                             member_list=member_list,
+                             label_list=label_list,
+                             attachment_list=attachment_list)
+
+    def get_board_email(self):
+        assert self.board_email is not None, "must define self.board_email"
+        
+        return self.board_email
+
+    def get_title(self):
+        assert self.title is not None, "must define self.title"
+
+        return self.title
+
+    def get_description(self):
+        """
+        Returns the card description as a string. Can be Markdown formatted.
+        Can return empty string if there is no description
+        """
+        raise NotImplementedError
+
+    def get_member_list(self):
+        """
+        Returns a list of members to be added to the card
+        By default, this returns self.member_list
+        Note: these members should not include `@`
+        """
+        assert isinstance(self.member_list, (list, tuple)), "self.member_list must be an iterable"
+
+        return self.member_list
+
+    def get_label_list(self):
+        """
+        Returns a list of labels to be added to the card
+        By default, this returns self.label_list
+        Not: these labels should not include `#`
+        """
+        assert isinstance(self.label_list, (list, tuple)), "self.label_list must be an iterable"
+
+        return self.label_list
+
+    def get_attachment_list(self):
         """
         Returns an iterable of attachments
         See attachments: https://docs.djangoproject.com/en/2.2/topics/email/#emailmessage-objects
