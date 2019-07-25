@@ -115,6 +115,7 @@ class SendToTrelloForm:
     """
     board_email = None
     title = None
+    description = None
     member_list = []
     label_list = []
     attachment_list = []
@@ -162,7 +163,20 @@ class SendToTrelloForm:
         Returns the card description as a string. Can be Markdown formatted.
         Can return empty string if there is no description
         """
-        raise NotImplementedError
+        desc_array = []
+        desc_string = ''
+
+        for field in self.fields:
+            html = ('<p>{}: {}</p>').format(field, self.data[field])
+            desc_array.append(html)
+
+        if desc_array:
+            desc_string = ''.join(desc_array)
+            return desc_string
+        else:
+            return desc_string
+        # raise NotImplementedError
+
 
     def get_member_list(self):
         """
