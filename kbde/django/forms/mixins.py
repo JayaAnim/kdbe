@@ -167,15 +167,15 @@ class SendToTrelloForm:
         desc_string = ''
 
         for field in self.fields:
-            html = ('<p>{}: {}</p>').format(field, self.data[field])
-            desc_array.append(html)
+            label = field.replace('_', ' ').title()
+            text = ('{}: {}\n').format(label, self.data[field])
+            desc_array.append(text)
 
         if desc_array:
             desc_string = ''.join(desc_array)
             return desc_string
         else:
             return desc_string
-        # raise NotImplementedError
 
 
     def get_member_list(self):
