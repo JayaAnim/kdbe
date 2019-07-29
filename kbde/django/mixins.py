@@ -77,3 +77,11 @@ class Edit:
         if self.success_message is not None:
            type(self).success_message_method(self.request, self.success_message)
         return super().get_success_url()
+
+
+class EmailForm:
+    
+    def form_valid(self, form):
+        # Send the email via the form
+        form.send_email()
+        return super().form_valid(form)
