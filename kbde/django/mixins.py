@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
 from pytz import UnknownTimeZoneError
@@ -85,3 +86,33 @@ class EmailForm:
         # Send the email via the form
         form.send_email()
         return super().form_valid(form)
+
+
+class OrganizationLimit(auth_mixins.LoginRequiredMixin):
+    organization_user_attribute = "organization"
+    organization_orm_path = "organization"
+    
+    def get_queryset(self):
+        q = super().get_queryset()
+        org_orm_path = self.get_organization_orm_path()
+        organization = self.get_organization()
+        f = {org_orm_path: organization}
+        return q.filter(**f)
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.instance.organization = self.get_organization()
+        return form
+
+    def get_organization(self):
+        return getattr(self.request.user, self.organization_user_attribute)
+
+    def get_organization_orm_path(self):
+        return self.organization_orm_path
+
+
+class SoftDelete:
+    
+    def get_queryset(self):
+        q = super().get_queryset()
+        return q.filter(deleted=False)
