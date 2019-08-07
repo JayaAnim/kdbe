@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v14`:
+  - Adds email and Trello `send_to_` functions, with form and view mixins.
 - `v13`:
   - Adds OpenCV image quality analysis.
   - Changes the interface for the `django.utils.send_email()`.
