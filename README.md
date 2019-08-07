@@ -6,6 +6,7 @@ KBDE
 
 - `v15`:
   - Adds mixins for Soft Delete and for org-limited models.
+  - Adds logging to `stdout` based on the `APP_LOG_LEVEL` env var to Django settings.
 - `v14`:
   - Adds email and Trello `send_to_` functions, with form and view mixins.
 - `v13`:

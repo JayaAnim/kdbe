@@ -5,7 +5,7 @@ import os
 config = globals()
 
 
-#App name
+# App name
 
 APP_NAME = os.getenv("APP_NAME")
 assert APP_NAME, "must define APP_NAME environement variable"
@@ -63,7 +63,7 @@ except ImportError:
     pass
 
 
-#Debug
+# Debug
 
 DEBUG = os.getenv("DEBUG", "0")
 try:
@@ -76,7 +76,48 @@ TEMPLATE_DEBUG = DEBUG
 DEBUG_EMAIL = os.getenv("DEBUG_EMAIL")
 
 
-#Email
+# Logging
+
+LOGGING = config.get("LOGGING")
+APP_LOG_LEVEL = os.getenv("APP_LOG_LEVEL", "INFO")
+
+if LOGGING is None:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "filters": {
+            "require_debug_false": {
+                "()": "django.utils.log.RequireDebugFalse",
+                },
+            },
+        "formatters": {
+            "verbose": {
+                "format": ("[%(asctime)s] [%(process)d] [%(levelname)s] %(message)s"),
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+                },
+            },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
+                },
+            "mail_admins": {
+                "level": "ERROR",
+                "filters": ["require_debug_false"],
+                "class": "django.utils.log.AdminEmailHandler",
+                },
+            },
+        "loggers": {
+            "django": {
+                "handlers": ["console", "mail_admins"],
+                "level": APP_LOG_LEVEL,
+                },
+            },
+        }
+
+
+# Email
 
 EMAIL_HOST = config.get("EMAIL_HOST", os.getenv("EMAIL_HOST", "smtp.sendgrid.net"))
 EMAIL_PORT = config.get("EMAIL_PORT", os.getenv("EMAIL_PORT", "587"))
@@ -86,7 +127,7 @@ EMAIL_HOST_PASSWORD = config.get("EMAIL_HOST_PASSWORD", os.getenv("EMAIL_PASSWOR
 EMAIL_SUBJECT_PREFIX = "[{}] ".format(config.get("EMAIL_SUBJECT_PREFIX", APP_NAME))
 
 
-#Staticfiles config
+# Staticfiles config
 
 STATIC_URL = config.get("STATIC_URL", '/static/')
 STATIC_ROOT = config.get("STATIC_ROOT", os.path.join(BASE_DIR, 'staticfiles'))
