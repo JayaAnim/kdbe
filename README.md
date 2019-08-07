@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v15`:
+  - Adds mixins for Soft Delete and for org-limited models.
 - `v14`:
   - Adds email and Trello `send_to_` functions, with form and view mixins.
 - `v13`:
