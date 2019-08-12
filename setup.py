@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name="kbde",
-      version="15",
+      version="16",
       url="https://gitlab.com/kbGit/kbde",
       author="kbuilds, LLC",
       author_email="k@kbuilds.com",

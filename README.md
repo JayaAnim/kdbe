@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v16`:
+  - Removes requirement that `DEBUG` needs to be an int. `DEBUG` can now be any value, and `bool()` evaluation will determine the `DEBUG` setting.
 - `v15`:
   - Adds mixins for Soft Delete and for org-limited models.
   - Adds logging to `stdout` based on the `APP_LOG_LEVEL` env var to Django settings.
