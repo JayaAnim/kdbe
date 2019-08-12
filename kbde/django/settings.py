@@ -65,11 +65,7 @@ except ImportError:
 
 # Debug
 
-DEBUG = os.getenv("DEBUG", "0")
-try:
-    DEBUG = bool(int(DEBUG))
-except ValueError:
-    raise Exception("DEBUG must be an int")
+DEBUG = bool(os.getenv("DEBUG"))
 
 TEMPLATE_DEBUG = DEBUG
 
