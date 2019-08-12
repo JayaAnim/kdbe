@@ -6,6 +6,7 @@ KBDE
 
 - `v16`:
   - Removes requirement that `DEBUG` needs to be an int. `DEBUG` can now be any value, and `bool()` evaluation will determine the `DEBUG` setting.
+  - Changes JSON response in `api_client` to not decode an empty response payload.
 - `v15`:
   - Adds mixins for Soft Delete and for org-limited models.
   - Adds logging to `stdout` based on the `APP_LOG_LEVEL` env var to Django settings.
