@@ -155,6 +155,11 @@ class Client:
 
     def get_response_data(self, response):
         response.raise_for_status()
+
+        if not response._content:
+            return None
+
+        # TODO: support other types of responses
         return response.json()
 
     def get_host(self, **params):
