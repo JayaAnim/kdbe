@@ -1,5 +1,4 @@
 from django.db import models
-from django.core.files.images import ImageFile
 from imutils import paths
 
 import argparse
