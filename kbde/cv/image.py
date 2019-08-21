@@ -18,7 +18,6 @@ class Image():
         """
         Takes an image file-like object
         """
-        print(image)
         self.image = image
         self.face_cascade = cv2.CascadeClassifier(FACE_CASCADE_FILE)
 
@@ -27,12 +26,10 @@ class Image():
 
     def get_cropped(self, image_box):
         """
-        Return a subset of self.image cropped to the given `image_box`
-        Returns a file-like object with the new image in it
+        Creates a subset of self.image cropped to the given `image_box`
+        Creates a new `Image` object with the subset
+        Returns the `Image` object
         """
-        print("crop coords")
-        print("{} {} {} {}".format(image_box.y, image_box.h, image_box.x, image_box.w))
-
         cropped_opencv_image = self.get_opencv_image()[image_box.y:image_box.y+image_box.h, image_box.x:image_box.x+image_box.w]
 
         _, buffer = cv2.imencode(".jpg", cropped_opencv_image)
@@ -82,14 +79,9 @@ class Image():
 
     def check_quality(self):
         im = self.get_opencv_image(gray_scale=True)
-        print("IMG SHAPE")
-        print(im.shape)
-        cv2.imwrite("cropped_check.jpg", im)
 
         #compute the focus measure of the image using Variance of Laplacian method
         fm = cv2.Laplacian(im, cv2.CV_64F).var()
-
-        print(fm)
         return fm
 
 
