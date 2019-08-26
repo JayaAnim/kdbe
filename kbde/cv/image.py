@@ -1,12 +1,7 @@
-from django.db import models
-from imutils import paths
-
-import argparse
 import cv2
-import PIL
-import piexif
 import numpy as np
 import os, io
+import base64
 
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -15,15 +10,25 @@ FACE_CASCADE_FILE = os.path.join(DIR_PATH, "haarcascade_frontalface_default.xml"
 
 class Image():
 
-    def __init__(self, image):
+    def __init__(self, image, image_box=None):
         """
         Takes an image file-like object
         """
         self.image = image
+        self.image_box = image_box
         self.face_cascade = cv2.CascadeClassifier(FACE_CASCADE_FILE)
 
     def get_string(self):
         return self.get_bytes().decode("utf-8")
+
+    def get_bytes(self):
+        buf = self.get_buffer()
+        image_bytes = base64.b64encode(buf)
+        return image_bytes
+
+    def get_buffer(self):
+        ret, buf = cv2.imencode(".jpg", self.get_opencv_image())
+        return buf
 
     def get_cropped(self, image_box):
         """
@@ -35,13 +40,33 @@ class Image():
 
         _, buffer = cv2.imencode(".jpg", cropped_opencv_image)
         new_file = io.BytesIO(buffer)
-        return Image(new_file)
+        return Image(new_file, image_box)
 
     def get_largest_face_box(self):
         face_boxes = self.get_face_boxes()
         face_boxes.sort(key=lambda x: x.get_area(), reverse=True)
 
         return face_boxes[0]
+
+    def get_faces(self):
+        # Get all of the faces that are in this image
+        face_boxes = self.get_face_boxes()
+
+        if not face_boxes:
+            # No faces were found
+            return None
+
+        # Get the image that is largest/closest to the camera
+        face_boxes.sort(key=lambda fb: fb.get_area(), reverse=True)
+
+        face_images = []
+
+        for face_box in face_boxes:
+            face_box = face_box.get_adjusted(self, percent=15)
+            face_image = self.get_cropped(face_box)
+            face_images.append(face_image)
+
+        return face_images
 
     def get_face_boxes(self):
         """
@@ -78,6 +103,12 @@ class Image():
         else:
             return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
+    @staticmethod
+    def opencv_image_to_file_image(opencv_image):
+        _, buffer = cv2.imencode(".jpg", opencv_image)
+
+        return io.BytesIO(buffer)
+
     def check_quality(self):
         im = self.get_opencv_image(gray_scale=True)
 
@@ -91,6 +122,9 @@ class Image():
         If found: removes from image, returns `True`
         Else: does nothing, returns false
         """
+        import PIL
+        import piexif
+
         img = PIL.Image.open(self.image)
         if "exif" in img.info:
             exif_dict = piexif.load(img.info['exif'])
