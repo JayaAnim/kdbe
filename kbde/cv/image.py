@@ -1,7 +1,11 @@
+from kbde.data import serialize
+
 import cv2
 import numpy as np
 import os, io
 import base64
+import PIL
+import piexif
 
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -9,26 +13,30 @@ FACE_CASCADE_FILE = os.path.join(DIR_PATH, "haarcascade_frontalface_default.xml"
 FACE_CASCADE = cv2.CascadeClassifier(FACE_CASCADE_FILE)
 
 
-class Image():
+class Image(serialize.Serializable):
+
+    @classmethod
+    def from_opencv_image(cls, opencv_image):
+        _, buf = cv2.imencode(".jpg", opencv_image)
+        return cls(buf)
 
     def __init__(self, image, image_box=None):
         """
-        Takes an image file-like object
+        Takes an image as bytes and an optional ImageBox object describing the source coordinates of
+            the image relative to any parent/source image
         """
         self.image = image
         self.image_box = image_box
 
+    def serialize(self):
+        data = {
+            "image": self.get_string(),
+            "image_box": self.image_box,
+            }
+        return data
+
     def get_string(self):
-        return self.get_bytes().decode("utf-8")
-
-    def get_bytes(self):
-        buf = self.get_buffer()
-        image_bytes = base64.b64encode(buf)
-        return image_bytes
-
-    def get_buffer(self):
-        ret, buf = cv2.imencode(".jpg", self.get_opencv_image())
-        return buf
+        return self.image.decode("latin1")
 
     def get_cropped(self, image_box):
         """
@@ -36,37 +44,45 @@ class Image():
         Creates a new `Image` object with the subset
         Returns the `Image` object
         """
-        cropped_opencv_image = self.get_opencv_image()[image_box.y:image_box.y+image_box.h, image_box.x:image_box.x+image_box.w]
 
-        _, buffer = cv2.imencode(".jpg", cropped_opencv_image)
-        new_file = io.BytesIO(buffer)
-        return Image(new_file, image_box)
+        assert amount is not None or percent is not None, "must provide amount or percent"
 
-    def get_largest_face_box(self):
+        cropped_opencv_image = self.get_opencv_image()[image_box.y:image_box.y+image_box.h,
+                                                       image_box.x:image_box.x+image_box.w]
+
+        _, buf = cv2.imencode(".jpg", cropped_opencv_image)
+        return Image(buf, image_box)
+
+    def get_largest_face_box(self, margin_amount=None, margin_percent=None):
         face_boxes = self.get_face_boxes()
+
         face_boxes.sort(key=lambda x: x.get_area(), reverse=True)
 
-        return face_boxes[0]
+        if not face_boxes:
+            return None
 
-    def get_faces(self):
+        face_box = face_boxes[0]
+
+        if margin_amount or margin_percent:
+            face_box = face_box.get_adjusted(self, margin_amount, margin_percent)
+
+        return face_box
+
+    def get_faces(self, margin_amount=None, margin_percent=None):
+        """
+        Returns a list of new image instances based on where faces were found in this image
+        """
         # Get all of the faces that are in this image
         face_boxes = self.get_face_boxes()
 
-        if not face_boxes:
-            # No faces were found
-            return None
+        if margin_amount or margin_percent:
+            face_boxes = [face_box.get_adjusted(self, margin_amount, margin_percent)]
 
         # Get the image that is largest/closest to the camera
         face_boxes.sort(key=lambda fb: fb.get_area(), reverse=True)
 
-        face_images = []
+        return [self.get_cropped(face_box) for face_box in face_boxes]
 
-        for face_box in face_boxes:
-            face_box = face_box.get_adjusted(self, percent=15)
-            face_image = self.get_cropped(face_box)
-            face_images.append(face_image)
-
-        return face_images
 
     def get_face_boxes(self):
         """
@@ -74,7 +90,7 @@ class Image():
         Creates a list of `ImageBox` objects, one for each face found
         Returns the list of `ImageBox` objects
         """
-        gray = cv2.cvtColor(self.get_opencv_image(), cv2.COLOR_BGR2GRAY)
+        gray = self.get_opencv_image(True)
         face_boxes = FACE_CASCADE.detectMultiScale(
             gray,
             scaleFactor=1.1,
@@ -90,12 +106,8 @@ class Image():
         """
         Returns a version of self.image which can be used by opencv
         """
-        self.image.seek(0)
-        #convert self.image to bytes
-        bytes_image = self.image.read()
-
         #handling for imdecode
-        nparr = np.fromstring(bytes_image, np.uint8)
+        nparr = np.fromstring(self.image, np.uint8)
 
         #load the image
         if gray_scale:
@@ -103,17 +115,12 @@ class Image():
         else:
             return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    @staticmethod
-    def opencv_image_to_file_image(opencv_image):
-        _, buffer = cv2.imencode(".jpg", opencv_image)
-
-        return io.BytesIO(buffer)
-
-    def check_quality(self):
+    def get_quality(self):
         im = self.get_opencv_image(gray_scale=True)
 
         #compute the focus measure of the image using Variance of Laplacian method
         fm = cv2.Laplacian(im, cv2.CV_64F).var()
+
         return fm
 
     def remove_ios_orientation_exif(self):
@@ -122,8 +129,6 @@ class Image():
         If found: removes from image, returns `True`
         Else: does nothing, returns false
         """
-        import PIL
-        import piexif
 
         img = PIL.Image.open(self.image)
         if "exif" in img.info:
@@ -163,13 +168,19 @@ class Image():
         return False
 
 
-class ImageBox:
+class ImageBox(serialize.Serializable):
     
     def __init__(self, x, y, w, h):
         self.x = x
         self.y = y
         self.w = w
         self.h = h
+
+    def __str__(self):
+        return str(self.get_coordinates())
+
+    def serialize(self):
+        return self.get_coordinates()
 
     def get_coordinates(self):
         return [int(self.x), int(self.y), int(self.w), int(self.h)]
@@ -179,6 +190,9 @@ class ImageBox:
         Takes amount or percent
         Adjusts the dimensions of this `ImageBox` accordingly
         """
+
+        assert amount is not None or percent is not None, "must provide amount or percent"
+
         if percent is not None:
             # Calculate amount to adjust by based on size of w and h
             l = max([self.w, self.h])
@@ -189,10 +203,10 @@ class ImageBox:
         new_x = self.x - amount
         new_y = self.y - amount
 
-        new_face_box = ImageBox(new_x, new_y, new_w, new_h)
-        new_face_box.validate(image)
+        new_image_box = ImageBox(new_x, new_y, new_w, new_h)
+        new_image_box.validate(image)
 
-        return new_face_box
+        return new_image_box
 
     def validate(self, image):
         """
