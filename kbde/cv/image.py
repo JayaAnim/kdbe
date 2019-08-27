@@ -16,15 +16,18 @@ FACE_CASCADE = cv2.CascadeClassifier(FACE_CASCADE_FILE)
 class Image(serialize.Serializable):
 
     @classmethod
-    def from_opencv_image(cls, opencv_image):
+    def from_opencv_image(cls, opencv_image, image_box=None):
         _, buf = cv2.imencode(".jpg", opencv_image)
-        return cls(buf)
+        buf = bytes(buf)
+        return cls(buf, image_box)
 
     def __init__(self, image, image_box=None):
         """
         Takes an image as bytes and an optional ImageBox object describing the source coordinates of
             the image relative to any parent/source image
         """
+        assert isinstance(image, bytes), "image was passed as {} but should be bytes".format(
+                                                                                        type(image))
         self.image = image
         self.image_box = image_box
 
@@ -36,7 +39,7 @@ class Image(serialize.Serializable):
         return data
 
     def get_string(self):
-        return self.image.decode("latin1")
+        return base64.b64encode(self.image).decode("latin1")
 
     def get_cropped(self, image_box):
         """
@@ -44,14 +47,10 @@ class Image(serialize.Serializable):
         Creates a new `Image` object with the subset
         Returns the `Image` object
         """
-
-        assert amount is not None or percent is not None, "must provide amount or percent"
-
         cropped_opencv_image = self.get_opencv_image()[image_box.y:image_box.y+image_box.h,
                                                        image_box.x:image_box.x+image_box.w]
 
-        _, buf = cv2.imencode(".jpg", cropped_opencv_image)
-        return Image(buf, image_box)
+        return Image.from_opencv_image(cropped_opencv_image, image_box)
 
     def get_largest_face_box(self, margin_amount=None, margin_percent=None):
         face_boxes = self.get_face_boxes()
@@ -83,14 +82,13 @@ class Image(serialize.Serializable):
 
         return [self.get_cropped(face_box) for face_box in face_boxes]
 
-
     def get_face_boxes(self):
         """
         Checks self.image for faces
         Creates a list of `ImageBox` objects, one for each face found
         Returns the list of `ImageBox` objects
         """
-        gray = self.get_opencv_image(True)
+        gray = cv2.cvtColor(self.get_opencv_image(), cv2.COLOR_BGR2GRAY)
         face_boxes = FACE_CASCADE.detectMultiScale(
             gray,
             scaleFactor=1.1,
@@ -111,9 +109,11 @@ class Image(serialize.Serializable):
 
         #load the image
         if gray_scale:
-            return cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+            image = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
         else:
-            return cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        return image
 
     def get_quality(self):
         im = self.get_opencv_image(gray_scale=True)
