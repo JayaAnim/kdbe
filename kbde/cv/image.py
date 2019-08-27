@@ -6,6 +6,7 @@ import base64
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 FACE_CASCADE_FILE = os.path.join(DIR_PATH, "haarcascade_frontalface_default.xml")
+FACE_CASCADE = cv2.CascadeClassifier(FACE_CASCADE_FILE)
 
 
 class Image():
@@ -16,7 +17,6 @@ class Image():
         """
         self.image = image
         self.image_box = image_box
-        self.face_cascade = cv2.CascadeClassifier(FACE_CASCADE_FILE)
 
     def get_string(self):
         return self.get_bytes().decode("utf-8")
@@ -75,7 +75,7 @@ class Image():
         Returns the list of `ImageBox` objects
         """
         gray = cv2.cvtColor(self.get_opencv_image(), cv2.COLOR_BGR2GRAY)
-        face_boxes = self.face_cascade.detectMultiScale(
+        face_boxes = FACE_CASCADE.detectMultiScale(
             gray,
             scaleFactor=1.1,
             minNeighbors=5,
