@@ -130,7 +130,7 @@ class Image(serialize.Serializable):
         Else: does nothing, returns false
         """
 
-        img = PIL.Image.open(self.image)
+        img = PIL.Image.open(io.BytesIO(self.image))
         if "exif" in img.info:
             exif_dict = piexif.load(img.info['exif'])
 
