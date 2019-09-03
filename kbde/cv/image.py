@@ -126,8 +126,6 @@ class Image(serialize.Serializable):
 
         #compute the focus measure of the image using Variance of Laplacian method
         fm = cv2.Laplacian(im, cv2.CV_64F).var()
-        
-        cv2.imwrite("fm_{}.jpg".format(fm), im)
 
         return fm
 
