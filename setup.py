@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
 
 setup(name="kbde",
-      version="16",
-      url="https://gitlab.com/kbGit/kbde",
+      version="17",
+      url="https://gitlab.com/kb_git/kbde",
       author="kbuilds, LLC",
       author_email="k@kbuilds.com",
       description="Development environment library. Foundational python library.",
