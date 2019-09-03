@@ -115,6 +115,12 @@ class Image(serialize.Serializable):
 
         return image
 
+    def get_dimensions(self):
+        im_shape = self.get_opencv_image().shape
+        
+        # im_shape[0] is height, im_shape[1] is width
+        return im_shape[1], im_shape[0]
+
     def get_quality(self):
         im = self.get_opencv_image(gray_scale=True)
 
