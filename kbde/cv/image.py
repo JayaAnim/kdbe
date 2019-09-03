@@ -115,11 +115,19 @@ class Image(serialize.Serializable):
 
         return image
 
+    def get_dimensions(self):
+        im_shape = self.get_opencv_image().shape
+        
+        # im_shape[0] is height, im_shape[1] is width
+        return im_shape[1], im_shape[0]
+
     def get_quality(self):
         im = self.get_opencv_image(gray_scale=True)
 
         #compute the focus measure of the image using Variance of Laplacian method
         fm = cv2.Laplacian(im, cv2.CV_64F).var()
+        
+        cv2.imwrite("fm_{}.jpg".format(fm), im)
 
         return fm
 
@@ -130,7 +138,7 @@ class Image(serialize.Serializable):
         Else: does nothing, returns false
         """
 
-        img = PIL.Image.open(self.image)
+        img = PIL.Image.open(io.BytesIO(self.image))
         if "exif" in img.info:
             exif_dict = piexif.load(img.info['exif'])
 
