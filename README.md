@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v17`:
+  - Adds a check to `data.serialize.Serializable` to ensure that it is being used properly.
+  - Moves image functionality into `cv.image`.
 - `v16`:
   - Removes requirement that `DEBUG` needs to be an int. `DEBUG` can now be any value, and `bool()` evaluation will determine the `DEBUG` setting.
   - Changes JSON response in `api_client` to not decode an empty response payload.
