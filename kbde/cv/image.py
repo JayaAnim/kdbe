@@ -93,7 +93,7 @@ class Image(serialize.Serializable):
             gray,
             scaleFactor=1.1,
             minNeighbors=5,
-            minSize=(50, 50),
+            minSize=(100, 100),
             flags=cv2.CASCADE_SCALE_IMAGE
         )
         face_boxes = [ImageBox(*face_box) for face_box in face_boxes]
@@ -172,6 +172,9 @@ class Image(serialize.Serializable):
                 return True
 
         return False
+
+    def write_to_file(self, file_path):
+        cv2.imwrite(file_path, self.get_opencv_image())
 
 
 class ImageBox(serialize.Serializable):
