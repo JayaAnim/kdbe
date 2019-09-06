@@ -9,8 +9,10 @@ import piexif
 
 
 DIR_PATH = os.path.dirname(os.path.abspath(__file__))
-FACE_CASCADE_FILE = os.path.join(DIR_PATH, "haarcascade_frontalface_default.xml")
-FACE_CASCADE = cv2.CascadeClassifier(FACE_CASCADE_FILE)
+
+MODEL_FILE = os.path.join(DIR_PATH, "opencv_face_detector_uint8.pb")
+CONFIG_FILE = os.path.join(DIR_PATH, "opencv_face_detector.pbtxt")
+FACE_CLASSIFIER = cv2.dnn.readNetFromTensorflow(MODEL_FILE, CONFIG_FILE)
 
 
 class Image(serialize.Serializable):
@@ -52,7 +54,7 @@ class Image(serialize.Serializable):
 
         return Image.from_opencv_image(cropped_opencv_image, image_box)
 
-    def get_largest_face_box(self, margin_amount=None, margin_percent=None):
+    def get_largest_face_box(self, margin_amount=None, margin_percent=None, confidence_threshold=50):
         face_boxes = self.get_face_boxes()
 
         face_boxes.sort(key=lambda x: x.get_area(), reverse=True)
@@ -67,7 +69,7 @@ class Image(serialize.Serializable):
 
         return face_box
 
-    def get_faces(self, margin_amount=None, margin_percent=None):
+    def get_faces(self, margin_amount=None, margin_percent=None, confidence_threshold=50):
         """
         Returns a list of new image instances based on where faces were found in this image
         """
@@ -75,28 +77,47 @@ class Image(serialize.Serializable):
         face_boxes = self.get_face_boxes()
 
         if margin_amount or margin_percent:
-            face_boxes = [face_box.get_adjusted(self, margin_amount, margin_percent)]
+            face_boxes = [face_box.get_adjusted(self, margin_amount, margin_percent) for face_box in face_boxes]
 
         # Get the image that is largest/closest to the camera
         face_boxes.sort(key=lambda fb: fb.get_area(), reverse=True)
 
         return [self.get_cropped(face_box) for face_box in face_boxes]
 
-    def get_face_boxes(self):
+    def get_face_boxes(self, confidence_threshold=50):
         """
         Checks self.image for faces
         Creates a list of `ImageBox` objects, one for each face found
         Returns the list of `ImageBox` objects
         """
-        gray = cv2.cvtColor(self.get_opencv_image(), cv2.COLOR_BGR2GRAY)
-        face_boxes = FACE_CASCADE.detectMultiScale(
-            gray,
-            scaleFactor=1.1,
-            minNeighbors=5,
-            minSize=(100, 100),
-            flags=cv2.CASCADE_SCALE_IMAGE
+        image = self.get_opencv_image()
+
+        (h, w) = image.shape[:2]
+        classifier_size = (300, 300)
+        rgb_values = (104.0, 177.0, 123.0)
+
+        resized = cv2.resize(image, classifier_size)
+
+        blob = cv2.dnn.blobFromImage(
+            image=resized,
+            scalefactor=1.0,
+            size=classifier_size,
+            mean=rgb_values,
         )
-        face_boxes = [ImageBox(*face_box) for face_box in face_boxes]
+
+        FACE_CLASSIFIER.setInput(blob)
+        detections = FACE_CLASSIFIER.forward()
+
+        face_boxes = []
+        for i in range(0, detections.shape[2]):
+            confidence = detections[0, 0, i, 2]
+
+            if confidence > confidence_threshold/100:
+                box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                (startX, startY, endX, endY) = box.astype("int")
+
+                face_box = ImageBox(startX, startY, endX - startX, endY - startY)
+                face_boxes.append(face_box)
 
         return face_boxes
 
@@ -121,8 +142,19 @@ class Image(serialize.Serializable):
         # im_shape[0] is height, im_shape[1] is width
         return im_shape[1], im_shape[0]
 
-    def get_quality(self):
+    def get_quality(self, dimension_min):
         im = self.get_opencv_image(gray_scale=True)
+
+        # resize if either dimension is smaller than dimension_min
+        w, h = self.get_dimensions()
+        if w < dimension_min or h < dimension_min:
+            smallest = min(w, h)
+            diff_scale = dimension_min/smallest
+
+            w = int(w*diff_scale)
+            h = int(h*diff_scale)
+
+            im = cv2.resize(im, (w, h))
 
         #compute the focus measure of the image using Variance of Laplacian method
         fm = cv2.Laplacian(im, cv2.CV_64F).var()
@@ -135,7 +167,6 @@ class Image(serialize.Serializable):
         If found: removes from image, returns `True`
         Else: does nothing, returns false
         """
-
         img = PIL.Image.open(io.BytesIO(self.image))
         if "exif" in img.info:
             exif_dict = piexif.load(img.info['exif'])
@@ -199,7 +230,6 @@ class ImageBox(serialize.Serializable):
         Takes amount or percent
         Adjusts the dimensions of this `ImageBox` accordingly
         """
-
         assert amount is not None or percent is not None, "must provide amount or percent"
 
         if percent is not None:
