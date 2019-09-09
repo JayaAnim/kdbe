@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v18`:
+  - Changes the method for facial detection in the `cv.image` module. Involves some non-backwards-compatible changes to the interface of that module.
 - `v17`:
   - Adds a check to `data.serialize.Serializable` to ensure that it is being used properly.
   - Moves image functionality into `cv.image`.
