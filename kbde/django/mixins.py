@@ -4,7 +4,8 @@ from django.contrib import messages
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
-from pytz import UnknownTimeZoneError
+
+import pytz
 
 
 class Base:
@@ -20,8 +21,11 @@ class Base:
     open_graph = {}
     tracking_ids = []
 
-    def get_context_data(self, **kwargs):
+    def dispatch(self, *args, **kwargs):
         self.set_timezone()
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = self.title
         context["icon"] = self.icon
@@ -37,7 +41,7 @@ class Base:
         if tz:
             try:
                 timezone.activate(tz)
-            except UnknownTimeZoneError:
+            except pytz.UnknownTimeZoneError:
                 pass
         else:
             timezone.deactivate()
