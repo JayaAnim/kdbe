@@ -12,7 +12,6 @@ DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 
 MODEL_FILE = os.path.join(DIR_PATH, "opencv_face_detector_uint8.pb")
 CONFIG_FILE = os.path.join(DIR_PATH, "opencv_face_detector.pbtxt")
-FACE_CLASSIFIER = cv2.dnn.readNetFromTensorflow(MODEL_FILE, CONFIG_FILE)
 
 
 class Image(serialize.Serializable):
@@ -105,8 +104,9 @@ class Image(serialize.Serializable):
             mean=rgb_values,
         )
 
-        FACE_CLASSIFIER.setInput(blob)
-        detections = FACE_CLASSIFIER.forward()
+        face_classifier = cv2.dnn.readNetFromTensorflow(MODEL_FILE, CONFIG_FILE)
+        face_classifier.setInput(blob)
+        detections = face_classifier.forward()
 
         face_boxes = []
         for i in range(0, detections.shape[2]):
