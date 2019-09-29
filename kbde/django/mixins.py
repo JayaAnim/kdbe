@@ -79,9 +79,14 @@ class Edit:
     success_message_method = messages.info
 
     def get_success_url(self):
-        if self.success_message is not None:
-           type(self).success_message_method(self.request, self.success_message)
+        success_message = self.get_success_message()
+        if success_message is not None:
+           type(self).success_message_method(self.request, success_message)
+
         return super().get_success_url()
+
+    def get_success_message(self):
+        return self.success_message
 
 
 class EmailForm:
