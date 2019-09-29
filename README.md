@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v19`:
+  - Adds a `self.get_success_message()` function to Edit mixin.
 - `v18`:
   - Changes the method for facial detection in the `cv.image` module. Involves some non-backwards-compatible changes to the interface of that module.
   - Fixes a timezone setting bug in `django.mixins`.
