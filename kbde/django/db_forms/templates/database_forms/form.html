@@ -1,0 +1,22 @@
+<form method="POST" enctype="multipart/form-data">
+    {%csrf_token%}
+
+    {%block form_content%}
+        
+        {%block form_title%}
+            {%if form_title%}
+            <h3>{{form_title}}</h3>
+            {%endif%}
+        {%endblock%}
+
+        {%block form_fields%}
+            {{form.as_p}}
+        {%endblock%}
+
+        {%block form_buttons%}
+            <button>{{form_button_title}}</button>
+        {%endblock%}
+
+    {%endblock%}
+
+</form>
