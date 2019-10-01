@@ -23,22 +23,33 @@ class Form(models.Model):
         
         fields = self.get_fields()
         for field in fields:
-            #annotate_args = {field.get_attr_name(): 
             q = q.annotate(
-            **{field.get_attr_name(): models.Subquery(FieldValue.objects.filter(filled_form=models.OuterRef("pk"), field=field).values("value"))}
-            )
-            #}
-            #q = q.annotate(**annotate_args)
+                **{field.get_attr_name(): models.Subquery(
+                    FieldValue.objects.filter(filled_form=models.OuterRef("pk"),
+                                              field=field).values("value")
+                    )}
+                )
 
         return q
 
     def get_fields(self):
-        return self.field_set.order_by("priority")
+        return self.field_set.order_by("field_group__priority", "priority", "pk")
+
+
+class FieldGroup(models.Model):
+    form = models.ForeignKey(Form, on_delete=models.CASCADE)
+    title = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
+    priority = models.IntegerField(null=True, blank=True)
+
+    def clean(self):
+        # Update all fields to have the same form as this group
+        self.field_set.update(form=self.form)
 
 
 class Field(poly_models.PolymorphicModel):
     form = models.ForeignKey(Form, on_delete=models.CASCADE)
-    priority = models.IntegerField()
+    field_group = models.ForeignKey(FieldGroup, on_delete=models.CASCADE, blank=True, null=True)
+    priority = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
 
     # Core field arguments
@@ -56,6 +67,7 @@ class Field(poly_models.PolymorphicModel):
         "polymorphic_ctype",
         "field_ptr",
         "form",
+        "field_group",
         "priority",
         "name",
         ]
@@ -66,14 +78,16 @@ class Field(poly_models.PolymorphicModel):
         return self.label or self.name or "Field {}".format(self.pk)
 
     def clean(self):
+        # Same form as group
+        if self.field_group and self.field_group.form != self.form:
+            raise exceptions.ValidationError("Field group and this field must both have the same form")
+        
+        # Name characters
         name = self.name
         for char in self.allowed_name_chars:
             name = name.replace(char, "")
         if name:
             raise exceptions.ValidationError("Name must only contain lowercase letters, numbers, and dashes")
-
-        if self.name != self.name.lower():
-            raise exceptions.ValidationError("Name must be all lowercase")
 
     def get_attr_name(self):
         return self.name or "field_{}".format(self.pk)
@@ -88,7 +102,7 @@ class Field(poly_models.PolymorphicModel):
 
     def get_form_field_kwargs(self):
         FieldClass = type(self)
-        model_fields = FieldClass._meta.get_fields()
+        model_fields = FieldClass._meta.fields
 
         kwargs = {field.name: getattr(self, field.name) for field in model_fields
                     if field.name not in self.exclude_field_names}
@@ -118,6 +132,7 @@ class ChoiceField(Field):
 
 class Choice(models.Model):
     choice_field = models.ForeignKey(ChoiceField, on_delete=models.CASCADE)
+    priority = models.IntegerField(null=True, blank=True)
     value = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD)
     title = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD)
 
@@ -242,7 +257,7 @@ class FilledForm(models.Model):
         return {field_value.field.get_attr_name(): field_value.value for field_value in field_values}
 
     def get_field_values(self):
-        return self.fieldvalue_set.order_by("field__priority").select_related("field")
+        return self.fieldvalue_set.order_by("field__priority", "field__pk").select_related("field")
 
 
 class FieldValue(models.Model):
