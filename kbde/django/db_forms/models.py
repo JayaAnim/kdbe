@@ -8,12 +8,25 @@ from ..models import MAX_LENGTH_CHAR_FIELD
 import uuid
 
 
+class FormGroup(models.Model):
+    """
+    A collection of forms
+    """
+    slug = models.UUIDField(default=uuid.uuid4)
+    title = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Form(models.Model):
     """
     The main collection of fields
     """
+    form_group = models.ForeignKey(FormGroup, on_delete=models.CASCADE, null=True, blank=True)
     slug = models.UUIDField(default=uuid.uuid4)
     title = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
+    priority = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.title or "Form {}".format(self.pk)
@@ -129,12 +142,28 @@ class CharField(Field):
 class ChoiceField(Field):
     form_field_class = forms.ChoiceField
 
+    def get_form_field_kwargs(self):
+        kwargs = super().get_form_field_kwargs()
+
+        kwargs["choices"] = self.get_choices()
+
+        return kwargs
+
+    def get_choices(self):
+        return ((choice_model.value, choice_model.title) for choice_model in self.get_choice_models())
+        
+    def get_choice_models(self):
+        return self.choice_set.order_by("priority")
+
 
 class Choice(models.Model):
     choice_field = models.ForeignKey(ChoiceField, on_delete=models.CASCADE)
     priority = models.IntegerField(null=True, blank=True)
     value = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD)
     title = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD)
+
+    def __str__(self):
+        return self.title
 
 
 class DateField(Field):
