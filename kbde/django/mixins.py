@@ -9,7 +9,6 @@ import pytz
 
 
 class Base:
-    template_name = "kbde/page.html"
     title = None
     icon = None
     bootstrap_css_path = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.min.css"
