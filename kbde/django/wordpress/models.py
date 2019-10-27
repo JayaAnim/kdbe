@@ -33,6 +33,7 @@ class WpOptions(WordpressMixin, models.Model):
     def get_login_url(cls):
         return urllib.parse.urljoin(cls.get_site_url(), wp_settings.WORDPRESS_LOGIN_URL)
 
+
 class WpUsermeta(WordpressMixin, models.Model):
     umeta_id = models.BigAutoField(primary_key=True)
     user_id = models.BigIntegerField()
@@ -75,9 +76,11 @@ class WpUsers(WordpressMixin, models.Model):
             cookie = wp_cookie.AuthCookie(cookie)
             
             try:
-                return cookie.validate()
+                wordpress_user = cookie.validate()
             except cookie.ValidationError:
                 return None
+
+            return cls.get_all().get(id=wordpress_user.id)
 
     @classmethod
     def get_from_username(cls, username):
