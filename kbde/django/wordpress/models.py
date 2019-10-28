@@ -4,6 +4,7 @@ from django.utils.six.moves import urllib
 
 from . import wp_settings, cookie as wp_cookie
 
+import hashlib
 import phpserialize
 
 
