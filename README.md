@@ -5,7 +5,7 @@ KBDE
 # Release notes, starting at v9
 
 - `v20`:
-  - Early-stage forms module. Auth settings.
+  - Early-stage forms module. Auth settings. Wordpress support.
 - `v19`:
   - Adds a `self.get_success_message()` function to Edit mixin.
 - `v18`:
