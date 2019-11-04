@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v21`:
+  - Fixes a bug with user models being defined in django.settings.
 - `v20`:
   - Early-stage forms module. Auth settings. Wordpress support.
 - `v19`:
