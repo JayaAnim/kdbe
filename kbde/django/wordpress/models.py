@@ -1,6 +1,7 @@
 from django.db import models
 from django import utils
 from django.utils.six.moves import urllib
+from django.conf import settings
 
 from . import wp_settings, cookie as wp_cookie
 
@@ -63,6 +64,12 @@ class WpUsers(WordpressMixin, models.Model):
 
     @classmethod
     def get_from_request(cls, request):
+        if wp_settings.WORDPRESS_DEV_USER_ID:
+            # We are overriding the normal auth process for dev only
+            assert settings.DEBUG, "you can only set WORDPRESS_DEV_USER_ID in DEBUG mode"
+
+            return cls.get_all().get(id=wp_settings.WORDPRESS_DEV_USER_ID)
+
         if wp_settings.WORDPRESS_COOKIEHASH is None:
             cookie_hash = hashlib.md5(utils.encoding.force_bytes(WpOptions.get_site_url())
                                 ).hexdigest()
