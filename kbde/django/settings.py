@@ -45,7 +45,6 @@ except ImportError:
 # Auth
 
 AUTH_USER_MODEL = config.get("AUTH_USER_MODEL", "user.User")
-LOGIN_URL = config.get("LOGIN_URL", urls.reverse_lazy("sign_in"))
 LOGIN_REDIRECT_URL = config.get("LOGIN_REDIRECT_URL", "/")
 LOGOUT_REDIRECT_URL = config.get("LOGOUT_REDIRECT_URL", "/")
 
