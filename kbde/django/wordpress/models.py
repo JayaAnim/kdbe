@@ -8,18 +8,19 @@ from . import wp_settings, cookie as wp_cookie
 import phpserialize
 
 
-class WordpressMixin:
+class WordpressManager(models.Manager):
     
-    @classmethod
-    def get_all(cls):
-        return cls.objects.using("wordpress").all()
+    def get_queryset(self):
+        return super().get_queryset().using("wordpress")
 
 
-class WpOptions(WordpressMixin, models.Model):
+class WpOptions(models.Model):
     option_id = models.BigAutoField(primary_key=True)
     option_name = models.CharField(unique=True, max_length=191)
     option_value = models.TextField()
     autoload = models.CharField(max_length=20)
+
+    objects = WordpressManager()
 
     class Meta:
         managed = False
@@ -27,7 +28,7 @@ class WpOptions(WordpressMixin, models.Model):
 
     @classmethod
     def get_site_url(cls):
-        url = cls.get_all().get(option_name="siteurl").option_value
+        url = cls.objects.get(option_name="siteurl").option_value
         return url.rstrip('/\\')
 
     @classmethod
@@ -35,18 +36,20 @@ class WpOptions(WordpressMixin, models.Model):
         return urllib.parse.urljoin(cls.get_site_url(), wp_settings.WORDPRESS_LOGIN_URL)
 
 
-class WpUsermeta(WordpressMixin, models.Model):
+class WpUsermeta(models.Model):
     umeta_id = models.BigAutoField(primary_key=True)
     user_id = models.BigIntegerField()
     meta_key = models.CharField(max_length=255, blank=True, null=True)
     meta_value = models.TextField(blank=True, null=True)
+
+    objects = WordpressManager()
 
     class Meta:
         managed = False
         db_table = 'wp_usermeta'
 
 
-class WpUsers(WordpressMixin, models.Model):
+class WpUsers(models.Model):
     id = models.BigAutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     user_login = models.CharField(max_length=60)
     user_pass = models.CharField(max_length=255)
@@ -58,6 +61,8 @@ class WpUsers(WordpressMixin, models.Model):
     user_status = models.IntegerField()
     display_name = models.CharField(max_length=250)
 
+    objects = WordpressManager()
+
     class Meta:
         managed = False
         db_table = 'wp_users'
@@ -68,7 +73,7 @@ class WpUsers(WordpressMixin, models.Model):
             # We are overriding the normal auth process for dev only
             assert settings.DEBUG, "you can only set WORDPRESS_DEV_USER_ID in DEBUG mode"
 
-            return cls.get_all().get(id=wp_settings.WORDPRESS_DEV_USER_ID)
+            return cls.objects.get(id=wp_settings.WORDPRESS_DEV_USER_ID)
 
         if wp_settings.WORDPRESS_COOKIEHASH is None:
             cookie_hash = hashlib.md5(utils.encoding.force_bytes(WpOptions.get_site_url())
@@ -87,11 +92,11 @@ class WpUsers(WordpressMixin, models.Model):
             except cookie.ValidationError:
                 return None
 
-            return cls.get_all().get(id=wordpress_user.id)
+            return cls.objects.get(id=wordpress_user.id)
 
     @classmethod
     def get_from_username(cls, username):
-        return cls.get_all().get(user_login=username)
+        return cls.objects.get(user_login=username)
 
     def get_data(self):
         return {meta.meta_key: meta.meta_value for meta in self.get_meta()}
@@ -105,21 +110,23 @@ class WpUsers(WordpressMixin, models.Model):
                                   decode_strings=True)
 
     def get_meta(self):
-        return WpUsermeta.get_all().filter(user_id=self.id)
+        return WpUsermeta.objects.filter(user_id=self.id)
 
 
-class WpPostmeta(WordpressMixin, models.Model):
+class WpPostmeta(models.Model):
     meta_id = models.BigAutoField(primary_key=True)
     post_id = models.BigIntegerField()
     meta_key = models.CharField(max_length=255, blank=True, null=True)
     meta_value = models.TextField(blank=True, null=True)
+
+    objects = WordpressManager()
 
     class Meta:
         managed = False
         db_table = 'wp_postmeta'
 
 
-class WpPosts(WordpressMixin, models.Model):
+class WpPosts(models.Model):
     id = models.BigAutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
     post_author = models.BigIntegerField()
     post_date = models.DateTimeField()
@@ -144,6 +151,8 @@ class WpPosts(WordpressMixin, models.Model):
     post_mime_type = models.CharField(max_length=100)
     comment_count = models.BigIntegerField()
 
+    objects = WordpressManager()
+
     class Meta:
         managed = False
         db_table = 'wp_posts'
@@ -152,4 +161,4 @@ class WpPosts(WordpressMixin, models.Model):
         return {meta.meta_key: meta.meta_value for meta in self.get_meta()}
 
     def get_meta(self):
-        return WpPostmeta.get_all().filter(post_id=self.id)
+        return WpPostmeta.objects.filter(post_id=self.id)
