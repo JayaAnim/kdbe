@@ -4,8 +4,12 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v23`:
+  - Removes `LOGIN_URL` setting.
+  - Converts WP models to use a model manager instead of a mixin.
 - `v22`:
-  - Fixes some issues with the defualt auth settings. Adds a mechanism for WP debug users so that all developers don't need to authenticate through WP.
+  - Fixes some issues with the defualt auth settings.
+  - Adds a mechanism for WP debug users so that all developers don't need to authenticate through WP.
 - `v21`:
   - Fixes a bug with user models being defined in django.settings.
 - `v20`:
