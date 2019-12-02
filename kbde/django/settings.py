@@ -136,3 +136,16 @@ EMAIL_SUBJECT_PREFIX = "[{}] ".format(config.get("EMAIL_SUBJECT_PREFIX", APP_NAM
 
 STATIC_URL = config.get("STATIC_URL", '/static/')
 STATIC_ROOT = config.get("STATIC_ROOT", os.path.join(BASE_DIR, 'staticfiles'))
+
+
+# SSL
+
+SECURE_PROXY_SSL_HEADER = config.get("SECURE_PROXY_SSL_HEADER")
+
+if SECURE_PROXY_SSL_HEADER is None:
+    SECURE_PROXY_SSL_HEADER = os.getenv("SECURE_PROXY_SSL_HEADER")
+    if SECURE_PROXY_SSL_HEADER is not None:
+        SECURE_PROXY_SSL_HEADER = SECURE_PROXY_SSL_HEADER.split(":")
+
+if SECURE_PROXY_SSL_HEADER:
+    SECURE_SSL_REDIRECT = True
