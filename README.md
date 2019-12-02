@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v24`:
+  - Adds SSL redirect variable for Django.
 - `v23`:
   - Removes `LOGIN_URL` setting.
   - Converts WP models to use a model manager instead of a mixin.
