@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v25`:
+  - Makes the WordPress authentication system compaitble with Django's. No need for a second set of access mixins.
 - `v24`:
   - Adds SSL redirect variable for Django.
 - `v23`:

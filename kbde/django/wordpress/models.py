@@ -2,6 +2,7 @@ from django.db import models
 from django import utils
 from django.utils.six.moves import urllib
 from django.conf import settings
+from django.contrib.auth import models as auth_models
 
 from . import wp_settings, cookie as wp_cookie
 
@@ -63,6 +64,9 @@ class WpUsers(models.Model):
 
     objects = WordpressManager()
 
+    is_anonymous = False
+    is_authenticated = True
+
     class Meta:
         managed = False
         db_table = 'wp_users'
@@ -90,9 +94,11 @@ class WpUsers(models.Model):
             try:
                 wordpress_user = cookie.validate()
             except cookie.ValidationError:
-                return None
+                return auth_models.AnonymousUser()
 
             return cls.objects.get(id=wordpress_user.id)
+
+        return auth_models.AnonymousUser()
 
     @classmethod
     def get_from_username(cls, username):
