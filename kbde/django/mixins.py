@@ -88,12 +88,52 @@ class Edit:
         return self.success_message
 
 
+class Delete:
+    previous_url = None
+    prompt_text = "Are you sure that you want to delete {}?"
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        data.update({
+            "prompt_text": self.get_prompt_text(),
+            "previous_url": self.get_previous_url(),
+            })
+
+        return data
+
+    def get_prompt_text(self):
+        return self.prompt_text.format(self.object)
+
+    def get_previous_url(self):
+        return self.previous_url
+
+
 class EmailForm:
     
     def form_valid(self, form):
         # Send the email via the form
         form.send_email()
         return super().form_valid(form)
+
+
+class RelatedObjectLimit:
+    related_orm_path = None
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        related_orm_path = self.get_related_orm_path()
+        related_object = self.get_related_object()
+
+        return queryset.filter(**{related_orm_path: related_object})
+
+    def get_related_orm_path(self):
+        assert self.related_orm_path, f"{self.__class__.__name__} must define self.related_orm_path"
+        return self.related_orm_path
+    
+    def get_related_object(self):
+        raise NotImplementedError(f"{self.__class__.__name__} must implement self.get_related_object()")
 
 
 class OrganizationLimit(auth_mixins.LoginRequiredMixin):
