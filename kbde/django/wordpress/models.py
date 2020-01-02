@@ -6,6 +6,7 @@ from django.contrib.auth import models as auth_models
 
 from . import wp_settings, cookie as wp_cookie
 
+import hashlib
 import phpserialize
 
 
