@@ -78,8 +78,19 @@ class Location(models.Model):
         return children
 
 
+class Point(models.Model):
+    name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+    locations = models.ManyToManyField(Location)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
+    class Meta:
+        unique_together = ("name", "longitude", "latitude")
+
+
 class Address(models.Model):
     locations = models.ManyToManyField(Location)
+    point = models.ForeignKey(Point, on_delete=models.CASCADE, null=True, blank=True)
     street_1 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
     street_2 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True, db_index=True)
     street_3 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True, db_index=True)
@@ -88,8 +99,6 @@ class Address(models.Model):
     zip_code = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
     zip_code_last_4 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
     country = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True, db_index=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     def __str__(self):
         fields = [
