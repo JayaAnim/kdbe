@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v27`:
+  - Adds location models for Addresses, Areas, and Points.
+  - Removes the Django Edit mixin in favor of Django's `SuccessMessageMixin`.
 - `v26`:
   - Adds related-object-limiting and delete-view mixins for Django.
 - `v25`:
