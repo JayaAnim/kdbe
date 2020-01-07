@@ -6,6 +6,13 @@ class Pdftk:
     def __init__(self, pdf):
         self.pdf = pdf
 
+    def concatenate(self, pdf_file):
+        output_file = self.get_new_tempfile()
+
+        self.pdf = self.run_command([self.pdf, pdf_file],
+                                    operation="cat",
+                                    output_file=output_file)
+
     def set_passwords(self, owner_password="", user_password=""):
         output_file = self.get_new_tempfile()
 
