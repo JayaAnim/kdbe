@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v28`:
+  - Adds Python bindings for PDFTK.
 - `v27`:
   - Adds location models for Addresses, Areas, and Points.
   - Removes the Django Edit mixin in favor of Django's `SuccessMessageMixin`.
