@@ -6,6 +6,7 @@ KBDE
 
 - `v29`:
   - Makes email login case insensitive.
+  - Removes the KBDE Django Base Mixin. All functionality ported to templates, template context processors, and middleware.
 - `v28`:
   - Adds Python bindings for PDFTK.
 - `v27`:

@@ -1,0 +1,7 @@
+{%with open_graph=object.get_open_graph%}
+
+{%for property, content in open_graph.items%}
+  <meta property="og:{{property}}" content="{{content}}" />
+{%endfor%}
+
+{%endwith%}
