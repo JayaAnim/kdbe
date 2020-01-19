@@ -11,6 +11,13 @@ APP_NAME = os.getenv("APP_NAME")
 assert APP_NAME, "must define APP_NAME environement variable"
 
 
+# KBDE Timezone
+
+MIDDLEWARE += [
+    "kbde.django.middleware.TimezoneMiddleware",
+    ]
+
+
 # Whitenoise config
 
 try:
