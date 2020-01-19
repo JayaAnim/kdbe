@@ -1,11 +1,26 @@
-from django.utils import timezone
-from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
 
-import pytz
+
+class OpenGraph:
+    """
+    A view mixin which enables OG
+    """
+    open_graph = {}
+
+    def get_open_graph(self):
+        open_graph = self.open_graph.copy()
+
+        for prop, content in open_graph.items():
+            open_graph[prop] = self.get_static_url(content)
+
+        return open_graph
+
+    def get_static_url(self, path):
+        if finders.find(path):
+            path = static.static(path)
+        return path
 
 
 class Delete:
