@@ -39,6 +39,9 @@ class EmailUserManager(base_user.BaseUserManager):
 
         return user
 
+    def get_by_natural_key(self, email):
+        return self.get(email__iexact=email)
+
 
 class EmailUser(User):
     email = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, unique=True)

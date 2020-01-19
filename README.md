@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v29`:
+  - Makes email login case insensitive.
 - `v28`:
   - Adds Python bindings for PDFTK.
 - `v27`:
