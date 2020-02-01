@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from kbde.django import models as kbde_models
 
 import urllib
@@ -81,11 +82,10 @@ class Location(models.Model):
 class Point(models.Model):
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     locations = models.ManyToManyField(Location)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    point = gis_models.PointField(null=True)
 
     class Meta:
-        unique_together = ("name", "longitude", "latitude")
+        unique_together = ("name", "point")
 
 
 class Address(models.Model):
