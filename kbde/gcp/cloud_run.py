@@ -70,7 +70,7 @@ class CloudRun:
         health_check_url = (f"{health_check_url}"
                             f"{self.health_check_path}")
 
-        response = requests.get(health_check_url)
+        response = requests.get(health_check_url, allow_redirects=False)
         if response.status_code == self.health_check_status_code:
             return None
 
