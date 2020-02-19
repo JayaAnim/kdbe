@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v30`:
+  - Adds geo point to the Point model from django.location.
 - `v29`:
   - Makes email login case insensitive.
   - Removes the KBDE Django Base Mixin. All functionality ported to templates, template context processors, and middleware.
