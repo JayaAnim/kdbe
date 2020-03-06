@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v31`:
+  - Adds reporting Django app.
 - `v30`:
   - Adds geo point to the Point model from django.location.
 - `v29`:
