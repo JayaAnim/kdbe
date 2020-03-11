@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v32`:
+  - Updates Bootstrap and Popper.js dependencies.
 - `v31`:
   - Adds reporting Django app.
 - `v30`:
