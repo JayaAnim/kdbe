@@ -32,19 +32,20 @@
 
 </head>
 
-<body style="display:none;">
+<body style="visibility:hidden;">
 
-{%block page%}
-{%endblock%}
+    {%block page%}
+    {%endblock%}
 
-{%block page_body_scripts%}
-    {%include 'kbde/timezone.html'%}
-    {%include 'kbde/device_id.html'%}
-    {%include 'kbde/validate_forms.html'%}
-{%endblock%}
+    {%block page_body_scripts%}
+        {%include 'kbde/timezone.html'%}
+        {%include 'kbde/device_id.html'%}
+        {%include 'kbde/validate_forms.html'%}
+    {%endblock%}
 
-{%include 'kbde/fouc.html'%}
-{%include 'kbde/analytics.html'%}
+    {%include 'kbde/fouc.html'%}
+    {%include 'kbde/analytics.html'%}
 
 </body>
+
 </html>
