@@ -1,7 +1,7 @@
 
 
-class Serializable:
-    serialize_fields = []
+class Serialize:
+    serialize_fields = None
 
     def serialize(self):
         """
@@ -10,7 +10,6 @@ class Serializable:
         By default, returns the values and keys associated with
         self.serialize_fields
         """
-        assert serialize_fields, ("must set self.serialize_fields or override the self.serialize() "
-                                  "method")
+        assert self.serialize_fields is not None, (f"{self.__class__.__name__} must set self.serialize_fields or override the `serialize()` method")
 
         return {key:getattr(self, key) for key in self.serialize_fields}

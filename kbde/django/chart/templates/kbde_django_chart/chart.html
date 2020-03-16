@@ -7,7 +7,7 @@
 $(function(){
     window.kbde_chart_data = window.kbde_chart_data || {}
 
-    window.kbde_chart_data["chart_{{chart_id}}"] = {{chart|safe}}
+    window.kbde_chart_data["chart_{{chart_id}}"] = {{chart.to_json|safe}}
 
     var chart = new Chart("chart_{{chart_id}}", window.kbde_chart_data["chart_{{chart_id}}"])
 
