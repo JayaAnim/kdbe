@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v34`:
+  - Adds a management command for creating and maintaining Django superusers via the ADMINS setting.
 - `v33`:
   - Adds basic charting lib.
 - `v32`:
