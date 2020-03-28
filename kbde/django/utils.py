@@ -2,6 +2,15 @@ from django.core import mail
 from django.conf import settings
 
 
+def get_url_host_from_request(request):
+    http_origin = request.META.get("HTTP_ORIGIN")
+    http_host = request.META.get("HTTP_HOST")
+
+    scheme = "http" if "dev" in settings.APP_NAME else "https"
+
+    return http_origin or f"{scheme}://{http_host}"
+
+
 def send_email(to_email_list,
                subject,
                text_message=None,
