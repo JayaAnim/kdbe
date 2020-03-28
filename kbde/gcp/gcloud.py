@@ -23,6 +23,9 @@ class Gcloud:
 
         command = f"gcloud {positional_args} {flags}"
 
-        result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE)
+        result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         return result.stdout
+
+    class GcloudException(Exception):
+        pass
