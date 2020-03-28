@@ -6,6 +6,7 @@ KBDE
 
 - `v34`:
   - Adds a management command for creating and maintaining Django superusers via the ADMINS setting.
+  - Adds Django utils function for getting the hostname from a request.
 - `v33`:
   - Adds basic charting lib.
 - `v32`:
