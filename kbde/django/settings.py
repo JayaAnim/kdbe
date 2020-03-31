@@ -152,3 +152,23 @@ if SECURE_PROXY_SSL_HEADER:
 
 # Admin password
 ADMIN_DEFAULT_PASSWORD = os.getenv("ADMIN_DEFAULT_PASSWORD")
+
+
+# Redis Queue
+try:
+    import django_rq
+
+    REDIS_URL = os.getenv("REDIS_URL")
+
+    assert REDIS_URL, "must define the REDIS_URL environement variable"
+
+    RQ_SYNC = os.getenv("RQ_SYNC")
+
+    RQ_QUEUES = {
+        "default": {
+            "URL": os.getenv("REDIS_URL"),
+        },
+    }
+
+except ImportError:
+    pass
