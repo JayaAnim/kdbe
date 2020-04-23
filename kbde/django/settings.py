@@ -162,7 +162,7 @@ try:
 
     assert REDIS_URL, "must define the REDIS_URL environement variable"
 
-    RQ_SYNC = os.getenv("RQ_SYNC")
+    RQ_SYNC = bool(os.getenv("RQ_SYNC"))
 
     RQ_QUEUES = {
         "default": {

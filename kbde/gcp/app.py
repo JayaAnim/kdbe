@@ -12,5 +12,5 @@ class App:
     def list_versions(self, *args, **kwargs):
         return self.gcloud.run("app", "versions", "list", *args, **kwargs)
 
-    def delete_version(self, service, version_id):
-        return self.gcloud.run("app", "versions", "delete", version_id, service=service, quiet="")
+    def delete_version(self, service, version_id, **kwargs):
+        return self.gcloud.run("app", "versions", "delete", version_id, service=service, quiet="", **kwargs)
