@@ -2,6 +2,11 @@ import json
 import decimal
 import datetime
 
+try:
+    import django
+except ImportError:
+    django = None
+
 
 class Encoder(json.JSONEncoder):
     serialize_method_name = "serialize"
@@ -25,6 +30,9 @@ class Encoder(json.JSONEncoder):
 
         if isinstance(obj, self.datetime_types):
             return self.handle_datetime(obj)
+
+        if django and isinstance(obj, django.db.models.query.QuerySet):
+            return self.handle_django_queryset(obj)
         
         return super().default(obj)
 
@@ -33,3 +41,6 @@ class Encoder(json.JSONEncoder):
 
     def handle_datetime(self, obj):
         return obj.isoformat()
+
+    def handle_django_queryset(self, obj):
+        return list(obj)

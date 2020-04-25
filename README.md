@@ -4,6 +4,41 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v34`:
+  - Adds a management command for creating and maintaining Django superusers via the ADMINS setting.
+  - Adds Django utils function for getting the hostname from a request.
+- `v33`:
+  - Adds basic charting lib.
+- `v32`:
+  - Updates Bootstrap and Popper.js dependencies.
+- `v31`:
+  - Adds reporting Django app.
+- `v30`:
+  - Adds geo point to the Point model from django.location.
+- `v29`:
+  - Makes email login case insensitive.
+  - Removes the KBDE Django Base Mixin. All functionality ported to templates, template context processors, and middleware.
+- `v28`:
+  - Adds Python bindings for PDFTK.
+- `v27`:
+  - Adds location models for Addresses, Areas, and Points.
+  - Removes the Django Edit mixin in favor of Django's `SuccessMessageMixin`.
+- `v26`:
+  - Adds related-object-limiting and delete-view mixins for Django.
+- `v25`:
+  - Makes the WordPress authentication system compaitble with Django's. No need for a second set of access mixins.
+- `v24`:
+  - Adds SSL redirect variable for Django.
+- `v23`:
+  - Removes `LOGIN_URL` setting.
+  - Converts WP models to use a model manager instead of a mixin.
+- `v22`:
+  - Fixes some issues with the defualt auth settings.
+  - Adds a mechanism for WP debug users so that all developers don't need to authenticate through WP.
+- `v21`:
+  - Fixes a bug with user models being defined in django.settings.
+- `v20`:
+  - Early-stage forms module. Auth settings. Wordpress support.
 - `v19`:
   - Adds a `self.get_success_message()` function to Edit mixin.
 - `v18`:

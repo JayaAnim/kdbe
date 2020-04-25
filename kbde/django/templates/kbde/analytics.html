@@ -1,12 +1,12 @@
-{%if tracking_ids%}
-<script async src="https://www.googletagmanager.com/gtag/js?id={{tracking_ids.0}}"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-89983744-1"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  {%for tracking_id in tracking_ids%}
-    gtag('config', '{{tracking_id}}');
+  gtag('config', 'UA-89983744-1');
+
+  {%for tracking_id in settings.GA_TRACKING_IDS%}
+    gtag("config", "{{tracking_id}}")
   {%endfor%}
 </script>
-{%endif%}

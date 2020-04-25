@@ -1,0 +1,113 @@
+{%block report_table%}
+<table class="table" id="report_table">
+
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Time Started</th>
+            <th>Total Records</th>
+            <th>Completed Records</th>
+            <th>Progress</th>
+            <th>Time Completed</th>
+            <th>Result</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {%for object in object_list%}
+        <tr data-report-slug="{{object.slug}}"
+            data-report-status="{{object.status}}"
+            data-report-update-url="{{object.get_update_url}}">
+            <td data-field-name="name">{{object.name}}</td>
+            <td data-field-name="title">{{object.title}}</td>
+            <td data-field-name="status_display">{{object.get_status_display}}</td>
+            <td data-field-name="time_started">{{object.time_started}}</td>
+            <td data-field-name="record_count">{{object.record_count}}</td>
+            <td data-field-name="records_complete">{{object.records_complete}}</td>
+            <td data-field-name="progress_percentage">{{object.get_progress_percentage}}</td>
+            <td data-field-name="time_completed">{{object.time_completed}}</td>
+            <td data-field-name="result">
+                {%if object.result%}
+                <a data-result-link href="{{object.result.url}}" target="_blank">Download</a>
+                {%endif%}
+            </td>
+        </tr>
+        {%endfor%}
+    </tbody>
+
+</table>
+{%endblock report_table%}
+
+{%block report_js%}
+<script>
+$(function(){
+
+
+function update_reports(){
+    var reports = get_updatable_report_rows()
+
+    reports.each(function(i, element){
+        get_report_data($(element))
+        })
+
+    setTimeout(update_reports, {{object_list.model.progress_update_interval}} * 1000)
+    }
+
+function get_report_data(element){
+    var response = $.ajax({
+        url: element.attr("data-report-update-url"),
+        success: update_report_data
+        })
+    }
+
+function update_report_data(response){
+    var report = get_report_rows().filter("tr[data-report-slug="+response.slug+"]")
+
+    var regular_fields = report.find("td[data-field-name!='result']")
+
+    regular_fields.each(function(i, element){
+        element = $(element)
+        var field_name = element.attr("data-field-name")
+        element.text(response[field_name])
+        })
+
+    // Update result
+    if (response.result){
+        var result_field = report.find("[data-field-name='result']")
+        // Get or create <a> tag
+        var link = result_field.find("a[data-result-link]")
+        if (!link.length){
+            link = $("<a>")
+            link.text("Download")
+            result_field.append(link)
+            }
+        link.attr("href", response.result)
+        }
+
+    // Update status
+    report.attr("data-report-status", response.status)
+    }
+
+function get_updatable_report_rows(){
+    return get_report_rows().filter("[data-report-status='{{object_list.model.STATUS_NEW}}'], [data-report-status='{{object_list.model.STATUS_PENDING}}'], [data-report-status='{{object_list.model.STATUS_RUNNING}}']")
+    }
+
+function get_report_rows(){
+    return $('#report_table tr[data-report-slug]')
+    }
+
+
+window.kbde_django_report = {
+    update_reports: update_reports,
+    get_report_data: get_report_data,
+    update_report_data: update_report_data,
+    get_updatable_report_rows: get_updatable_report_rows,
+    get_report_rows: get_report_rows
+    }
+
+
+})
+</script>
+{%endblock report_js%}

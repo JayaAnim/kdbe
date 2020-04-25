@@ -1,0 +1,3 @@
+{%for property, content in view.get_open_graph.items%}
+  <meta property="og:{{property}}" content="{{content}}" />
+{%endfor%}

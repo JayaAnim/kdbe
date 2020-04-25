@@ -4,8 +4,6 @@ from django.core import exceptions
 from django.contrib.auth import models as auth_models
 from django.contrib.auth import base_user
 
-import dateutil
-
 
 MAX_LENGTH_CHAR_FIELD = 255
 
@@ -40,6 +38,9 @@ class EmailUserManager(base_user.BaseUserManager):
         user.save()
 
         return user
+
+    def get_by_natural_key(self, email):
+        return self.get(email__iexact=email)
 
 
 class EmailUser(User):
@@ -104,6 +105,8 @@ class Schedule(models.Model):
         """
         Checks to see if the time right now falls within this schedule
         """
+        import dateutil
+
         now = utils.timezone.now()
 
         # Dates
