@@ -52,6 +52,60 @@ class EmailForm:
         return super().form_valid(form)
 
 
+class RelatedObject:
+    related_model = None
+    related_orm_path = None
+    related_slug_field = "slug"
+    related_slug_url_kwarg = "related_slug"
+    related_pk_url_kwarg = "related_pk"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        related_orm_path = self.get_related_orm_path()
+        related_object = self.get_related_object()
+
+        return queryset.filter(**{related_orm_path: related_object})
+
+    def get_related_orm_path(self):
+        assert self.related_orm_path, f"{self.__class__.__name__} must define `.related_orm_path`"
+        return self.related_orm_path
+
+    def get_related_object(self, related_queryset=None):
+        if related_queryset is None:
+            related_queryset = self.get_related_queryset()
+
+        related_pk = self.kwargs.get(self.related_pk_url_kwarg)
+        related_slug = self.kwargs.get(self.related_slug_url_kwarg)
+
+        assert related_pk is not None or related_slug is not None, (f"{self.__class__.__name__} must "
+                                                                     "be called with either a related "
+                                                                     "pk or a slug in the URLconf")
+
+        if related_pk is not None:
+            # Filter by pk
+            related_queryset = related_queryset.filter(pk=related_pk)
+        else:
+            # Filter by slug
+            related_queryset = related_queryset.filter(**{self.related_slug_field: related_slug})
+
+        try:
+            obj = queryset.get()
+        except queryset.model.DoesNotExist:
+            raise http.Http404(f"No related {queryset.model._meta.verbose_name}s found matching the query")
+
+        return obj
+
+    def get_related_queryset(self):
+        assert self.related_model is not None or self.related_queryset is not None, (""
+                    f"{self.__class__.__name__} must define `.related_model` or .related_queryset")
+
+        if self.related_queryset is not None:
+            return self.related_queryset
+        else:
+            return self.related_model.objects.all()
+
+
 class RelatedObjectLimit:
     related_orm_path = None
 

@@ -4,6 +4,10 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v35`:
+  - Adds GCP bindings for the `gcloud` command.
+  - Adds RQ config and utils.
+  - Refines related object mixin.
 - `v34`:
   - Adds a management command for creating and maintaining Django superusers via the ADMINS setting.
   - Adds Django utils function for getting the hostname from a request.
