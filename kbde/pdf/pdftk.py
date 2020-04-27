@@ -69,10 +69,15 @@ class Pdftk:
         if user_password:
             user_password = f"user_pw {user_password}"
 
+        if owner_password or user_password:
+            password_printing = "allow printing"
+        else:
+            password_printing = ""
+
         command = (f"pdftk {input_pdf_file_names} "
                    f"{operation} {operation_arguments} "
                    f"{output} "
-                   f"{owner_password} {user_password}")
+                   f"{owner_password} {user_password} {password_printing}")
 
         command = shlex.split(command)
         subprocess.check_output(command)
