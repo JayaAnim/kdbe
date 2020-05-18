@@ -1,5 +1,3 @@
-from django import urls
-
 from config.settings_base import *
 
 import os
@@ -50,7 +48,6 @@ except ImportError:
 # Auth
 
 AUTH_USER_MODEL = "user.User"
-LOGIN_URL = urls.reverse_lazy("sign_in")
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
