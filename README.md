@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v36`:
+  - Allows printing of rendered PDFs with passwords on them.
+  - Adds `LOGIN_URL` setting back in (was removed in `v23`).
 - `v35`:
   - Adds GCP bindings for the `gcloud` command.
   - Adds RQ config and utils.
