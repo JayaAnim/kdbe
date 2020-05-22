@@ -43,7 +43,7 @@ class Pdftk:
             [self.pdf],
             operation="fill_form",
             operation_arguments=[fdf_file.name],
-            output_file=pdf.get_new_tempfile()
+            output_file=self.get_new_tempfile()
         )
 
     def get_new_tempfile(self):
