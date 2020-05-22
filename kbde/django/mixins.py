@@ -54,6 +54,7 @@ class EmailForm:
 
 class RelatedObject:
     related_model = None
+    related_queryset = None
     related_orm_path = None
     related_slug_field = "slug"
     related_slug_url_kwarg = "related_slug"
@@ -90,8 +91,8 @@ class RelatedObject:
             related_queryset = related_queryset.filter(**{self.related_slug_field: related_slug})
 
         try:
-            obj = queryset.get()
-        except queryset.model.DoesNotExist:
+            obj = related_queryset.get()
+        except related_queryset.model.DoesNotExist:
             raise http.Http404(f"No related {queryset.model._meta.verbose_name}s found matching the query")
 
         return obj

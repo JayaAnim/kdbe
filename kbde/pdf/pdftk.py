@@ -38,6 +38,14 @@ class Pdftk:
 
         return self.run_command([self.pdf], operation="generate_fdf", output_file=output_file)
 
+    def fill_form(self, fdf_file):
+        return self.run_command(
+            [self.pdf],
+            operation="fill_form",
+            operation_arguments=[fdf_file.name],
+            output_file=pdf.get_new_tempfile()
+        )
+
     def get_new_tempfile(self):
         with tempfile.NamedTemporaryFile(delete=False) as new_tempfile:
             pass
