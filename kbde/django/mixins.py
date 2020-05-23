@@ -65,6 +65,7 @@ class RelatedObject:
 
         related_orm_path = self.get_related_orm_path()
         related_object = self.get_related_object()
+        print(related_orm_path, related_object)
 
         return queryset.filter(**{related_orm_path: related_object})
 
@@ -107,7 +108,7 @@ class RelatedObject:
             return self.related_model.objects.all()
 
 
-class RelatedObjectForm:
+class RelatedObjectForm(RelatedObject):
     
     def get_form(self, **kwargs):
         form = super().get_form(**kwargs)
