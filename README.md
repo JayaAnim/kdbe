@@ -8,6 +8,7 @@ KBDE
   - Adds `fill_form` method to PDFtk.
   - Fixes issue with `RelatedObject` mixin in Django.
   - Uses `dj-redis-url` for configuring RQ.
+  - Adds `RelatedObjectForm` mixin to Django.
 - `v36`:
   - Allows printing of rendered PDFs with passwords on them.
 - `v35`:
