@@ -107,6 +107,17 @@ class RelatedObject:
             return self.related_model.objects.all()
 
 
+class RelatedObjectForm:
+    
+    def get_form(self, **kwargs):
+        form = super().get_form(**kwargs)
+
+        if hasattr(form, "instance"):
+            setattr(form.instance, self.related_orm_path, self.get_related_object())
+
+        return form
+
+
 class RelatedObjectLimit:
     related_orm_path = None
 
