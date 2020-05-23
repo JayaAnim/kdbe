@@ -154,7 +154,7 @@ ADMIN_DEFAULT_PASSWORD = os.getenv("ADMIN_DEFAULT_PASSWORD")
 
 # Redis Queue
 try:
-    import django_rq
+    import django_rq, dj_redis_url
 
     REDIS_URL = os.getenv("REDIS_URL")
 
@@ -163,10 +163,10 @@ try:
     RQ_SYNC = bool(os.getenv("RQ_SYNC"))
 
     RQ_QUEUES = {
-        "default": {
-            "URL": os.getenv("REDIS_URL"),
-        },
+        "default": dj_redis_url.parse(REDIS_URL),
     }
+
+    RQ_QUEUES["default"]["DB"] += 1
 
 except ImportError:
     pass
