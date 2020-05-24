@@ -65,7 +65,6 @@ class RelatedObject:
 
         related_orm_path = self.get_related_orm_path()
         related_object = self.get_related_object()
-        print(related_orm_path, related_object)
 
         return queryset.filter(**{related_orm_path: related_object})
 
