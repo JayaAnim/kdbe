@@ -1,3 +1,4 @@
+from django import http
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
@@ -93,7 +94,7 @@ class RelatedObject:
         try:
             obj = related_queryset.get()
         except related_queryset.model.DoesNotExist:
-            raise http.Http404(f"No related {queryset.model._meta.verbose_name}s found matching the query")
+            raise http.Http404(f"No related {related_queryset.model._meta.verbose_name}s found matching the query")
 
         return obj
 
