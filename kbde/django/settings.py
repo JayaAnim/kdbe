@@ -158,15 +158,19 @@ try:
 
     REDIS_URL = os.getenv("REDIS_URL")
 
-    assert REDIS_URL, "must define the REDIS_URL environement variable"
-
-    RQ_SYNC = bool(os.getenv("RQ_SYNC"))
-
     RQ_QUEUES = {
-        "default": dj_redis_url.parse(REDIS_URL),
+        "default": {},
     }
 
-    RQ_QUEUES["default"]["DB"] += 1
+    if REDIS_URL:
+
+        RQ_QUEUES = {
+            "default": dj_redis_url.config(),
+        }
+
+        RQ_QUEUES["default"]["DB"] += 1
+
+    RQ_SYNC = bool(os.getenv("RQ_SYNC"))
 
 except ImportError:
     pass
