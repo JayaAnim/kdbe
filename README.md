@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v38`:
+  - Overhauls Django RelatedObject mixin.
+  - Adds `LOGIN_URL` to the Django settings. Defaults to the Django default url name.
 - `v37`:
   - Adds `fill_form` method to PDFtk.
   - Fixes issue with `RelatedObject` mixin in Django.

@@ -1,11 +1,12 @@
 from setuptools import setup, find_packages
 
-setup(name="kbde",
-      version="37",
-      url="https://gitlab.com/kb_git/kbde",
-      author="kbuilds, LLC",
-      author_email="k@kbuilds.com",
-      description="Development environment library. Foundational python library.",
-      packages=find_packages(),
-      include_package_data=True,
-      )
+setup(
+    name="kbde",
+    version="38",
+    url="https://gitlab.com/kb_git/kbde",
+    author="kbuilds, LLC",
+    author_email="k@kbuilds.com",
+    description="Development environment library. Foundational python library.",
+    packages=find_packages(),
+    include_package_data=True,
+)
