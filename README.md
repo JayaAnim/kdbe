@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v39`:
+  - Better API exception handling for errors with response data.
 - `v38`:
   - Overhauls Django RelatedObject mixin.
   - Adds `LOGIN_URL` to the Django settings. Defaults to the Django default url name.
