@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `40`:
+  - Adds a model-based Background Processing module for Django, based on `django-rq`.
 - `v39`:
   - Better API exception handling for errors with response data.
 - `v38`:
