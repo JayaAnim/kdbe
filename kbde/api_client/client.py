@@ -154,7 +154,15 @@ class Client:
         return function(url, **kwargs)
 
     def get_response_data(self, response):
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            try:
+                response_json = response.json()
+                response_json["status_code"] = response.status_code
+                raise self.ApiClientException(response_json)
+            except ValueError:
+                raise e
 
         if not response._content:
             return None

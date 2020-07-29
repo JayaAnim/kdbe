@@ -4,6 +4,22 @@ KBDE
 
 # Release notes, starting at v9
 
+- `v39`:
+  - Better API exception handling for errors with response data.
+- `v38`:
+  - Overhauls Django RelatedObject mixin.
+  - Adds `LOGIN_URL` to the Django settings. Defaults to the Django default url name.
+- `v37`:
+  - Adds `fill_form` method to PDFtk.
+  - Fixes issue with `RelatedObject` mixin in Django.
+  - Uses `dj-redis-url` for configuring RQ.
+  - Adds `RelatedObjectForm` mixin to Django.
+- `v36`:
+  - Allows printing of rendered PDFs with passwords on them.
+- `v35`:
+  - Adds GCP bindings for the `gcloud` command.
+  - Adds RQ config and utils.
+  - Refines related object mixin.
 - `v34`:
   - Adds a management command for creating and maintaining Django superusers via the ADMINS setting.
   - Adds Django utils function for getting the hostname from a request.

@@ -38,6 +38,14 @@ class Pdftk:
 
         return self.run_command([self.pdf], operation="generate_fdf", output_file=output_file)
 
+    def fill_form(self, fdf_file):
+        return self.run_command(
+            [self.pdf],
+            operation="fill_form",
+            operation_arguments=[fdf_file.name],
+            output_file=self.get_new_tempfile()
+        )
+
     def get_new_tempfile(self):
         with tempfile.NamedTemporaryFile(delete=False) as new_tempfile:
             pass
@@ -69,10 +77,15 @@ class Pdftk:
         if user_password:
             user_password = f"user_pw {user_password}"
 
+        if owner_password or user_password:
+            password_printing = "allow printing"
+        else:
+            password_printing = ""
+
         command = (f"pdftk {input_pdf_file_names} "
                    f"{operation} {operation_arguments} "
                    f"{output} "
-                   f"{owner_password} {user_password}")
+                   f"{owner_password} {user_password} {password_printing}")
 
         command = shlex.split(command)
         subprocess.check_output(command)

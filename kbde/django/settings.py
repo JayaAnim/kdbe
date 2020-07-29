@@ -1,6 +1,6 @@
-from django import urls
-
 from config.settings_base import *
+
+from django import urls
 
 import os
 
@@ -50,6 +50,7 @@ except ImportError:
 # Auth
 
 AUTH_USER_MODEL = "user.User"
+LOGIN_URL = urls.reverse_lazy("login")
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
@@ -152,3 +153,27 @@ if SECURE_PROXY_SSL_HEADER:
 
 # Admin password
 ADMIN_DEFAULT_PASSWORD = os.getenv("ADMIN_DEFAULT_PASSWORD")
+
+
+# Redis Queue
+try:
+    import django_rq, dj_redis_url
+
+    REDIS_URL = os.getenv("REDIS_URL")
+
+    RQ_QUEUES = {
+        "default": {},
+    }
+
+    if REDIS_URL:
+
+        RQ_QUEUES = {
+            "default": dj_redis_url.config(),
+        }
+
+        RQ_QUEUES["default"]["DB"] += 1
+
+    RQ_SYNC = bool(os.getenv("RQ_SYNC"))
+
+except ImportError:
+    pass
