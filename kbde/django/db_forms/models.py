@@ -153,7 +153,7 @@ class ChoiceField(Field):
         return ((choice_model.value, choice_model.title) for choice_model in self.get_choice_models())
         
     def get_choice_models(self):
-        return self.choice_set.order_by("priority")
+        return self.choice_set.order_by("priority", "id")
 
 
 class Choice(models.Model):
