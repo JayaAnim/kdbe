@@ -88,7 +88,3 @@ LIST = [
     CsvRenderer,
     NewlineJsonRenderer,
     ]
-
-CHOICES = ((cls.__name__, cls.title) for cls in LIST)
-
-MAP = {cls.__name__: cls for cls in LIST}
