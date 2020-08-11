@@ -1,4 +1,6 @@
 from django.db import models
+from django.core import exceptions
+from polymorphic import models as poly_models
 from kbde.django import models as kbde_models
 from kbde.django.bg_process import models as kbde_bg_models
 
@@ -7,6 +9,9 @@ import tempfile, uuid, csv
 
 def get_source_upload_to(obj, file_name):
     return f"import/source_file/{uuid.uuid4()}/{file_name}"
+
+
+# Input data
 
 
 class ImportFile(kbde_bg_models.BgProcessModel):
@@ -75,6 +80,7 @@ class ImportFile(kbde_bg_models.BgProcessModel):
 
         return self.column_dict
 
+
 class ImportColumn(models.Model):
     import_file = models.ForeignKey(ImportFile, on_delete=models.CASCADE)
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
@@ -115,6 +121,10 @@ class ImportRow(models.Model):
 
         return row
 
+    def get_data(self):
+        values = self.importvalue_set.select_related("column")
+        return {value.column.name: value.value for value in values}
+
 
 class ImportValue(models.Model):
     column = models.ForeignKey(ImportColumn, on_delete=models.CASCADE)
@@ -123,3 +133,150 @@ class ImportValue(models.Model):
 
     def __str__(self):
         return f"{self.column}"
+
+
+# Mappings
+
+
+class ImportMapping(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel):
+    model = None
+    import_fields = []
+
+    import_file = models.ForeignKey(ImportFile, on_delete=models.CASCADE)
+
+    def queue_bg_process(self):
+        if self.importmappingcolumn_set.exists():
+            return super().queue_bg_process()
+
+    def bg_process(self):
+        self.create_rows()
+
+    def create_rows(self):
+        for row in self.get_all_import_rows():
+            mapping_row = ImportMappingRow(
+                mapping=self,
+                row=row,
+            )
+            mapping_row.clean()
+            mapping_row.save()
+
+    def get_all_import_rows(self):
+        start_index = 0
+
+        while True:
+            import_rows = self.get_import_row_page(start_index)
+
+            if not import_rows:
+                break
+
+            for import_row in import_rows:
+                yield import_row
+
+            start_index += 1000
+        
+    def get_import_row_page(self, start_index):
+        return self.import_file.importrow_set.order_by("id")[start_index:start_index+1000]
+
+    def get_instance_lookup_data(self):
+        """
+        Override this to add constants to the import
+        """
+        return {}
+
+
+class ImportMappingColumn(models.Model):
+    mapping = models.ForeignKey(ImportMapping, on_delete=models.CASCADE)
+    import_field = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    column = models.ForeignKey(ImportColumn, on_delete=models.CASCADE)
+    is_identifier = models.BooleanField(default=False, help_text="Should this column be used to look up an existing model?")
+
+    def clean(self):
+        if self.import_field not in self.mapping.import_fields:
+            import_fields = ", ".join(self.mapping.import_fields)
+            raise exceptions.ValidationError(f'import_field, "{self.import_field}", is not valid. Choices are: {import_fields}')
+
+
+class ImportMappingRow(models.Model):
+    STATUS_GOOD = "good"
+    STATUS_BAD = "bad"
+    STATUS_CHOICES = (
+        (STATUS_GOOD, "Good"),
+        (STATUS_BAD, "Bad"),
+    )
+
+    mapping = models.ForeignKey(ImportMapping, on_delete=models.CASCADE)
+    row = models.ForeignKey(ImportRow, on_delete=models.CASCADE)
+    status = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    status_message = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+
+    def clean(self):
+        if not self.status:
+            self.set_instance_status()
+
+    def save_instance(self):
+        instance = self.set_instance_status()
+        
+        if self.status == self.STATUS_GOOD:
+            instance.save()
+
+    def set_instance_status(self):
+        try:
+            instance = self.get_instance()
+        except self.mapping.model.MultipleObjectsReturned:
+            self.status = self.STATUS_BAD
+            self.status_message = "Multiple objects found when looking up existing models"
+
+        if instance is None:
+            instance = self.mapping.model()
+
+        try:
+            instance = self.update_instance(instance)
+            self.status = self.STATUS_GOOD
+
+        except exceptions.ValidationError as e:
+            self.status_message = str(e)
+            self.status = self.STATUS_BAD
+
+        self.save()
+
+        return instance
+
+    def update_instance(self, instance):
+        # Get new data to update
+        data = self.get_data()
+
+        for key, value in data.items():
+            setattr(instance, key, value)
+
+        instance.clean()
+
+        return instance
+    
+    def get_instance(self):
+        lookup_data = self.get_instance_lookup_data()
+
+        if not lookup_data:
+            return None
+
+        try:
+            return self.mapping.model.objects.get(**lookup_data)
+        except self.mapping.model.DoesNotExist:
+            return None
+        
+    def get_instance_lookup_data(self):
+        row_data = self.row.get_data()
+
+        identifier_mapping_columns = self.mapping.importmappingcolumn_set.filter(is_identifier=True).select_related("column")
+
+        lookup_data = {mapping_column.import_field: row_data[mapping_column.column.name] for mapping_column in identifier_mapping_columns}
+
+        lookup_data.update(self.mapping.get_instance_lookup_data())
+
+        return lookup_data
+
+    def get_data(self):
+        row_data = self.row.get_data()
+
+        identifier_mapping_columns = self.mapping.importmappingcolumn_set.select_related("column")
+
+        return {mapping_column.import_field: row_data[mapping_column.column.name] for mapping_column in identifier_mapping_columns}
