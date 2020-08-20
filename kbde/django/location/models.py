@@ -85,7 +85,7 @@ class Point(models.Model):
     point_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     locations = models.ManyToManyField(Location)
-    point = gis_models.PointField(null=True)
+    point = gis_models.PointField()
 
     class Meta:
         unique_together = ("name", "point")

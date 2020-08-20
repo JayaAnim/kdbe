@@ -8,6 +8,7 @@ KBDE
   - Changes Django `location` models to use explicit id fields for pk. This will break models which rely on this app.
   - Changes Django `bg_process` models to use explicit id fields for pk. This will break models which rely on this app.
   - Adds a template context processor which allows settings.py variables to be selectively exposed to all templates.
+  - Removes the nullable option for `django.location.models.Point`.
 - `40`:
   - Adds a model-based Background Processing module for Django, based on `django-rq`.
 - `v39`:
