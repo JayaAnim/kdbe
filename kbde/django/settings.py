@@ -179,3 +179,10 @@ try:
 
 except ImportError:
     pass
+
+
+# Settings context processor
+
+TEMPLATES[0]["OPTIONS"]["context_processors"] += [
+    "kbde.django.context_processors.settings_to_template",
+]
