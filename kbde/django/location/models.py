@@ -84,7 +84,7 @@ class Location(models.Model):
 class Point(models.Model):
     point_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
-    locations = models.ManyToManyField(Location)
+    locations = models.ManyToManyField(Location, blank=True)
     point = gis_models.PointField()
 
     class Meta:
@@ -93,7 +93,7 @@ class Point(models.Model):
 
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True)
-    locations = models.ManyToManyField(Location)
+    locations = models.ManyToManyField(Location, blank=True)
     point = models.ForeignKey(Point, on_delete=models.CASCADE, null=True, blank=True)
     street_1 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
     street_2 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True, db_index=True)
