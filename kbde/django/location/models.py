@@ -87,9 +87,6 @@ class Point(models.Model):
     locations = models.ManyToManyField(Location, blank=True)
     point = gis_models.PointField()
 
-    class Meta:
-        unique_together = ("name", "point")
-
 
 class Address(models.Model):
     address_id = models.AutoField(primary_key=True)
