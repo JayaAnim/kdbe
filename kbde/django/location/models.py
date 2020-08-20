@@ -21,6 +21,8 @@ class Location(models.Model):
         (TYPE_VOTING_DISTRICT, "Voting District"),
         )
 
+    location_id = models.AutoField(primary_key=True)
+
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
     short_name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     code = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
@@ -80,6 +82,7 @@ class Location(models.Model):
 
 
 class Point(models.Model):
+    point_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     locations = models.ManyToManyField(Location)
     point = gis_models.PointField(null=True)
@@ -89,6 +92,7 @@ class Point(models.Model):
 
 
 class Address(models.Model):
+    address_id = models.AutoField(primary_key=True)
     locations = models.ManyToManyField(Location)
     point = models.ForeignKey(Point, on_delete=models.CASCADE, null=True, blank=True)
     street_1 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
