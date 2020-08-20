@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `41`:
+  - Changes Django `location` models to use explicit id fields for pk. This will break models which rely on this app.
+  - Changes Django `bg_process` models to use explicit id fields for pk. This will break models which rely on this app.
 - `40`:
   - Adds a model-based Background Processing module for Django, based on `django-rq`.
 - `v39`:
