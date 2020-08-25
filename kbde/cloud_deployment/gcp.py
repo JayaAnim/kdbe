@@ -80,7 +80,7 @@ class GcpLeader(leader.Leader):
             auth_token=auth_token,
         )
 
-        print(result)
+        return [i["id"] for i in result["instances"]]
 
     def get_project_id(self):
         """
