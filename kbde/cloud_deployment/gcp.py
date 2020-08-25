@@ -12,7 +12,7 @@ class MetadataBase(api_client.Client):
 
 class AppEngineBase(api_client.Client):
     host = "https://appengine.googleapis.com"
-    header = {
+    headers = {
         "Authorization": "Bearer {auth_token}",
     }
 
