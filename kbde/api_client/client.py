@@ -13,8 +13,8 @@ class Client:
     path = None
 
     # Request content types
-    CONTENT_TYPE_TEXT = "text"
-    CONTENT_TYPE_JSON = "json"
+    CONTENT_TYPE_TEXT = "application/text"
+    CONTENT_TYPE_JSON = "application/json"
     CONTENT_TYPE_MULTIPART = "multipart"
 
     # Requests params mapping
@@ -168,7 +168,10 @@ class Client:
             return None
 
         # TODO: support other types of responses
-        return response.json()
+        if response.headers["Content-Type"] == self.CONTENT_TYPE_JSON:
+            return response.json()
+
+        return response.text
 
     def get_host(self, **params):
         return self.host
