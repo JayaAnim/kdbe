@@ -168,7 +168,7 @@ class Client:
             return None
 
         # TODO: support other types of responses
-        if response.headers["Content-Type"] == self.CONTENT_TYPE_JSON:
+        if self.CONTENT_TYPE_JSON in response.headers["Content-Type"]:
             return response.json()
 
         return response.text
