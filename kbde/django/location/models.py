@@ -1,8 +1,16 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
+from django.contrib.gis import geos
+from django.conf import settings
 from kbde.django import models as kbde_models
+from kbde import api_client
 
 import urllib
+
+
+class GoogleGeocodeClient(api_client.Client):
+    host = "https://maps.googleapis.com"
+    path = "/maps/api/geocode/json?address={address}&key={api_key}"
 
 
 class Location(models.Model):
@@ -20,6 +28,8 @@ class Location(models.Model):
         (TYPE_WARD, "Ward"),
         (TYPE_VOTING_DISTRICT, "Voting District"),
         )
+
+    location_id = models.AutoField(primary_key=True)
 
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
     short_name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
@@ -80,25 +90,24 @@ class Location(models.Model):
 
 
 class Point(models.Model):
+    point_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
-    locations = models.ManyToManyField(Location)
-    point = gis_models.PointField(null=True)
-
-    class Meta:
-        unique_together = ("name", "point")
+    locations = models.ManyToManyField(Location, blank=True)
+    point = gis_models.PointField()
 
 
 class Address(models.Model):
-    locations = models.ManyToManyField(Location)
+    address_id = models.AutoField(primary_key=True)
+    locations = models.ManyToManyField(Location, blank=True)
     point = models.ForeignKey(Point, on_delete=models.CASCADE, null=True, blank=True)
-    street_1 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
-    street_2 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True, db_index=True)
-    street_3 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True, db_index=True)
-    city = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
-    state = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
-    zip_code = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
-    zip_code_last_4 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, db_index=True)
-    country = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True, db_index=True)
+    street_1 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    street_2 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+    street_3 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+    city = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    state = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    zip_code = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    zip_code_last_4 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+    country = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
 
     def __str__(self):
         fields = [
@@ -148,3 +157,42 @@ class Address(models.Model):
             ]
         fields = [f for f in fields if f]
         return " ".join(fields)
+
+    # Geocoding
+
+    def geocode(self):
+        self.point = self.create_geocode_point()
+        self.save()
+
+    def create_geocode_point(self):
+        coords = self.get_coords()
+
+        if coords is None:
+            return None
+        
+        geos_point = geos.Point(*coords)
+
+        point = Point(point=geos_point)
+        point.save()
+
+        return point
+
+    def get_coords(self):
+        """
+        Returns the coordinates for this address
+        """
+        result = GoogleGeocodeClient().get(
+            address=self.get_url_safe(),
+            api_key=settings.GEOCODE_API_KEY,
+        )
+
+        results = result["results"]
+
+        if not results:
+            return None
+
+        result = results[0]
+        geometry = result["geometry"]
+        location = geometry["location"]
+
+        return location["lat"], location["lng"]
