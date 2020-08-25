@@ -5,6 +5,7 @@ from . import models
 
 MODEL_LIST = [models.Location,
               models.Address,
+              models.Point,
               ]
 
 for model in MODEL_LIST:
