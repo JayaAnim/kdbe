@@ -45,7 +45,7 @@ class GcpLeader(leader.Leader):
     """
     Requires that the project's App Engine Admin API is enabled
     """
-    METADATA_CLIENTS = {
+    CLIENTS = {
         "instance_id_client": InstanceId,
         "project_id_client": ProjectId,
         "service_client": Service,
@@ -61,7 +61,7 @@ class GcpLeader(leader.Leader):
 
     def create_clients(self):
         # Create metadata clients
-        for class_name, client_class in self.METADATA_CLIENTS.items():
+        for class_name, client_class in self.CLIENTS.items():
             setattr(self, class_name, client_class())
 
     def get_all_instance_ids(self):
@@ -80,7 +80,7 @@ class GcpLeader(leader.Leader):
             auth_token=auth_token,
         )
 
-        return [i["id"] for i in result["instances"]]
+        return sorted(i["id"] for i in result["instances"])
 
     def get_project_id(self):
         """
