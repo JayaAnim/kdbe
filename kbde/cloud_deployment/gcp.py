@@ -5,7 +5,7 @@ from . import leader
 
 class MetadataBase(api_client.Client):
     host = "http://metadata.google.internal"
-    header = {
+    headers = {
         "Metadata-Flavor": "Google",
     }
 
