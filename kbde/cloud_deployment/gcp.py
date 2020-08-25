@@ -38,7 +38,7 @@ class AuthToken(MetadataBase):
 
 
 class InstanceList(AppEngineBase):
-    path = "/v1/apps/{project_id}/services/{service}/version/{version}/instances/"
+    path = "/v1/apps/{project_id}/services/{service}/versions/{version}/instances/"
 
 
 class GcpLeader(leader.Leader):
