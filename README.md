@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `42`:
+  - Adds leader identification for GCP.
+  - Adds geocoding to Django location module for addresses.
 - `41`:
   - Changes Django `location` models to use explicit id fields for pk. This will break models which rely on this app.
   - Changes Django `bg_process` models to use explicit id fields for pk. This will break models which rely on this app.

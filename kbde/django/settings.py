@@ -186,3 +186,8 @@ except ImportError:
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "kbde.django.context_processors.settings_to_template",
 ]
+
+
+# Geocode
+
+GEOCODE_API_KEY = os.getenv("GEOCODE_API_KEY")
