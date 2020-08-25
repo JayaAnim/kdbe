@@ -69,8 +69,9 @@ class GcpLeader(leader.Leader):
         Get all instance ids for this same zone and project
         """
         project_id = self.get_project_id()
-        #service = self.get_service()
-        #version = 
+        service = self.get_service()
+        version = self.get_version()
+        print(project_id, service, version)
         #result = self.instance_list_client.get()
         #print(result)
 
@@ -78,22 +79,25 @@ class GcpLeader(leader.Leader):
         """
         Get the project ID for this instance
         """
-        result = self.project_id_client.get()
-        print(result)
+        return self.project_id_client.get()
 
     def get_service(self):
         """
         Get the ID of the service for this instance
         """
-        result = self.service_client.get()
-        print(result)
+        return self.service_client.get()
+
+    def get_version(self):
+        """
+        Return the version for this instance
+        """
+        return self.version_client.get()
     
     def get_instance_id(self):
         """
         Get the id for this instance
         """
-        result = self.instance_id_client.get()
-        print(result)
+        return self.instance_id_client.get()
 
     def get_auth_token(self):
         """
