@@ -111,4 +111,4 @@ class GcpLeader(leader.Leader):
         Get an auth token from the metatdata server
         """
         result = self.auth_token_client.get()
-        print(result)
+        return result.get("access_token")
