@@ -71,9 +71,16 @@ class GcpLeader(leader.Leader):
         project_id = self.get_project_id()
         service = self.get_service()
         version = self.get_version()
-        print(project_id, service, version)
-        #result = self.instance_list_client.get()
-        #print(result)
+        auth_token = self.get_auth_token()
+
+        result = self.instance_list_client.get(
+            project_id=project_id,
+            service=service,
+            version=version,
+            auth_token=auth_token,
+        )
+
+        print(result)
 
     def get_project_id(self):
         """
