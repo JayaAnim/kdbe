@@ -1,6 +1,6 @@
 from kbde import api_client
 
-from . import leader
+from . import base
 
 
 class MetadataBase(api_client.Client):
@@ -41,7 +41,7 @@ class InstanceList(AppEngineBase):
     path = "/v1/apps/{project_id}/services/{service}/versions/{version}/instances/"
 
 
-class GcpLeader(leader.Leader):
+class GcpLeader(base.Leader):
     """
     Requires that the project's App Engine Admin API is enabled
     """
