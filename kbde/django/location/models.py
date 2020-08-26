@@ -195,4 +195,4 @@ class Address(models.Model):
         geometry = result["geometry"]
         location = geometry["location"]
 
-        return location["lat"], location["lng"]
+        return location["lng"], location["lat"]
