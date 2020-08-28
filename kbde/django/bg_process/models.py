@@ -21,6 +21,8 @@ class BgProcessModel(models.Model):
 
     bg_process_queue_name = "default"
 
+    bg_process_id = models.AutoField(primary_key=True)
+
     slug = models.UUIDField(default=uuid.uuid4)
     bg_process_status = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
                                          choices=BG_PROCESS_STATUS_CHOICES,
