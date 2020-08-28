@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 
+
 setup(
     name="kbde",
     version="42",
@@ -9,4 +10,5 @@ setup(
     description="Development environment library. Foundational Python library.",
     packages=find_packages(),
     include_package_data=True,
+    scripts=['scripts/kbde_cli.py'],
 )
