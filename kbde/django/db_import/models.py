@@ -80,6 +80,23 @@ class ImportFile(kbde_bg_models.BgProcessModel):
 
         return self.column_dict
 
+    def get_import_rows(self):
+        start_index = 0
+
+        while True:
+            import_rows = self.get_import_row_page(start_index)
+
+            if not import_rows:
+                break
+
+            for import_row in import_rows:
+                yield import_row
+
+            start_index += 1000
+        
+    def get_import_row_page(self, start_index):
+        return self.importrow_set.order_by("id")[start_index:start_index+1000]
+
 
 class ImportColumn(models.Model):
     import_file = models.ForeignKey(ImportFile, on_delete=models.CASCADE)
@@ -152,7 +169,7 @@ class ImportMapping(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel)
         self.create_rows()
 
     def create_rows(self):
-        for row in self.get_all_import_rows():
+        for row in self.import_file.get_import_rows():
             mapping_row = ImportMappingRow(
                 mapping=self,
                 row=row,
@@ -160,28 +177,33 @@ class ImportMapping(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel)
             mapping_row.clean()
             mapping_row.save()
 
-    def get_all_import_rows(self):
-        start_index = 0
-
-        while True:
-            import_rows = self.get_import_row_page(start_index)
-
-            if not import_rows:
-                break
-
-            for import_row in import_rows:
-                yield import_row
-
-            start_index += 1000
-        
-    def get_import_row_page(self, start_index):
-        return self.import_file.importrow_set.order_by("id")[start_index:start_index+1000]
-
     def get_instance_lookup_data(self):
         """
         Override this to add constants to the import
         """
         return {}
+
+    def get_import_mapping_rows(self):
+        start_index = 0
+
+        while True:
+            import_mapping_rows = self.get_import_mapping_row_page(start_index)
+
+            if not import_mapping_rows:
+                break
+
+            for import_mapping_row in import_mapping_rows:
+                yield import_mapping_row
+
+            start_index += 1000
+        
+    def get_import_mapping_row_page(self, start_index):
+        return self.importmappingrow_set.order_by("id")[start_index:start_index+1000]
+
+    def save_instance(self, instance):
+        instance.save()
+
+        return instance
 
 
 class ImportMappingColumn(models.Model):
@@ -207,6 +229,7 @@ class ImportMappingRow(models.Model):
     mapping = models.ForeignKey(ImportMapping, on_delete=models.CASCADE)
     row = models.ForeignKey(ImportRow, on_delete=models.CASCADE)
     status = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    new_instance = models.BooleanField(default=True)
     status_message = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
 
     def clean(self):
@@ -217,7 +240,7 @@ class ImportMappingRow(models.Model):
         instance = self.set_instance_status()
         
         if self.status == self.STATUS_GOOD:
-            instance.save()
+            self.mapping.save_instance(instance)
 
     def set_instance_status(self):
         try:
@@ -228,6 +251,9 @@ class ImportMappingRow(models.Model):
 
         if instance is None:
             instance = self.mapping.model()
+            self.new_instance = True
+        else:
+            self.new_instance = False
 
         try:
             instance = self.update_instance(instance)
@@ -280,3 +306,15 @@ class ImportMappingRow(models.Model):
         identifier_mapping_columns = self.mapping.importmappingcolumn_set.select_related("column")
 
         return {mapping_column.import_field: row_data[mapping_column.column.name] for mapping_column in identifier_mapping_columns}
+
+
+class Import(kbde_bg_models.BgProcessModel):
+    """
+    The actual import of an ImportMapping
+    """
+    import_mapping = models.ForeignKey(ImportMapping, on_delete=models.CASCADE)
+
+    def bg_process(self):
+        
+        for import_mapping_row in self.import_mapping.get_import_mapping_rows():
+            import_mapping_row.save_instance()
