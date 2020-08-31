@@ -75,7 +75,7 @@ class ImportFile(kbde_bg_models.BgProcessModel):
     def get_column_dict(self):
 
         if not self.column_dict:
-            columns = self.importcolumn_set.all()
+            columns = self.get_import_columns()
             self.column_dict = {column.name: column for column in columns}
 
         return self.column_dict
@@ -96,6 +96,12 @@ class ImportFile(kbde_bg_models.BgProcessModel):
         
     def get_import_row_page(self, start_index):
         return self.importrow_set.order_by("id")[start_index:start_index+1000]
+
+    def get_import_row_count(self):
+        return self.importrow_set.count()
+
+    def get_import_columns(self):
+        return self.importcolumn_set.order_by("id")
 
 
 class ImportColumn(models.Model):
@@ -138,6 +144,15 @@ class ImportRow(models.Model):
 
         return row
 
+    def get_import_column_values(self):
+        columns = self.import_file.get_import_columns()
+        data = self.get_data()
+        
+        for column in columns:
+            column.value = data[column.name]
+
+        return columns
+
     def get_data(self):
         values = self.importvalue_set.select_related("column")
         return {value.column.name: value.value for value in values}
@@ -158,8 +173,18 @@ class ImportValue(models.Model):
 class ImportMapping(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel):
     model = None
     import_fields = []
+    form_field_names = [
+        "import_file",
+    ]
 
     import_file = models.ForeignKey(ImportFile, on_delete=models.CASCADE)
+
+    @classmethod
+    def get_model_name(cls):
+        return cls.__name__
+
+    def __str__(self):
+        return self.import_file.name
 
     def queue_bg_process(self):
         if self.importmappingcolumn_set.exists():
@@ -205,12 +230,29 @@ class ImportMapping(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel)
 
         return instance
 
+    def get_columns_display(self):
+        mapping_columns = self.get_import_mapping_columns()
+        return ", ".join(mc.column.name for mc in mapping_columns)
+
+    def get_import_fields_display(self):
+        mapping_columns = self.get_import_mapping_columns()
+        return ", ".join(mc.import_field for mc in mapping_columns)
+        
+    def get_import_mapping_columns(self):
+        return self.importmappingcolumn_set.order_by("id")
+
+    def modify_form(self, form):
+        return form
+
 
 class ImportMappingColumn(models.Model):
     mapping = models.ForeignKey(ImportMapping, on_delete=models.CASCADE)
     import_field = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
     column = models.ForeignKey(ImportColumn, on_delete=models.CASCADE)
     is_identifier = models.BooleanField(default=False, help_text="Should this column be used to look up an existing model?")
+
+    class Meta:
+        unique_together = ("mapping", "import_field", "column")
 
     def clean(self):
         if self.import_field not in self.mapping.import_fields:
