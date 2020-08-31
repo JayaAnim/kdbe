@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `43`:
+  - Adds a Django database import tool.
 - `42`:
   - Adds leader identification for GCP.
   - Adds geocoding to Django location module for addresses.
