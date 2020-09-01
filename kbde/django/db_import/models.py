@@ -38,7 +38,7 @@ class ImportFile(kbde_bg_models.BgProcessModel):
         """
         local_source_path = self.get_local_source_path()
 
-        with open(local_source_path) as local_source:
+        with open(local_source_path, encoding="latin1") as local_source:
             reader = csv.DictReader(local_source)
             column_names = reader.fieldnames
 
@@ -54,7 +54,7 @@ class ImportFile(kbde_bg_models.BgProcessModel):
         """
         local_source_path = self.get_local_source_path()
 
-        with open(local_source_path) as local_source:
+        with open(local_source_path, encoding="latin1") as local_source:
             reader = csv.DictReader(local_source)
 
             for row_dict in reader:
