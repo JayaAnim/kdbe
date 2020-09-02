@@ -1,4 +1,5 @@
-import kbde, argparse, pkgutil, importlib, inspect
+import kbde, argparse, pkgutil, importlib, inspect, argcomplete
+from kbde.shell import mixins as shell_mixins
 
 
 class KbdeCli:
@@ -8,32 +9,65 @@ class KbdeCli:
 
     def __init__(self):
         self.parser = argparse.ArgumentParser()
-        self.subparsers = self.parser.add_subparsers()
 
-        self.process_commands_modules()
+        subparsers = self.parser.add_subparsers(title="commands", dest="module_name")
+        subparsers.required = True
+
+        self.command_map = {}
+
+        self.process_commands_modules(subparsers)
+
+        argcomplete.autocomplete(self.parser)
 
     def run(self):
-        self.parser.parse_args()
-        print(self.parser)
+        args = self.parser.parse_args()
 
-    def process_commands_modules(self):
+        args_dict = args.__dict__
+
+        module_name = args_dict.pop("module_name")
+        command_name = args_dict.pop("command_name")
+
+        command_instance = self.command_map[module_name][command_name]
+
+        try:
+            return command_instance.handle(**args_dict)
+        except shell_mixins.RunCommand.CommandException as e:
+            print(e.get_stdout())
+
+    def process_commands_modules(self, subparsers):
         commands_modules = self.get_commands_modules()
 
         for commands_module in commands_modules:
-            self.process_commands_module(commands_module)
+            self.process_commands_module(subparsers, commands_module)
         
-    def process_commands_module(self, commands_module):
+    def process_commands_module(self, subparsers, commands_module):
         command_modules = self.get_command_modules_from_commands_module(commands_module)
 
         # Add subparser for this command
         module_name = commands_module.__name__.split(".")[1]
-        module_parser = self.subparsers.add_parser(module_name)
+        module_parser = subparsers.add_parser(module_name)
+
+        module_subparsers = module_parser.add_subparsers(title="commands", dest="command_name")
+        module_subparsers.required = True
+        
+        # Add to command map
+        module_names = self.command_map.get(module_name, {})
+        self.command_map[module_name] = module_names
 
         for command_module in command_modules:
-            self.process_command_module(command_module)
+            self.process_command_module(module_subparsers, module_names, command_module)
 
-    def process_command_module(self, command_module):
-        print("    ", command_module)
+    def process_command_module(self, module_subparsers, module_names, command_module):
+        command_class = getattr(command_module, "Command")
+
+        module_name = command_module.__name__.split(".")[-1]
+        module_subparser = module_subparsers.add_parser(module_name)
+
+        command_instance = command_class()
+        command_instance.add_arguments(module_subparser)
+
+        # Add to command_map
+        module_names[module_name] = command_instance
 
     def get_command_modules_from_commands_module(self, commands_module):
         module_infos = pkgutil.iter_modules(commands_module.__path__)
