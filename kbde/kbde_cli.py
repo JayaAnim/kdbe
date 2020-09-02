@@ -1,4 +1,4 @@
-import kbde, argparse, pkgutil, importlib, inspect, argcomplete
+import kbde, argparse, pkgutil, importlib, inspect
 from kbde.shell import mixins as shell_mixins
 
 
@@ -17,7 +17,11 @@ class KbdeCli:
 
         self.process_commands_modules(subparsers)
 
-        argcomplete.autocomplete(self.parser)
+        try:
+            import argcomplete
+            argcomplete.autocomplete(self.parser)
+        except ImportError:
+            pass
 
     def run(self):
         args = self.parser.parse_args()
@@ -30,7 +34,7 @@ class KbdeCli:
         command_instance = self.command_map[module_name][command_name]
 
         try:
-            return command_instance.handle(**args_dict)
+            print(command_instance.handle(**args_dict))
         except shell_mixins.RunCommand.CommandException as e:
             print(e.get_stdout())
 

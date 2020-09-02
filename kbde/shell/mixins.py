@@ -18,7 +18,7 @@ class RunCommand:
 
             raise self.CommandException(**e.__dict__)
 
-        return result.stdout
+        return result.stdout.decode("latin1")
 
     class CommandException(subprocess.CalledProcessError):
 
