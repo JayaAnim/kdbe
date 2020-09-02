@@ -10,7 +10,11 @@ class Command(kbde_cli.Command):
     ]
 
     def add_arguments(self, parser):
-        parser.add_argument("installer_name", help="The name of the installer module to run")
+        parser.add_argument(
+            "installer_name",
+            help="The name of the installer module to run",
+            choices=self.get_module_map().keys(),
+        )
 
     def handle(self, **options):
         class_map = self.get_installer_class_map()

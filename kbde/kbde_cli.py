@@ -34,7 +34,11 @@ class KbdeCli:
         command_instance = self.command_map[module_name][command_name]
 
         try:
-            print(command_instance.handle(**args_dict))
+            result = command_instance.handle(**args_dict)
+
+            if result:
+                print(result)
+
         except shell_mixins.RunCommand.CommandException as e:
             print(e.get_stdout())
 
