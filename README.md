@@ -4,6 +4,10 @@ KBDE
 
 # Release notes, starting at v9
 
+- `44`:
+  - Adds new cli script and command framework.
+  - Adds `apt` module to pre-configure environments.
+  - Adds shell mixins for running commands against the host OS.
 - `43`:
   - Adds a Django database import tool.
 - `42`:
