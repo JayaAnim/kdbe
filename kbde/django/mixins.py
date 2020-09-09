@@ -122,7 +122,7 @@ class RelatedObjectEdit(RelatedObject):
 
             related_orm_path = self.get_related_orm_path()
 
-            if "__" in related_orm_path:
+            if "__" not in related_orm_path:
                 setattr(form.instance, related_orm_path, self.get_related_object())
 
         return form
