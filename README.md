@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `45`:
+  - Changes Django `RelatedObject` mixin. Removes deprecated relational mixins.
 - `44`:
   - Adds new cli script and command framework.
   - Adds `apt` module to pre-configure environments.
