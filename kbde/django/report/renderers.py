@@ -31,6 +31,12 @@ class Renderer:
         """
         raise NotImplementedError
 
+    def finalize(self):
+        """
+        Do anything needed to close off this renderer
+        """
+        return None
+
 
 class HeaderRowMixin:
     

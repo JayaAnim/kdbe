@@ -39,6 +39,10 @@ class Report(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel):
     # Available renderers
     available_renderers = renderers.LIST
 
+    # Mode in which the result file is opened
+    # Useful for writing file types which are not strings (such as .zip)
+    result_file_open_mode = "w"
+
     # Model fields
     name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     record_count = models.IntegerField(null=True, blank=True)
@@ -129,7 +133,7 @@ class Report(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel):
         update_interval = datetime.timedelta(seconds=self.progress_update_interval)
         next_update = datetime.datetime.now() + update_interval
 
-        with tempfile.NamedTemporaryFile("w", delete=False, prefix="report_") as temp:
+        with tempfile.NamedTemporaryFile(self.result_file_open_mode, delete=False, prefix="report_") as temp:
             renderer_cls = self.get_renderer()
             renderer = renderer_cls(temp, self.get_output_fields())
             
@@ -142,7 +146,10 @@ class Report(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel):
 
                 renderer.write_row(row)
 
-        self.records_complete = i + 1
+                self.records_complete = i + 1
+
+            renderer.finalize()
+
         self.save()
 
         return temp.name, renderer.file_extension
