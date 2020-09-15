@@ -85,9 +85,14 @@ class KbdeCli:
         for module_info in module_infos:
             
             # Import the module
-            module = importlib.import_module(
-                f"{commands_module.__name__}.{module_info.name}"
-            )
+            try:
+                module = importlib.import_module(
+                    f"{commands_module.__name__}.{module_info.name}"
+                )
+            except ModuleNotFoundError:
+                # There was a dependency issue with this module
+                # Skip it
+                continue
 
             if not hasattr(module, "Command"):
                 continue
@@ -119,7 +124,6 @@ class KbdeCli:
         """
         try:
             commands_module = importlib.import_module(f"{module.__name__}.commands")
-
         except ModuleNotFoundError:
             return None
             
