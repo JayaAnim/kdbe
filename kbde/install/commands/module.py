@@ -12,7 +12,7 @@ from kbde.install import (
 class Command(kbde_cli.Command):
 
     module_list = [
-        base
+        base,
         desktop,
         dev,
         dokku,
