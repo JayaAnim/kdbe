@@ -136,7 +136,12 @@ class KbdeCli:
         for module_info in module_infos:
 
             # Import the module
-            module = importlib.import_module(f"kbde.{module_info.name}")
+            try:
+                module = importlib.import_module(f"kbde.{module_info.name}")
+            except ModuleNotFoundError:
+                # There was some kind of dependency issue with this module
+                # Skip it
+                continue
 
             # Check if the module has a path
             # File-based modules will not have this attribute, but
