@@ -33,8 +33,17 @@ class Base(kbde_cli.Command):
 
 class GetCommand(Base):
     """
-    A command which runs an API get
+    A command which runs an API GET operation
     """
     
     def handle_client(self, **options):
         return self.api_client.get(**options)
+
+
+class PostCommand(Base):
+    """
+    A command which runs and API POST operation
+    """
+
+    def handle_client(self, **options):
+        return self.api_client.post(**options)
