@@ -1,12 +1,20 @@
 from kbde import kbde_cli
 
-from kbde.apt import python_environment
+from kbde.install import (
+    desktop,
+    dev,
+    dokku,
+    python,
+)
 
 
 class Command(kbde_cli.Command):
 
     module_list = [
-        python_environment,
+        desktop,
+        dev,
+        dokku,
+        python,
     ]
 
     def add_arguments(self, parser):

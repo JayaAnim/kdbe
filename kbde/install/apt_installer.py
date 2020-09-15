@@ -1,7 +1,5 @@
 from kbde.shell import mixins as shell_mixins
 
-import subprocess
-
 
 class Installer(shell_mixins.RunCommand):
     

@@ -1,7 +1,7 @@
-from . import installer
+from . import apt_installer
 
 
-class Installer(installer.Installer):
+class Installer(apt_installer.Installer):
     package_names = [
         "tree",
         "parallel",
