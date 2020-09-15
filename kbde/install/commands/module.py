@@ -1,6 +1,7 @@
 from kbde import kbde_cli
 
 from kbde.install import (
+    base,
     desktop,
     dev,
     dokku,
@@ -11,6 +12,7 @@ from kbde.install import (
 class Command(kbde_cli.Command):
 
     module_list = [
+        base
         desktop,
         dev,
         dokku,
