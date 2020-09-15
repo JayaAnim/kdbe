@@ -47,3 +47,12 @@ class PostCommand(Base):
 
     def handle_client(self, **options):
         return self.api_client.post(**options)
+
+
+class DeleteCommand(Base):
+    """
+    A command which runs and API POST operation
+    """
+
+    def handle_client(self, **options):
+        return self.api_client.delete(**options)

@@ -7,7 +7,6 @@ class Command(command_base.PostCommand):
     
     api_client_class = block_storage.Volume
 
-
     def add_arguments(self, parser):
         parser.add_argument(
             "size_gigabytes",
@@ -51,12 +50,12 @@ class Command(command_base.PostCommand):
         )
         parser.add_argument(
             "--tags",
-            help=("A flat array of tag names as comma-delimited strings to apply to the Volume after it is created. Tag names can either be existing or new tags."),
+            help=("A flat array of tag names as comma-delimited strings to apply to the Volume "
+                  "after it is created. Tag names can either be existing or new tags."),
         )
 
     def handle(self, **options):
         if options["tags"]:
             options["tags"] = [opt.strip() for opt in options["tags"].split(",")]
 
-        print(options)
         return super().handle(**options)
