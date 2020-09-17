@@ -25,8 +25,8 @@ class ImportFileList(views.generic.ListView):
 class ImportRowList(kbde_mixins.RelatedObject, views.generic.ListView):
     template_name = "kbde_django_db_import/import_row/list.html"
     model = models.ImportRow
-    import_file_orm_path = "import_file"
-    import_file_model = models.ImportFile
+    related_orm_path = "import_file"
+    related_model = models.ImportFile
     paginate_by = 10
     ordering = ["-pk"]
 
@@ -112,8 +112,8 @@ class ImportMappingList(views.generic.ListView):
 class ImportMappingColumnList(kbde_mixins.RelatedObject, views.generic.ListView):
     template_name = "kbde_django_db_import/import_mapping_column/list.html"
     model = models.ImportMappingColumn
-    import_mapping_orm_path = "mapping"
-    import_mapping_model = models.ImportMapping
+    related_orm_path = "mapping"
+    related_model = models.ImportMapping
     paginate_by = 10
     ordering = ["-pk"]
 
@@ -121,8 +121,8 @@ class ImportMappingColumnList(kbde_mixins.RelatedObject, views.generic.ListView)
 class ImportMappingColumnCreate(kbde_mixins.RelatedObjectEdit, views.generic.CreateView):
     template_name = "kbde_django_db_import/import_mapping_column/create.html"
     model = models.ImportMappingColumn
-    import_mapping_orm_path = "mapping"
-    import_mapping_model = models.ImportMapping
+    related_orm_path = "mapping"
+    related_model = models.ImportMapping
     fields = [
         "column",
         "import_field",
@@ -134,7 +134,7 @@ class ImportMappingColumnCreate(kbde_mixins.RelatedObjectEdit, views.generic.Cre
         
         form.fields["import_field"] = self.get_import_fields_field()
         form.fields["column"].queryset = form.fields["column"].queryset.filter(
-            import_file=self.get_related_objects()["import_mapping"].import_file
+            import_file=self.get_related_object().import_file
         )
 
         return form
@@ -145,7 +145,7 @@ class ImportMappingColumnCreate(kbde_mixins.RelatedObjectEdit, views.generic.Cre
         )
 
     def get_import_field_choices(self):
-        import_mapping = self.get_related_objects()["import_mapping"]
+        import_mapping = self.get_related_object()
         return ((field, field) for field in import_mapping.import_fields)
 
     def get_success_url(self):
@@ -158,10 +158,17 @@ class ImportMappingColumnCreate(kbde_mixins.RelatedObjectEdit, views.generic.Cre
 class ImportMappingRowList(kbde_mixins.RelatedObject, views.generic.ListView):
     template_name = "kbde_django_db_import/import_mapping_row/list.html"
     model = models.ImportMappingRow
-    import_mapping_orm_path = "mapping"
-    import_mapping_model = models.ImportMapping
+    related_orm_path = "mapping"
+    related_model = models.ImportMapping
     paginate_by = 10
     ordering = ["-pk"]
+
+
+class ImportMappingComplete(views.generic.UpdateView):
+    template_name = "kbde_django_db_import/import_mapping/complete.html"
+    model = models.ImportMapping
+    fields = []
+    success_url = urls.reverse_lazy("kbde_django_db_import:mapping_list")
 
 
 class ImportCreate(views.generic.CreateView):
@@ -175,7 +182,9 @@ class ImportCreate(views.generic.CreateView):
     def get_form(self, form_class=None):
         form = super().get_form(form_class=None)
 
-        form.fields["import_mapping"].queryset = form.fields["import_mapping"].queryset.order_by("-pk")
+        form.fields["import_mapping"].queryset = form.fields["import_mapping"].queryset.filter(
+            bg_process_status=models.ImportMapping.BG_PROCESS_STATUS_COMPLETED
+        ).order_by("-pk")
 
         return form
 
