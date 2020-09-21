@@ -3,6 +3,7 @@ from django.db import models
 from django.core import files
 from polymorphic import models as poly_models
 from kbde.django import models as kbde_models
+from kbde.django.bg_process import models as kbde_bg_models
 
 from . import renderers
 
@@ -13,7 +14,7 @@ def get_report_upload_to(obj, file_name):
     return f"report/{uuid.uuid4()}/{file_name}"
 
 
-class Report(poly_models.PolymorphicModel):
+class Report(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel):
     # The human-readable name of the report
     title = None
 
@@ -35,78 +36,50 @@ class Report(poly_models.PolymorphicModel):
     # Update URL name
     update_url_name = None
 
+    # Available renderers
+    available_renderers = renderers.LIST
+
+    # Mode in which the result file is opened
+    # Useful for writing file types which are not strings (such as .zip)
+    result_file_open_mode = "w"
+
     # Model fields
-    slug = models.UUIDField(default=uuid.uuid4)
-    name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     record_count = models.IntegerField(null=True, blank=True)
-    renderer = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
-                                choices=renderers.CHOICES)
+    renderer_name = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
     records_complete = models.IntegerField(default=0)
     result = models.FileField(upload_to=get_report_upload_to, null=True, blank=True)
 
     time_started = models.DateTimeField(null=True, blank=True)
     time_completed = models.DateTimeField(null=True, blank=True)
 
-    # Status fields
-    STATUS_NEW = 0
-    STATUS_PENDING = 1
-    STATUS_RUNNING = 2
-    STATUS_FINISHED = 3
-    STATUS_FAILED = 4
-    STATUS_CHOICES = (
-        (STATUS_NEW, "Created"),
-        (STATUS_PENDING, "Pending"),
-        (STATUS_RUNNING, "Running"),
-        (STATUS_FINISHED, "Finished"),
-        (STATUS_FAILED, "Failed"),
-        )
-    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_NEW)
+    def clean(self):
+        assert self.renderer_name, "Must define `self.renderer_name`"
+        assert self.renderer_name in self.get_renderer_map().keys(), f"Could not get a renderer named {self.renderer_name}"
 
-    class Meta:
-        abstract = True
-    
     def save(self, *args, **kwargs):
         assert self.title, f"Report, {self.__class__.__name__}, must define self.title"
         assert self.model, f"Report, {self.__class__.__name__}, must define self.model"
         assert issubclass(self.model, models.Model), ("self.model in {self.__class__.__name__} "
                                                       "must be a Django model")
 
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
-    def schedule_process(self):
-        self.status = self.STATUS_PENDING
-        self.save()
+    def bg_process(self):
+        # Set row count
+        self.set_row_count()
 
-        is_async = not settings.RQ_SYNC
-        q = django_rq.get_queue("report", is_async=is_async)
-        return q.enqueue(process_report, self.id)
+        # Get data
+        data = self.get_data()
 
-    def process(self):
-        self.status = self.STATUS_RUNNING
-        self.time_started = utils.timezone.now()
-        self.save()
+        # Render
+        result_file_path, file_extension = self.write_result_file(data)
 
-        try:
-            # Set row count
-            self.set_row_count()
-            # Get data
-            data = self.get_data()
-            # Render
-            result_file_path, file_extension = self.write_result_file(data)
-            # Save
-            self.save_result_file(result_file_path, file_extension)
+        # Save
+        self.save_result_file(result_file_path, file_extension)
 
-        except Exception:
-            self.status = self.STATUS_FAILED
-            self.save()
-            raise
-
-        # Cleanup
+        # Clean up
         os.remove(result_file_path)
-
-        self.status = self.STATUS_FINISHED
-        self.time_completed = utils.timezone.now()
-        self.save()
 
     def set_row_count(self):
         self.record_count = self.get_record_count()
@@ -147,7 +120,7 @@ class Report(poly_models.PolymorphicModel):
         start_index = self.get_start_index(page_number, page_size)
         end_index = self.get_end_index(page_number, page_size)
 
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().order_by("id")
 
         """
         if sorts:
@@ -160,7 +133,7 @@ class Report(poly_models.PolymorphicModel):
         update_interval = datetime.timedelta(seconds=self.progress_update_interval)
         next_update = datetime.datetime.now() + update_interval
 
-        with tempfile.NamedTemporaryFile("w", delete=False, prefix="report_") as temp:
+        with tempfile.NamedTemporaryFile(self.result_file_open_mode, delete=False, prefix="report_") as temp:
             renderer_cls = self.get_renderer()
             renderer = renderer_cls(temp, self.get_output_fields())
             
@@ -173,7 +146,10 @@ class Report(poly_models.PolymorphicModel):
 
                 renderer.write_row(row)
 
-        self.records_complete = i + 1
+                self.records_complete = i + 1
+
+            renderer.finalize()
+
         self.save()
 
         return temp.name, renderer.file_extension
@@ -196,7 +172,7 @@ class Report(poly_models.PolymorphicModel):
         return self.output_fields.copy()
             
     def get_renderer(self):
-        return renderers.MAP[self.renderer]
+        return self.get_renderer_map()[self.renderer_name]
 
     def get_record_count(self):
         return self.get_queryset().count()
@@ -213,6 +189,15 @@ class Report(poly_models.PolymorphicModel):
             return urls.reverse(self.update_url_name, args=[self.slug])
 
     # Base helpers
+
+    def get_renderer_choices(self):
+        return ((cls.__name__, cls.title) for cls in self.get_renderer_list())
+
+    def get_renderer_map(self):
+        return {cls.__name__: cls for cls in self.get_renderer_list()}
+
+    def get_renderer_list(self):
+        return self.available_renderers
 
     def get_page_size_default(self):
         return self.page_size_default

@@ -31,6 +31,12 @@ class Renderer:
         """
         raise NotImplementedError
 
+    def finalize(self):
+        """
+        Do anything needed to close off this renderer
+        """
+        return None
+
 
 class HeaderRowMixin:
     
@@ -88,7 +94,3 @@ LIST = [
     CsvRenderer,
     NewlineJsonRenderer,
     ]
-
-CHOICES = ((cls.__name__, cls.title) for cls in LIST)
-
-MAP = {cls.__name__: cls for cls in LIST}

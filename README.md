@@ -4,6 +4,27 @@ KBDE
 
 # Release notes, starting at v9
 
+- `46`:
+  - Moves `apt` module into the `install` module. Adds several install scripts.
+- `45`:
+  - Changes Django `RelatedObject` mixin. Removes deprecated relational mixins.
+- `44`:
+  - Adds new cli script and command framework.
+  - Adds `apt` module to pre-configure environments.
+  - Adds shell mixins for running commands against the host OS.
+- `43`:
+  - Adds a Django database import tool.
+- `42`:
+  - Adds leader identification for GCP.
+  - Adds geocoding to Django location module for addresses.
+  - Moves Django report to Bg Process model.
+- `41`:
+  - Changes Django `location` models to use explicit id fields for pk. This will break models which rely on this app.
+  - Changes Django `bg_process` models to use explicit id fields for pk. This will break models which rely on this app.
+  - Adds a template context processor which allows settings.py variables to be selectively exposed to all templates.
+  - Removes the nullable option for `django.location.models.Point`.
+- `40`:
+  - Adds a model-based Background Processing module for Django, based on `django-rq`.
 - `v39`:
   - Better API exception handling for errors with response data.
 - `v38`:
