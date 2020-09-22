@@ -86,9 +86,9 @@ def send_sms(to_phone_number, message, from_phone_number=None):
     """
     Sends SMS wit a "debugged_phone_number"
     """
-    import twilio
+    from twilio import rest as twilio_rest
 
-    client = twilio.rest.Client(
+    client = twilio_rest.Client(
         settings.TWILIO_ACCOUNT_SID,
         settings.TWILIO_AUTH_TOKEN,
     )
@@ -120,9 +120,9 @@ def send_sms_verificaton(phone_number):
     Uses the Twilio verification API to send a code to a phone_number
     https://www.twilio.com/verify/api
     """
-    import twilio
+    from twilio import rest as twilio_rest
 
-    client = twilio.rest.Client(
+    client = twilio_rest.Client(
         settings.TWILIO_ACCOUNT_SID,
         settings.TWILIO_AUTH_TOKEN,
     )
@@ -143,9 +143,9 @@ def verify_sms_verification(phone_number, code):
     """
     Checks a verification code against the Twilio verificaton API
     """
-    import twilio
+    from twilio import rest as twilio_rest
 
-    client = twilio.rest.Client(
+    client = twilio_rest.Client(
         settings.TWILIO_ACCOUNT_SID,
         settings.TWILIO_AUTH_TOKEN,
     )
