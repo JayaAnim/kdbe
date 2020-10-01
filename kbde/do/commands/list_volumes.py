@@ -5,7 +5,7 @@ from kbde.do.v2 import block_storage
 
 class Command(command_base.GetCommand):
     
-    api_client_class = block_storage.Volume
+    api_client_class = block_storage.VolumeList
 
     def add_arguments(self, parser):
         parser.add_argument(

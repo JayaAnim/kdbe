@@ -1,6 +1,6 @@
 from kbde import kbde_cli, api_client
 
-import os
+import os, io, yaml
 
 
 class Base(kbde_cli.Command):
@@ -14,12 +14,23 @@ class Base(kbde_cli.Command):
 
     def handle(self, **options):
         try:
-            return self.handle_client(**options)
+            result = self.handle_client(**options)
+
+            if not result:
+                return ""
+
+            str_result = io.StringIO()
+            yaml.dump(result, str_result)
+
+            return str_result.getvalue()
+
         except api_client.Client.ApiClientException as e:
             self.stdout.write(str(e))
 
     def handle_client(self, **options):
-        raise NotImplementedError(f"{self.__class__.__name__} must implement .handle_client()")
+        raise NotImplementedError(
+            f"{self.__class__.__name__} must implement .handle_client()"
+        )
         
     def get_api_client(self):
         api_token = os.getenv("KBDE_DO_API_TOKEN")
