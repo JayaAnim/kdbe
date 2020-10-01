@@ -1,6 +1,6 @@
 from kbde import kbde_cli, api_client
 
-import os, io, yaml
+import os, io, yaml, json
 
 
 class Base(kbde_cli.Command):
@@ -16,16 +16,19 @@ class Base(kbde_cli.Command):
         try:
             result = self.handle_client(**options)
 
-            if not result:
-                return ""
-
-            str_result = io.StringIO()
-            yaml.dump(result, str_result)
-
-            return str_result.getvalue()
-
         except api_client.Client.ApiClientException as e:
-            self.stdout.write(str(e))
+            try:
+                result = json.loads(str(e))
+            except ValueError:
+                result = ""
+
+        if not result:
+            return ""
+
+        str_result = io.StringIO()
+        yaml.dump(result, str_result)
+
+        return str_result.getvalue()
 
     def handle_client(self, **options):
         raise NotImplementedError(

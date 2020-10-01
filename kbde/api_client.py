@@ -1,5 +1,4 @@
-import requests
-import string
+import requests, string, json
 from . import url
 
 
@@ -160,7 +159,7 @@ class Client:
             try:
                 response_json = response.json()
                 response_json["status_code"] = response.status_code
-                raise self.ApiClientException(response_json)
+                raise self.ApiClientException(json.dumps(response_json))
             except ValueError:
                 raise e
 
