@@ -6,6 +6,7 @@ KBDE
 
 - `46`:
   - Moves `apt` module into the `install` module. Adds several install scripts.
+  - Adds SMS validation with Twilio.
 - `45`:
   - Changes Django `RelatedObject` mixin. Removes deprecated relational mixins.
 - `44`:
