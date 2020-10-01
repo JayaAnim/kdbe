@@ -1,6 +1,6 @@
 import requests
 import string
-from .. import url
+from . import url
 
 
 class Client:
