@@ -26,21 +26,18 @@ def send_email(to_email_list,
     """
 
     # Make sure that the DEBUG_EMAIL setting is present
-    assert (
-        hasattr(settings, "DEBUG_EMAIL"),
+    assert hasattr(settings, "DEBUG_EMAIL"), (
         "must set `DEBUG_EMAIL` in settings"
     )
     
     # If in DEBUG mode, make sure that DEBUG_EMAIL is set to something
     if settings.DEBUG:
-        assert (
-            settings.DEBUG_EMAIL,
-            "Must set `DEBUG_EMAIL` when in DEBUG mode",
+        assert settings.DEBUG_EMAIL, (
+            "Must set `DEBUG_EMAIL` when in DEBUG mode"
         )
 
-    assert (
-        text_message is not None or html_message is not None,
-        "must pass `text_message` or `html_message`",
+    assert text_message is not None or html_message is not None, (
+        "must pass `text_message` or `html_message`"
     )
 
     message = mail.EmailMultiAlternatives()
@@ -100,10 +97,9 @@ def send_sms(to_phone_number, message, from_phone_number=None):
         getattr(settings, "DEFAULT_SMS_FROM_PHONE_NUMBER", None)
     )
 
-    assert (
-        from_phone_number,
-        ("You must either pass `from_phone_number` to this function or set "
-         "settings.DEFAULT_SMS_FROM_PHONE_NUMBER"),
+    assert from_phone_number, (
+        "You must either pass `from_phone_number` to this function or set "
+        "settings.DEFAULT_SMS_FROM_PHONE_NUMBER"
     )
 
     message = client.messages.create(
@@ -169,22 +165,19 @@ def get_debugged_phone_number(phone_number):
     """
     assert isinstance(phone_number, str), "`phone_number` must be a string"
 
-    assert (
-        hasattr(settings, "DEBUG_PHONE_NUMBER"),
+    assert hasattr(settings, "DEBUG_PHONE_NUMBER"), (
         "must set `DEBUG_PHONE_NUMBER` in settings"
     )
 
     # If in DEBUG mode, make sure that DEBUG_PHONE_NUMBER is set to something
     if settings.DEBUG:
-        assert (
-            settings.DEBUG_PHONE_NUMBER,
-            "Must set `DEBUG_PHONE_NUMBER` when in DEBUG mode",
+        assert settings.DEBUG_PHONE_NUMBER, (
+            "Must set `DEBUG_PHONE_NUMBER` when in DEBUG mode"
         )
 
     if settings.DEBUG_PHONE_NUMBER:
-        assert (
-            isinstance(settings.DEBUG_PHONE_NUMBER, str),
-            "`settings.DEBUG_PHONE_NUMBER` must be a string",
+        assert isinstance(settings.DEBUG_PHONE_NUMBER, str), (
+            "`settings.DEBUG_PHONE_NUMBER` must be a string"
         )
         phone_number = settings.DEBUG_PHONE_NUMBER
 
@@ -203,16 +196,14 @@ def send_to_trello(board_email,
     """
     # Make sure that users do not include the @ at the beginning
     if member_list:
-        assert (
-            not member_list[0].startswith("@"),
-            "usernames should not include `@`",
+        assert not member_list[0].startswith("@"), (
+            "usernames should not include `@`"
         )
 
     # Make sure that labels to not include the # at the beginning
     if label_list:
-        assert (
-            not label_list[0].startswith("#"),
-            "labels should not include `#`",
+        assert not label_list[0].startswith("#"), (
+            "labels should not include `#`"
         )
 
     # Create member and label lists

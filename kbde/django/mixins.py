@@ -89,7 +89,7 @@ class RelatedObject:
             related_queryset = related_queryset.filter(pk=related_pk)
         else:
             # Filter by slug
-            related_slug_field = getattr(self, "related_slug_field", "related_slug")
+            related_slug_field = getattr(self, "related_slug_field", "slug")
             related_queryset = related_queryset.filter(**{related_slug_field: related_slug})
 
         try:
