@@ -208,6 +208,9 @@ class ImportMapping(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel)
         """
         return {}
 
+    def update_mapping_row_data(self, data):
+        return data
+
     def get_import_mapping_rows(self):
         start_index = 0
 
@@ -270,7 +273,7 @@ class ImportMappingRow(models.Model):
 
     mapping = models.ForeignKey(ImportMapping, on_delete=models.CASCADE)
     row = models.ForeignKey(ImportRow, on_delete=models.CASCADE)
-    status = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    status = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, choices=STATUS_CHOICES)
     new_instance = models.BooleanField(default=True)
     status_message = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
 
@@ -304,6 +307,9 @@ class ImportMappingRow(models.Model):
         except exceptions.ValidationError as e:
             self.status_message = str(e)
             self.status = self.STATUS_BAD
+        except self.RelatedLookupValue as e:
+            self.status = self.STATUS_BAD
+            self.status_message = str(e)
 
         self.save()
 
@@ -334,9 +340,14 @@ class ImportMappingRow(models.Model):
     def get_instance_lookup_data(self):
         row_data = self.row.get_data()
 
-        identifier_mapping_columns = self.mapping.importmappingcolumn_set.filter(is_identifier=True).select_related("column")
+        identifier_mapping_columns = self.mapping.importmappingcolumn_set.filter(
+            is_identifier=True
+        ).select_related("column")
 
-        lookup_data = {mapping_column.import_field: row_data[mapping_column.column.name] for mapping_column in identifier_mapping_columns}
+        lookup_data = {
+            mapping_column.import_field: row_data[mapping_column.column.name]
+            for mapping_column in identifier_mapping_columns
+        }
 
         lookup_data.update(self.mapping.get_instance_lookup_data())
 
@@ -347,7 +358,85 @@ class ImportMappingRow(models.Model):
 
         identifier_mapping_columns = self.mapping.importmappingcolumn_set.select_related("column")
 
-        return {mapping_column.import_field: row_data[mapping_column.column.name] for mapping_column in identifier_mapping_columns}
+        data = {
+            mapping_column.import_field: row_data[mapping_column.column.name]
+            for mapping_column in identifier_mapping_columns
+        }
+
+        data = self.mapping.update_mapping_row_data(data)
+
+        new_data = {}
+
+        for key, value in data.items():
+
+            if "__" in key:
+                # This is a model relationship
+                key_parts = key.split("__")
+
+                related_model_name = key_parts[0]
+
+                foreign_key_field = getattr(
+                    self.mapping.model,
+                    related_model_name,
+                    None,
+                )
+
+                assert foreign_key_field is not None, (
+                    f"related_model_name `{related_model_name}` nor found"
+                )
+
+                model = foreign_key_field.field.related_model
+
+                lookup = new_data.get(related_model_name, {
+                    "model": model,
+                    "query": {},
+                })
+                
+                query_key = "__".join(key_parts[1:])
+                lookup["query"][query_key] = value
+
+                new_data[related_model_name] = lookup
+
+            else:
+                new_data[key] = value
+
+        for key, value in new_data.items():
+            if (
+                isinstance(value, dict)
+                and "model" in value
+                and "query" in value
+            ):
+                model = value["model"]
+                query = value["query"]
+
+                try:
+                    obj = model.objects.get(**query)
+                except model.DoesNotExist:
+                    raise self.RelatedLookupValue(
+                        f"Related {model.__name__} not found"
+                    )
+                except model.MultipleObjectsReturned:
+                    raise self.RelatedLookupValue(
+                        f"Multiple {model.__name__} found"
+                    )
+
+                new_data[key] = obj
+
+        return new_data
+
+    def get_import_mapping_column_values(self):
+        columns = self.mapping.get_import_mapping_columns()
+        data = self.get_data()
+        
+        for column in columns:
+            column.value = data[column.column.name]
+
+        return columns
+
+    class RelatedLookupValue(Exception):
+        """
+        Exception for when a related model cannot be found
+        """
 
 
 class Import(kbde_bg_models.BgProcessModel):
