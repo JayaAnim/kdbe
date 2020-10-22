@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `47`:
+  - Adds a scraper Python library.
+  - Changes `django.location.models.Address` fields.
 - `46`:
   - Moves `apt` module into the `install` module. Adds several install scripts.
   - Adds SMS validation with Twilio.
