@@ -1,6 +1,7 @@
 from kbde.django.bg_process import models as kbde_bg_models
 
 
+"""
 class Scrape(kbde_bg_models.BgProcessModel):
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(blank=True)
@@ -15,4 +16,4 @@ class Page(kbde_bg_models.BgProcessModel):
     url = models.URLField()
     
     def bg_process(self):
-        
+"""
