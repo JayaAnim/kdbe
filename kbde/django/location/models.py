@@ -104,9 +104,9 @@ class Address(models.Model):
     street_2 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     street_3 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     city = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
-    state = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
+    state = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     zip_code = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
-    zip_code_last_4 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+    zip_code_4 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
     country = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
 
     def __str__(self):
