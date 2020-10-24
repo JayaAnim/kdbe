@@ -1,4 +1,3 @@
-import requests
 import string
 from . import url
 
@@ -38,6 +37,8 @@ class Client:
         self.params = params
 
     def make_session(self, username, password):
+        import requests
+
         session = requests.Session()
 
         if username is not None:
@@ -154,6 +155,8 @@ class Client:
         return function(url, **kwargs)
 
     def get_response_data(self, response):
+        import requests
+
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:

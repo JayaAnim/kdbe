@@ -7,6 +7,7 @@ KBDE
 - `47`:
   - Adds a scraper Python library.
   - Changes `django.location.models.Address` fields.
+  - Abstracts `django.location.models.Address` into another class.
 - `46`:
   - Moves `apt` module into the `install` module. Adds several install scripts.
   - Adds SMS validation with Twilio.
