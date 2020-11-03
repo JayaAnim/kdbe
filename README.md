@@ -6,6 +6,7 @@ KBDE
 
 - `48`:
   - Adds slug fields for Django Address class.
+  - Adds Django mixin for search.
 - `47`:
   - Adds a scraper Python library.
   - Changes `django.location.models.Address` fields.
