@@ -1,16 +1,88 @@
+from django import utils
 from django.db import models
 from kbde.django import models as kbde_models
 
 
 class AbstractAddress(models.Model):
     street_1 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
-    street_2 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
-    street_3 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+    street_2 = models.CharField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+    )
+    street_3 = models.CharField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+    )
     city = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
     state = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
     zip_code = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD)
-    zip_code_4 = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
-    country = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD, blank=True)
+    zip_code_4 = models.CharField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+    )
+    country = models.CharField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+    )
+
+    street_1_slug = models.SlugField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+        db_index=False,
+    )
+    street_2_slug = models.SlugField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+        db_index=False,
+    )
+    street_3_slug = models.SlugField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+        db_index=False,
+    )
+    city_slug = models.SlugField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+        db_index=False,
+    )
+    state_slug = models.SlugField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+        db_index=False,
+    )
+    country_slug = models.SlugField(
+        max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+        db_index=False,
+    )
+
+    slug_field_names = [
+        "street_1",
+        "street_2",
+        "street_3",
+        "city",
+        "state",
+        "country",
+    ]
+
+    @classmethod
+    def slug_get(cls, **kwargs):
+        return cls.slug_filter(**kwargs).get()
+
+    @classmethod
+    def slug_filter(cls, **kwargs):
+        slug_kwargs = {}
+
+        for key, value in kwargs.items():
+
+            if key not in cls.slug_field_names:
+                slug_kwargs[key] = value
+                continue
+
+            slug = utils.text.slugify(value)
+            slug_kwargs[f"{key}_slug"] = slug
+
+        return cls.objects.filter(**slug_kwargs)
 
     class Meta:
         abstract = True
@@ -36,6 +108,16 @@ class AbstractAddress(models.Model):
             ]
         fields = [f for f in fields if f]
         return ", ".join(fields)
+
+    def save(self, *args, **kwargs):
+        self.set_slugs()
+        return super().save(*args, **kwargs)
+
+    def set_slugs(self):
+        for field_name in self.slug_field_names:
+            value = getattr(self, field_name)
+            slug = utils.text.slugify(value)
+            setattr(self, f"{field_name}_slug", slug)
 
     def get_location_with_type(self, type):
         locations = self.locations.all()

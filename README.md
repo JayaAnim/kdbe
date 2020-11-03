@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `48`:
+  - Adds slug fields for Django Address class.
 - `47`:
   - Adds a scraper Python library.
   - Changes `django.location.models.Address` fields.
