@@ -4,6 +4,8 @@ KBDE
 
 # Release notes, starting at v9
 
+- `49`:
+  - Adds `DEBUG_PHONE_NUMBER` to Django settings.
 - `48`:
   - Adds slug fields for Django Address class.
   - Adds Django mixin for search.

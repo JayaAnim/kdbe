@@ -80,10 +80,10 @@ except ImportError:
 # Debug
 
 DEBUG = bool(os.getenv("DEBUG"))
-
 TEMPLATE_DEBUG = DEBUG
 
 DEBUG_EMAIL = os.getenv("DEBUG_EMAIL")
+DEBUG_PHONE_NUMBER = os.getenv("DEBUG_PHONE_NUMBER")
 
 
 # Logging
