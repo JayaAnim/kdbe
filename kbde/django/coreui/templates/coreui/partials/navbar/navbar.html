@@ -23,6 +23,12 @@
                     Override `block navbar_items`
                 {% endblock %}
             </ul>
+
+            <ul class="navbar-nav">
+                {% block navbar_items_right %}
+                    Override `block navbar_items_right`
+                {% endblock %}
+            </ul>
         </div>
 
     {% endblock %}
