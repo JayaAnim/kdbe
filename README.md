@@ -6,6 +6,7 @@ KBDE
 
 - `49`:
   - Adds `DEBUG_PHONE_NUMBER` to Django settings.
+  - Adds CoreUI Django app.
 - `48`:
   - Adds slug fields for Django Address class.
   - Adds Django mixin for search.
