@@ -13,7 +13,6 @@ assert APP_NAME, "must define APP_NAME environement variable"
 
 # App host
 APP_HOST = os.getenv("APP_HOST")
-assert APP_HOST, "must set the APP_HOST env var"
 
 
 # KBDE Timezone
