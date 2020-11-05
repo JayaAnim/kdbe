@@ -1,0 +1,12 @@
+// Fix global assignments in coreui
+
+$color: null;
+$value: null;
+$parent-element: null;
+$default-theme: null;
+$current-theme: null;
+$default-variant: null;
+$gradient: null;
+
+
+@import "./coreui/scss/coreui.scss";

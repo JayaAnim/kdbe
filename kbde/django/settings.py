@@ -11,6 +11,11 @@ APP_NAME = os.getenv("APP_NAME")
 assert APP_NAME, "must define APP_NAME environement variable"
 
 
+# App host
+APP_HOST = os.getenv("APP_HOST")
+assert APP_HOST, "must set the APP_HOST env var"
+
+
 # KBDE Timezone
 
 MIDDLEWARE += [
@@ -191,3 +196,39 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
 # Geocode
 
 GEOCODE_API_KEY = os.getenv("GEOCODE_API_KEY")
+
+
+# Django Pipeline
+# https://github.com/jazzband/django-pipeline
+
+try:
+    import pipeline
+
+    PIPELINE = {
+        'STYLESHEETS': {
+            'base': {
+                'source_filenames': (
+                    'common/style/base.scss',
+                ),
+                'output_filename': 'common/style/base.css',
+            }
+        },
+        'COMPILERS': (
+            'libsasscompiler.LibSassCompiler',
+        ),
+        "CSS_COMPRESSOR": None,
+    }
+
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+    STATICFILES_FINDERS = (
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+        'pipeline.finders.PipelineFinder',
+    )
+
+    STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
+
+except ImportError:
+    pass
