@@ -1,29 +1,29 @@
 <nav class="{% block navbar_class %}navbar navbar-expand-lg navbar-light bg-light{% endblock %}">
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        {% block navbar_content %}
+    {% block navbar_content %}
 
-            {% block navbar_brand %}
-                <a class="navbar-brand" href="{% block navbar_brand_href %}/{% endblock %}">{% block navbar_brand_title %}Override `block navbar_brand_title`{% endblock %}</a>
-            {% endblock %}
+        {% block navbar_brand %}
+            <a class="navbar-brand" href="{% block navbar_brand_href %}/{% endblock %}">{% block navbar_brand_title %}Override `block navbar_brand_title`{% endblock %}</a>
+        {% endblock %}
 
-            {% block navbar_toggler %}
-                <button class="navbar-toggler"
-                        type="button"
-                        data-toggle="collapse"
-                        data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            {% endblock %}
+        {% block navbar_toggler %}
+            <button class="navbar-toggler"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        {% endblock %}
 
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 {% block navbar_items %}
                     Override `block navbar_items`
                 {% endblock %}
             </ul>
+        </div>
 
-        {% endblock %}
-    </div>
+    {% endblock %}
 </nav>
