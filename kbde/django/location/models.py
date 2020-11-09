@@ -3,16 +3,10 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis import geos
 from django.conf import settings
 from kbde.django import models as kbde_models
-from kbde import api_client
 
 from .address import models as address_models
 
 import urllib
-
-
-class GoogleGeocodeClient(api_client.Client):
-    host = "https://maps.googleapis.com"
-    path = "/maps/api/geocode/json?address={address}&key={api_key}"
 
 
 class Location(models.Model):

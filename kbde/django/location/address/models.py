@@ -1,6 +1,12 @@
 from django import utils
 from django.db import models
 from kbde.django import models as kbde_models
+from kbde import api_client
+
+
+class GoogleGeocodeClient(api_client.Client):
+    host = "https://maps.googleapis.com"
+    path = "/maps/api/geocode/json?address={address}&key={api_key}"
 
 
 class AbstractAddress(models.Model):
