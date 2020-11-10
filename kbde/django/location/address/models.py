@@ -161,7 +161,7 @@ class AbstractAddress(models.Model):
         self.save()
 
     def create_geocode_point(self):
-        from kbde.location import models as location_models
+        from kbde.django.location import models as location_models
 
         coords = self.get_coords()
 
