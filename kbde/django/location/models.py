@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis import geos
-from django.conf import settings
 from kbde.django import models as kbde_models
 
 from .address import models as address_models

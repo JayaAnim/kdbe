@@ -1,5 +1,6 @@
 from django import utils
 from django.db import models
+from django.conf import settings
 from kbde.django import models as kbde_models
 from kbde import api_client
 
