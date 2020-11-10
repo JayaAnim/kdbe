@@ -6,8 +6,6 @@ from kbde.django import models as kbde_models
 
 from .address import models as address_models
 
-import urllib
-
 
 class Location(models.Model):
     TYPE_COUNTRY = 1

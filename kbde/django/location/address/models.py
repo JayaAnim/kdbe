@@ -3,6 +3,8 @@ from django.db import models
 from kbde.django import models as kbde_models
 from kbde import api_client
 
+import urllib
+
 
 class GoogleGeocodeClient(api_client.Client):
     host = "https://maps.googleapis.com"
