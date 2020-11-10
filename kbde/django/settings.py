@@ -203,6 +203,10 @@ GEOCODE_API_KEY = os.getenv("GEOCODE_API_KEY")
 try:
     import pipeline
 
+    INSTALLED_APPS += [
+        "pipeline",
+    ]
+
     PIPELINE = {
         'STYLESHEETS': {
             'base': {
