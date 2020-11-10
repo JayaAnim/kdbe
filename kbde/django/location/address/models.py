@@ -161,6 +161,8 @@ class AbstractAddress(models.Model):
         self.save()
 
     def create_geocode_point(self):
+        from kbde.location import models as location_models
+
         coords = self.get_coords()
 
         if coords is None:
@@ -168,7 +170,7 @@ class AbstractAddress(models.Model):
         
         geos_point = geos.Point(*coords)
 
-        point = Point(point=geos_point)
+        point = location_models.Point(point=geos_point)
         point.save()
 
         return point
