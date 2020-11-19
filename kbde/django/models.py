@@ -1,8 +1,13 @@
 from django import utils
 from django.db import models
 from django.core import exceptions
-from django.contrib.auth import models as auth_models
-from django.contrib.auth import base_user
+from django.contrib.auth import (models as auth_models,
+                                 base_user,
+                                 hashers)
+
+from kbde.django import utils as kbde_utils
+
+import random, datetime
 
 
 MAX_LENGTH_CHAR_FIELD = 255
@@ -57,6 +62,89 @@ class EmailUser(User):
 
     def __str__(self):
         return self.email
+
+
+class EmailVerificationMixin(models.Model):
+    unverified_email = models.EmailField(blank=True)
+    verification_code = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
+    verification_email_send_time = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        abstract = False
+
+    def save(self, *args, **kwargs):
+        result = super().save(*args, **kwargs)
+        
+        if self.unverified_email and not self.verification_email_send_time:
+            self.request_email_verification()
+
+        return result
+
+    def request_email_verification(self):
+        self.set_verification_code()
+        self.send_verification_email()
+
+    def set_verification_code(self):
+        self.verification_code = hashers.make_password(
+            str(self.generate_verification_code())
+        )
+
+    def generate_verification_code(self):
+        # TODO: make the number of digits configurable
+        return int(random.random() * 10 ** 6)
+
+    def send_verification_email(self):
+        message = f"Your verification code is: {self.verification_code}"
+
+        kbde_utils.send_email(
+            [self.unverified_email],
+            "Your verification code",
+            text_message=message,
+        )
+
+        self.verification_email_send_time = utils.timezone.now()
+        self.save()
+        
+    def verify_email(self, verification_code):
+        self.check_verification_code_expired()
+
+        if not hashers.check_password(
+            str(verification_code),
+            self.verification_code,
+        ):
+            raise self.VerificationCodeIncorrect()
+
+        # Verification passed
+
+        self.email = self.unverified_email
+        self.unverified_email = ""
+        self.verification_code = ""
+        self.verification_email_send_time = None
+
+        self.save()
+
+    def check_verification_code_expired(self):
+        assert self.verification_email_send_time
+
+        # TODO: make the expiration time configurable
+        expire_time = (
+              self.verification_email_send_time
+            + datetime.timedelta(minutes=10)
+        )
+        if expire_time <= utils.timezone.now():
+            self.verification_code = ""
+            self.save()
+
+            raise self.VerificationCodeExpired()
+
+    class VerificationException(Exception):
+        pass
+
+    class VerificationCodeExpired(VerificationException):
+        pass
+
+    class VerificationCodeIncorrect(VerificationException):
+        pass
 
 
 class Schedule(models.Model):
