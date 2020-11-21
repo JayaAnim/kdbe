@@ -4,6 +4,9 @@ KBDE
 
 # Release notes, starting at v9
 
+- `50`:
+  - Removes CoreUI partials lib.
+  - Adds Django form partial.
 - `49`:
   - Adds `DEBUG_PHONE_NUMBER` to Django settings.
   - Adds CoreUI Django app.
