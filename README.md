@@ -5,13 +5,7 @@ KBDE
 # Install system-level kbde
 
 ```
-wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | bash 
-```
-
-You can also install as root:
-
-```
-wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | sudo bash
+wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | sudo bash 
 ```
 
 
