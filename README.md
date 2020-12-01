@@ -2,8 +2,18 @@ KBDE
 ===
 
 
+# Install system-level kbde
+
+```
+wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | sudo bash 
+```
+
+
 # Release notes, starting at v9
 
+- `50`:
+  - Removes CoreUI partials lib.
+  - Adds Django form partial.
 - `49`:
   - Adds `DEBUG_PHONE_NUMBER` to Django settings.
   - Adds CoreUI Django app.
