@@ -66,11 +66,14 @@ class EmailUser(User):
 
 class EmailVerificationMixin(models.Model):
     unverified_email = models.EmailField(blank=True)
-    verification_code = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
+    verification_code = models.CharField(
+        max_length=MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+    )
     verification_email_send_time = models.DateTimeField(null=True, blank=True)
     
     class Meta:
-        abstract = False
+        abstract = True
 
     def save(self, *args, **kwargs):
         result = super().save(*args, **kwargs)
@@ -85,8 +88,10 @@ class EmailVerificationMixin(models.Model):
         self.send_verification_email()
 
     def set_verification_code(self):
+        self.verification_code_raw = str(self.generate_verification_code())
+
         self.verification_code = hashers.make_password(
-            str(self.generate_verification_code())
+            self.verification_code_raw
         )
 
     def generate_verification_code(self):
@@ -94,7 +99,7 @@ class EmailVerificationMixin(models.Model):
         return int(random.random() * 10 ** 6)
 
     def send_verification_email(self):
-        message = f"Your verification code is: {self.verification_code}"
+        message = f"Your verification code is: {self.verification_code_raw}"
 
         kbde_utils.send_email(
             [self.unverified_email],
