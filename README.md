@@ -11,6 +11,8 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
+- `51`:
+  - Adds user email verification model for Django.
 - `50`:
   - Removes CoreUI partials lib.
   - Adds Django form partial.
