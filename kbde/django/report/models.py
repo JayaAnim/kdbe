@@ -14,7 +14,7 @@ def get_report_upload_to(obj, file_name):
     return f"report/{uuid.uuid4()}/{file_name}"
 
 
-class Report(poly_models.PolymorphicModel, kbde_bg_models.BgProcessModel):
+class Report(poly_models.PolymorphicModel, kbde_bg_models.AbstractBgProcess):
     # The human-readable name of the report
     title = None
 

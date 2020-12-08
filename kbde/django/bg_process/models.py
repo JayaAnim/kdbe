@@ -5,7 +5,7 @@ from kbde.django import (models as kbde_models,
 import uuid
 
 
-class BgProcessModel(models.Model):
+class AbstractBgProcess(models.Model):
     BG_PROCESS_STATUS_NEW = "new"
     BG_PROCESS_STATUS_PENDING = "pending"
     BG_PROCESS_STATUS_PROCESSING = "processing"
@@ -21,12 +21,13 @@ class BgProcessModel(models.Model):
 
     bg_process_queue_name = "default"
 
-    bg_process_id = models.AutoField(primary_key=True)
-
     slug = models.UUIDField(default=uuid.uuid4)
     bg_process_status = models.CharField(max_length=kbde_models.MAX_LENGTH_CHAR_FIELD,
                                          choices=BG_PROCESS_STATUS_CHOICES,
                                          default=BG_PROCESS_STATUS_NEW)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return f"{super().__str__()} - {self.get_bg_process_status_display()}"
@@ -64,3 +65,7 @@ class BgProcessModel(models.Model):
         Override to do work
         """
         raise NotImplementedError(f"{self.__class__.__name__} must implement self.bg_process()")
+
+
+class BgProcessModel(AbstractBgProcess):
+    bg_process_id = models.AutoField(primary_key=True)
