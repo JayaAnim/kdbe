@@ -14,7 +14,7 @@ def get_report_upload_to(obj, file_name):
     return f"report/{uuid.uuid4()}/{file_name}"
 
 
-class Report(poly_models.PolymorphicModel, kbde_bg_models.AbstractBgProcess):
+class AbstractReport(models.Model):
     # The human-readable name of the report
     title = None
 
@@ -52,6 +52,9 @@ class Report(poly_models.PolymorphicModel, kbde_bg_models.AbstractBgProcess):
 
     time_started = models.DateTimeField(null=True, blank=True)
     time_completed = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        abstract = True
 
     def clean(self):
         assert self.renderer_name, "Must define `self.renderer_name`"
@@ -214,3 +217,14 @@ class Report(poly_models.PolymorphicModel, kbde_bg_models.AbstractBgProcess):
         Takes page and page size and calculates the offset
         """
         return (page - 1) * page_size
+
+
+class Report(poly_models.PolymorphicModel, AbstractReport, kbde_bg_models.BgProcessModel):
+    """
+    This type of class is broken, and is now deprecated 
+    """
+    pass
+
+
+class Report2(poly_models.PolymorphicModel, AbstractReport, kbde_bg_models.AbstractBgProcess):
+    pass
