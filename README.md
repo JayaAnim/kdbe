@@ -11,6 +11,9 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
+- `52`:
+  - Separates the Django BgProcess model into abstract and concrete classes.
+  - Creates a new Django reporting model to inherit from the BgProcess abstract class. Old versions of the Report class are now deprecated.
 - `51`:
   - Adds user email verification model for Django.
 - `50`:
