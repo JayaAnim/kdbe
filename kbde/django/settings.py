@@ -163,6 +163,10 @@ ADMIN_DEFAULT_PASSWORD = os.getenv("ADMIN_DEFAULT_PASSWORD")
 try:
     import django_rq
 
+    INSTALLED_APPS += [
+        "django_rq",
+    ]
+
     REDIS_URL = os.getenv("REDIS_URL")
 
     if REDIS_URL:
