@@ -165,3 +165,9 @@ class SearchQueryset:
             ).filter(search=search)
 
         return q
+
+
+class SuccessUrlNext:
+    
+    def get_success_url(self):
+        return self.request.GET.get("next") or super().get_success_url()

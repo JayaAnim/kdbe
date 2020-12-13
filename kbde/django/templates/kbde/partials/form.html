@@ -1,7 +1,7 @@
 {% load bootstrap4 %}
 
 
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" {% if request.GET.next %}action="?next={{ request.GET.next }}"{% endif %} enctype="multipart/form-data">
     {% csrf_token %}
 
     {% block form_content %}

@@ -263,7 +263,6 @@ class Schedule(models.Model):
             if self.end_time <= now.time():
                 raise self.AfterEnd
 
-
     class ScheduleException(Exception):
         pass
 
