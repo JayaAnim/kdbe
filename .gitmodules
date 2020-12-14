@@ -1,0 +1,3 @@
+[submodule "kbde/django/coreui/static/coreui"]
+	path = kbde/django/coreui/static/coreui
+	url = https://github.com/coreui/coreui.git

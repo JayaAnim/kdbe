@@ -2,8 +2,37 @@ KBDE
 ===
 
 
+# Install system-level kbde
+
+```
+wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | sudo bash 
+```
+
+
 # Release notes, starting at v9
 
+- `53`:
+  - Adds new Django mixins for redirecting based on the `next` GET parameter. Updates form partial to match.
+  - Adds `django_rq` to Django settings automatically.
+- `52`:
+  - Separates the Django BgProcess model into abstract and concrete classes.
+  - Creates a new Django reporting model to inherit from the BgProcess abstract class. Old versions of the Report class are now deprecated.
+- `51`:
+  - Adds user email verification model for Django.
+- `50`:
+  - Removes CoreUI partials lib.
+  - Adds Django form partial.
+- `49`:
+  - Adds `DEBUG_PHONE_NUMBER` to Django settings.
+  - Adds CoreUI Django app.
+  - Adds Django Pipeline Sass config to Django settings.
+- `48`:
+  - Adds slug fields for Django Address class.
+  - Adds Django mixin for search.
+- `47`:
+  - Adds a scraper Python library.
+  - Changes `django.location.models.Address` fields.
+  - Abstracts `django.location.models.Address` into another class.
 - `46`:
   - Moves `apt` module into the `install` module. Adds several install scripts.
   - Adds SMS validation with Twilio.

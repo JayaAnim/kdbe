@@ -11,6 +11,10 @@ APP_NAME = os.getenv("APP_NAME")
 assert APP_NAME, "must define APP_NAME environement variable"
 
 
+# App host
+APP_HOST = os.getenv("APP_HOST")
+
+
 # KBDE Timezone
 
 MIDDLEWARE += [
@@ -80,10 +84,10 @@ except ImportError:
 # Debug
 
 DEBUG = bool(os.getenv("DEBUG"))
-
 TEMPLATE_DEBUG = DEBUG
 
 DEBUG_EMAIL = os.getenv("DEBUG_EMAIL")
+DEBUG_PHONE_NUMBER = os.getenv("DEBUG_PHONE_NUMBER")
 
 
 # Logging
@@ -159,6 +163,10 @@ ADMIN_DEFAULT_PASSWORD = os.getenv("ADMIN_DEFAULT_PASSWORD")
 try:
     import django_rq
 
+    INSTALLED_APPS += [
+        "django_rq",
+    ]
+
     REDIS_URL = os.getenv("REDIS_URL")
 
     if REDIS_URL:
@@ -191,3 +199,43 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
 # Geocode
 
 GEOCODE_API_KEY = os.getenv("GEOCODE_API_KEY")
+
+
+# Django Pipeline
+# https://github.com/jazzband/django-pipeline
+
+try:
+    import pipeline
+
+    INSTALLED_APPS += [
+        "pipeline",
+    ]
+
+    PIPELINE = {
+        'STYLESHEETS': {
+            'base': {
+                'source_filenames': (
+                    'common/style/base.scss',
+                ),
+                'output_filename': 'common/style/base.css',
+            }
+        },
+        'COMPILERS': (
+            'libsasscompiler.LibSassCompiler',
+        ),
+        "CSS_COMPRESSOR": None,
+    }
+
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+    STATICFILES_FINDERS = (
+        'django.contrib.staticfiles.finders.FileSystemFinder',
+        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+        'pipeline.finders.PipelineFinder',
+    )
+
+    STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
+
+except ImportError:
+    pass

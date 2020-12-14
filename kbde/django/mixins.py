@@ -2,6 +2,7 @@ from django import http
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
+from django.contrib.postgres import search as pg_search
 
 import inspect
 
@@ -89,7 +90,7 @@ class RelatedObject:
             related_queryset = related_queryset.filter(pk=related_pk)
         else:
             # Filter by slug
-            related_slug_field = getattr(self, "related_slug_field", "related_slug")
+            related_slug_field = getattr(self, "related_slug_field", "slug")
             related_queryset = related_queryset.filter(**{related_slug_field: related_slug})
 
         try:
@@ -143,3 +144,30 @@ class SoftDelete:
     def get_queryset(self):
         q = super().get_queryset()
         return q.filter(deleted=False)
+
+
+class SearchQueryset:
+    search_url_kwarg = "search"
+    search_vector_args = None
+
+    def get_queryset(self):
+        assert self.search_vector_args, (
+            f"{self.__class__.__name__} must define `.search_vector_args`"
+        )
+
+        q = super().get_queryset()
+
+        search = self.request.GET.get(self.search_url_kwarg)
+
+        if search:
+            q = q.annotate(
+                search=pg_search.SearchVector(*self.search_vector_args)
+            ).filter(search=search)
+
+        return q
+
+
+class SuccessUrlNext:
+    
+    def get_success_url(self):
+        return self.request.GET.get("next") or super().get_success_url()
