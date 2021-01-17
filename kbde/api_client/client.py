@@ -1,5 +1,5 @@
 import string
-from . import url
+from kbde.url import url
 
 
 class Client:

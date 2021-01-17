@@ -1,4 +1,4 @@
-from kbde import kbde_cli
+from kbde.kbde_cli import command
 
 from kbde.install import (
     base,
@@ -9,7 +9,7 @@ from kbde.install import (
 )
 
 
-class Command(kbde_cli.Command):
+class Command(command.Command):
 
     module_list = [
         base,
