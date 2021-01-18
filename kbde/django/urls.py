@@ -20,8 +20,15 @@ def path(url_path, view_class):
     module_name = view_class.__module__.split(".")[0]
     template_name = f"{module_name}/{path_name}.html"
 
+    if hasattr(view_class, "template_name"):
+        as_view_kwargs = {
+            "template_name": template_name,
+        }
+    else:
+        as_view_kwargs = {}
+
     return urls.path(
         url_path,
-        view_class.as_view(template_name=template_name),
+        view_class.as_view(**as_view_kwargs),
         name=path_name,
     )
