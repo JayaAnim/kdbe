@@ -11,6 +11,10 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
+- `54`:
+  - Removes support for several unused packages.
+  - Updates to CLI.
+  - Reorganizes some packages.
 - `53`:
   - Adds new Django mixins for redirecting based on the `next` GET parameter. Updates form partial to match.
   - Adds `django_rq` to Django settings automatically.
