@@ -1,10 +1,46 @@
-from django import http
+from django import http, urls
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
 from django.contrib.postgres import search as pg_search
 
 import inspect
+
+
+class Base:
+    page_template_name = "kbde/page.html"
+
+    @classmethod
+    def get_urls_path(cls, url_path, **view_kwargs):
+        if hasattr(cls, "template_name"):
+            view_kwargs.setdefault("template_name", cls.page_template_name)
+
+        return urls.path(
+            url_path,
+            cls.as_view(**view_kwargs),
+            name=cls.__name__,
+        )
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data["content_template_name"] = self.get_kbde_template_name()
+        return context_data
+
+    def get_template_names(self):
+        return [
+            getattr(self, "template_name", None) or
+            self.get_kbde_template_name()
+        ]
+
+    def get_kbde_template_name(self):
+        path_name = self.__class__.__name__
+
+        # Template name is {module_name}/{path_name}.html
+        module_name_list = self.__class__.__module__.split(".")[:-1]
+        module_name = "/".join(module_name_list)
+        template_name = f"{module_name}/{path_name}.html"
+
+        return template_name
 
 
 class OpenGraph:
