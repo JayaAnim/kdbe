@@ -131,25 +131,25 @@ def verify_verification(to, code):
     return verificaton_check
 
 def send_email_verification(email):
-    send_verification_message(
+    return send_verification_message(
         get_debugged_email(email),
         VERIFICATION_CHANNEL_EMAIL
     )
 
 def verify_email_verification(email, code):
-    verify_verification(
+    return verify_verification(
         get_debugged_email(email),
         code
     )
 
 def send_sms_verification(phone_number):
-    send_verification_message(
+    return send_verification_message(
         get_debugged_phone_number(phone_number),
         VERIFICATION_CHANNEL_SMS
     )
 
 def verify_sms_verification(phone_number, code):
-    verify_verification(
+    return verify_verification(
         get_debugged_phone_number(phone_number),
         code
     )
