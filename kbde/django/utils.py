@@ -133,7 +133,7 @@ def verify_verification(to, code):
 
     return verificaton_check
 
-def send_email_verificaton(email):
+def send_email_verification(email):
     send_verification_message(
         get_debugged_email(email),
         VERIFICATION_CHANNEL_EMAIL
@@ -145,7 +145,7 @@ def verify_email_verification(email, code):
         code
     )
 
-def send_sms_verificaton(phone_number):
+def send_sms_verification(phone_number):
     send_verification_message(
         get_debugged_phone_number(phone_number),
         VERIFICATION_CHANNEL_SMS
@@ -193,7 +193,7 @@ def get_debugged_value(value, env_var_name):
     Takes a value
     Returns the value or the debug value from the settings
     """
-    assert isinstance(value, str), f"`value` must be a string"
+    assert isinstance(value, str), f"`value` must be a string {value}"
 
     assert hasattr(settings, env_var_name), (
         f"must set `{env_var_name}` in settings"
@@ -219,7 +219,7 @@ def get_debugged_email(email):
     return get_debugged_value(email, DEBUG_EMAIL_ENV_VAR_NAME)
 
 def get_debugged_phone_number(phone_number):
-    return get_debugged_value(phone_number, DEBUG_PHONE_NUMBER_ENV_VAR_NAME)
+    return get_debugged_value(str(phone_number), DEBUG_PHONE_NUMBER_ENV_VAR_NAME)
 
 
 def send_to_trello(board_email,
