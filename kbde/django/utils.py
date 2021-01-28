@@ -2,9 +2,6 @@ from django.core import mail
 from django.conf import settings
 
 
-DEBUG_EMAIL_ENV_VAR_NAME = "DEBUG_EMAIL"
-DEBUG_PHONE_NUMBER_ENV_VAR_NAME = "DEBUG_PHONE_NUMBER"
-
 VERIFICATION_CHANNEL_EMAIL = "email"
 VERIFICATION_CHANNEL_SMS = "sms"
 
@@ -188,38 +185,38 @@ def send_sms(to_phone_number, message, from_phone_number=None):
 
     return message
 
-def get_debugged_value(value, env_var_name):
+def get_debugged_value(value, setting_name):
     """
     Takes a value
     Returns the value or the debug value from the settings
     """
     assert isinstance(value, str), f"`value` must be a string {value}"
 
-    assert hasattr(settings, env_var_name), (
-        f"must set `{env_var_name}` in settings"
+    assert hasattr(settings, setting_name), (
+        f"must set `{setting_name}` in settings"
     )
 
     # If in DEBUG mode, make sure that DEBUG_PHONE_NUMBER is set to something
     if settings.DEBUG:
-        assert getattr(settings, env_var_name, None), (
-            f"Must set `{env_var_name}` when in DEBUG mode"
+        assert getattr(settings, setting_name, None), (
+            f"Must set `{setting_name}` when in DEBUG mode"
         )
 
-    debug_value = getattr(settings, env_var_name)
+    debug_value = getattr(settings, setting_name)
 
     if debug_value:
         assert isinstance(debug_value, str), (
-           f"`settings.{env_var_name}` must be a string"
+           f"`settings.{setting_name}` must be a string"
         )
         value = debug_value
 
     return value
 
 def get_debugged_email(email):
-    return get_debugged_value(email, DEBUG_EMAIL_ENV_VAR_NAME)
+    return get_debugged_value(email, "DEBUG_EMAIL")
 
 def get_debugged_phone_number(phone_number):
-    return get_debugged_value(str(phone_number), DEBUG_PHONE_NUMBER_ENV_VAR_NAME)
+    return get_debugged_value(str(phone_number), "DEBUG_PHONE_NUMBER")
 
 
 def send_to_trello(board_email,
