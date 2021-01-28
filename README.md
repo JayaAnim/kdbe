@@ -13,6 +13,7 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 - `55`:
   - Improvements to `django.utils`.
+  - Django base mixin.
 - `54`:
   - Removes support for several unused packages.
   - Updates to CLI.
