@@ -21,6 +21,12 @@ class Base:
             name=cls.__name__,
         )
 
+    def post(self, *args, **kwargs):
+        if hasattr(super(), "post"):
+            return super().post(*args, **kwargs)
+        else:
+            return self.get(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         context_data["content_template_name"] = self.get_kbde_template_name()
