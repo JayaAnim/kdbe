@@ -3,12 +3,21 @@ from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
 from django.contrib.postgres import search as pg_search
+from django.conf import settings
 
 import inspect
 
 
+class PostToGet:
+    
+    def post(self, *args, **kwargs):
+        return super().get(*args, **kwargs)
+
+
 class Base:
-    page_template_name = "kbde/page.html"
+    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
+
+    permission_classes = []
 
     @classmethod
     def get_urls_path(cls, url_path, **view_kwargs):
@@ -20,12 +29,6 @@ class Base:
             cls.as_view(**view_kwargs),
             name=cls.__name__,
         )
-
-    def post(self, *args, **kwargs):
-        if hasattr(super(), "post"):
-            return super().post(*args, **kwargs)
-        else:
-            return self.get(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
