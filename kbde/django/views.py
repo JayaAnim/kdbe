@@ -15,12 +15,28 @@ class RedirectView(mixins.Base, views.generic.RedirectView):
     pass
 
 
-class DetailView(mixins.Base, mixins.PostToGet, views.generic.DetailView):
-    pass
+class DetailView(mixins.Base,
+                 mixins.PostToGet,
+                 mixins.UserAllowedInstances,
+                 views.generic.DetailView):
+
+    def get_user_allowed_instances(self):
+        return self.get_user_read_instances()
 
 
-class ListView(mixins.Base, mixins.PostToGet, views.generic.ListView):
-    pass
+class ListView(mixins.Base,
+               mixins.PostToGet,
+               mixins.UserAllowedInstances,
+               views.generic.ListView):
+
+    def get_queryset(self):
+        queryset = self.get_user_read_instances()
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
 
 
 class FormView(mixins.Base, views.generic.FormView):
@@ -31,9 +47,17 @@ class CreateView(mixins.Base, views.generic.CreateView):
     pass
 
 
-class UpdateView(mixins.Base, views.generic.UpdateView):
-    pass
+class UpdateView(mixins.Base,
+                 mixins.UserAllowedInstances,
+                 views.generic.UpdateView):
+
+    def get_queryset(self):
+        return self.get_user_update_instances()
 
 
-class DeleteView(mixins.Base, views.generic.DeleteView):
-    pass
+class DeleteView(mixins.Base,
+                 mixins.UserAllowedInstances,
+                 views.generic.DeleteView):
+
+    def get_queryset(self):
+        return self.get_user_delete_instances()

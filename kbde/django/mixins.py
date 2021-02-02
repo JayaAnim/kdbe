@@ -1,4 +1,5 @@
 from django import http, urls
+from django.core import exceptions
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
@@ -14,10 +15,51 @@ class PostToGet:
         return super().get(*args, **kwargs)
 
 
-class Base:
-    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
-
+class Permissions:
     permission_classes = []
+
+
+class UserAllowedInstances:
+    """
+    Provides methods to pull only model instances which the
+        currently-logged-in user can interact with
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        assert hasattr(self, "model"), (
+            f"{self.__class__.__name__} must define `.model`"
+        )
+
+    def get_queryset(self):
+        raise NotImplementedError(
+            f"{self.__class__.__name__} must implement .get_queryset()"
+        )
+
+    def get_user_read_instances(self):
+        assert hasattr(self.model, "get_user_read_instances"), (
+            f"Model, {self.model}, must implement classmethod "
+            f".get_user_read_instances()"
+        )
+        return self.model.get_user_read_instances(self.request.user)
+
+    def get_user_update_instances(self):
+        assert hasattr(self.model, "get_user_update_instances"), (
+            f"Model, {self.model}, must implement classmethod "
+            f".get_user_update_instances()"
+        )
+        return self.model.get_user_update_instances(self.request.user)
+
+    def get_user_delete_instances(self):
+        assert hasattr(self.model, "get_user_delete_instances"), (
+            f"Model, {self.model}, must implement classmethod "
+            f".get_user_delete_instances()"
+        )
+        return self.model.get_user_delete_instances(self.request.user)
+
+
+class Base(Permissions):
+    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
 
     @classmethod
     def get_urls_path(cls, url_path, **view_kwargs):
