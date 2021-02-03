@@ -20,7 +20,7 @@ class DetailView(mixins.Base,
                  mixins.UserAllowedInstances,
                  views.generic.DetailView):
 
-    def get_user_allowed_instances(self):
+    def get_queryset(self):
         return self.get_user_read_instances()
 
 
@@ -37,6 +37,8 @@ class ListView(mixins.Base,
             if isinstance(ordering, str):
                 ordering = (ordering,)
             queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 
 class FormView(mixins.Base, views.generic.FormView):

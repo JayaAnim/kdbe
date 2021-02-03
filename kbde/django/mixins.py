@@ -6,6 +6,9 @@ from django.templatetags import static
 from django.contrib.postgres import search as pg_search
 from django.conf import settings
 
+from kbde.import_tools import utils as import_utils
+from kbde.django import permissions
+
 import inspect
 
 
@@ -16,7 +19,50 @@ class PostToGet:
 
 
 class Permissions:
-    permission_classes = []
+    permission_classes = None
+
+    def dispatch(self, *args, **kwargs):
+        return self.check_permissions() or super().dispatch(*args, **kwargs)
+
+    def check_permissions(self):
+        """
+        Check all permissions in self.permission_classes
+        Calls permission.check() on each permission.
+        Returns the first result of those calls which is not True
+        If they are all true, returns None
+        """
+        permission_classes = self.get_permission_classes()
+
+        assert permission_classes is not None, (
+            f"{self.__class__} must define an iterable, .permission_classes "
+            f"or you must define settings.DEFAULT_PERMISSION_CLASSES "
+            f"as an iterable of strings"
+        )
+
+        for permission_class in permission_classes:
+            if isinstance(permission_class, str):
+                # Import the class based on the string
+                permission_class = import_utils.import_class_from_string(
+                    permission_class,
+                )
+
+            assert issubclass(permission_class, permissions.Permission), (
+                f"Class {permission_class} must be a subclass of "
+                f"{permissions.Permission}"
+            )
+                
+            result = permission_class().check(self)
+
+            if result is not None:
+                return result
+
+        return None
+
+    def get_permission_classes(self):
+        if self.permission_classes is not None:
+            return self.permission_classes
+
+        return settings.DEFAULT_PERMISSION_CLASSES
 
 
 class UserAllowedInstances:
