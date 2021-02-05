@@ -71,37 +71,44 @@ class UserAllowedInstances:
         currently-logged-in user can interact with
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        assert hasattr(self, "model"), (
-            f"{self.__class__.__name__} must define `.model`"
-        )
-
     def get_queryset(self):
         raise NotImplementedError(
-            f"{self.__class__.__name__} must implement .get_queryset()"
+            f"{self.__class__} must implement .get_queryset()"
         )
 
     def get_user_read_instances(self):
-        assert hasattr(self.model, "get_user_read_instances"), (
+        model = self.get_model()
+
+        assert hasattr(model, "get_user_read_instances"), (
             f"Model, {self.model}, must implement classmethod "
             f".get_user_read_instances()"
         )
-        return self.model.get_user_read_instances(self.request.user)
+        return model.get_user_read_instances(self.request.user)
 
     def get_user_update_instances(self):
-        assert hasattr(self.model, "get_user_update_instances"), (
+        model = self.get_model()
+
+        assert hasattr(model, "get_user_update_instances"), (
             f"Model, {self.model}, must implement classmethod "
             f".get_user_update_instances()"
         )
-        return self.model.get_user_update_instances(self.request.user)
+        return model.get_user_update_instances(self.request.user)
 
     def get_user_delete_instances(self):
-        assert hasattr(self.model, "get_user_delete_instances"), (
+        model = self.get_model()
+
+        assert hasattr(model, "get_user_delete_instances"), (
             f"Model, {self.model}, must implement classmethod "
             f".get_user_delete_instances()"
         )
-        return self.model.get_user_delete_instances(self.request.user)
+        return model.get_user_delete_instances(self.request.user)
+
+    def get_model(self):
+        assert getattr(self, "model", None), (
+            f"{self.__class__} must define `.model`"
+        )
+        return self.model
+        
 
 
 class Base(Permissions):
@@ -202,9 +209,11 @@ class RelatedObject:
         return queryset.filter(**{related_orm_path: related_object})
 
     def get_related_orm_path(self):
-        assert self.related_orm_path, (f"{self.__class__.__name__} must define "
-                                        "`.related_orm_path` or override "
-                                        "`.get_related_orm_path()`")
+        assert self.related_orm_path, (
+            f"{self.__class__} must define "
+             "`.related_orm_path` or override "
+             "`.get_related_orm_path()`"
+        )
 
         return self.related_orm_path
 
@@ -215,7 +224,7 @@ class RelatedObject:
         related_slug = self.kwargs.get("related_slug")
 
         assert related_pk is not None or related_slug is not None, (
-            f"{self.__class__.__name__} must be called with either `related_pk` or "
+            f"{self.__class__} must be called with either `related_pk` or "
             f"`related_slug` in the URLconf")
 
         if related_pk is not None:
@@ -238,7 +247,7 @@ class RelatedObject:
         related_queryset = getattr(self, "related_queryset", None)
 
         assert related_model is not None or related_queryset is not None, (""
-            f"{self.__class__.__name__} must define `.related_model` or "
+            f"{self.__class__} must define `.related_model` or "
             f"`.related_queryset`")
 
         if related_queryset is not None:
@@ -285,7 +294,7 @@ class SearchQueryset:
 
     def get_queryset(self):
         assert self.search_vector_args, (
-            f"{self.__class__.__name__} must define `.search_vector_args`"
+            f"{self.__class__} must define `.search_vector_args`"
         )
 
         q = super().get_queryset()

@@ -11,56 +11,61 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
-- `55`:
+- `v56`:
+  - Adds KBDE Django views.
+  - Adds user-allowed model classmethods to limit what individual users are allowed to see.
+  - Adds permissioning classes for Django.
+  - Adds template filter to check permissions on another view.
+- `v55`:
   - Improvements to `django.utils`.
   - Django base mixin.
-- `54`:
+- `v54`:
   - Removes support for several unused packages.
   - Updates to CLI.
   - Reorganizes some packages.
-- `53`:
+- `v53`:
   - Adds new Django mixins for redirecting based on the `next` GET parameter. Updates form partial to match.
   - Adds `django_rq` to Django settings automatically.
-- `52`:
+- `v52`:
   - Separates the Django BgProcess model into abstract and concrete classes.
   - Creates a new Django reporting model to inherit from the BgProcess abstract class. Old versions of the Report class are now deprecated.
-- `51`:
+- `v51`:
   - Adds user email verification model for Django.
-- `50`:
+- `v50`:
   - Removes CoreUI partials lib.
   - Adds Django form partial.
-- `49`:
+- `v49`:
   - Adds `DEBUG_PHONE_NUMBER` to Django settings.
   - Adds CoreUI Django app.
   - Adds Django Pipeline Sass config to Django settings.
-- `48`:
+- `v48`:
   - Adds slug fields for Django Address class.
   - Adds Django mixin for search.
-- `47`:
+- `v47`:
   - Adds a scraper Python library.
   - Changes `django.location.models.Address` fields.
   - Abstracts `django.location.models.Address` into another class.
-- `46`:
+- `v46`:
   - Moves `apt` module into the `install` module. Adds several install scripts.
   - Adds SMS validation with Twilio.
-- `45`:
+- `v45`:
   - Changes Django `RelatedObject` mixin. Removes deprecated relational mixins.
-- `44`:
+- `v44`:
   - Adds new cli script and command framework.
   - Adds `apt` module to pre-configure environments.
   - Adds shell mixins for running commands against the host OS.
-- `43`:
+- `v43`:
   - Adds a Django database import tool.
-- `42`:
+- `v42`:
   - Adds leader identification for GCP.
   - Adds geocoding to Django location module for addresses.
   - Moves Django report to Bg Process model.
-- `41`:
+- `v41`:
   - Changes Django `location` models to use explicit id fields for pk. This will break models which rely on this app.
   - Changes Django `bg_process` models to use explicit id fields for pk. This will break models which rely on this app.
   - Adds a template context processor which allows settings.py variables to be selectively exposed to all templates.
   - Removes the nullable option for `django.location.models.Point`.
-- `40`:
+- `v40`:
   - Adds a model-based Background Processing module for Django, based on `django-rq`.
 - `v39`:
   - Better API exception handling for errors with response data.
