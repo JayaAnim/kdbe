@@ -76,32 +76,32 @@ class UserAllowedInstances:
             f"{self.__class__} must implement .get_queryset()"
         )
 
-    def get_user_read_instances(self):
+    def get_user_read_queryset(self):
         model = self.get_model()
 
-        assert hasattr(model, "get_user_read_instances"), (
+        assert hasattr(model, "get_user_read_queryset"), (
             f"Model, {self.model}, must implement classmethod "
-            f".get_user_read_instances()"
+            f".get_user_read_queryset()"
         )
-        return model.get_user_read_instances(self.request.user)
+        return model.get_user_read_queryset(self.request.user)
 
-    def get_user_update_instances(self):
+    def get_user_update_queryset(self):
         model = self.get_model()
 
-        assert hasattr(model, "get_user_update_instances"), (
+        assert hasattr(model, "get_user_update_queryset"), (
             f"Model, {self.model}, must implement classmethod "
-            f".get_user_update_instances()"
+            f".get_user_update_queryset()"
         )
-        return model.get_user_update_instances(self.request.user)
+        return model.get_user_update_queryset(self.request.user)
 
-    def get_user_delete_instances(self):
+    def get_user_delete_queryset(self):
         model = self.get_model()
 
-        assert hasattr(model, "get_user_delete_instances"), (
+        assert hasattr(model, "get_user_delete_queryset"), (
             f"Model, {self.model}, must implement classmethod "
-            f".get_user_delete_instances()"
+            f".get_user_delete_queryset()"
         )
-        return model.get_user_delete_instances(self.request.user)
+        return model.get_user_delete_queryset(self.request.user)
 
     def get_model(self):
         assert getattr(self, "model", None), (

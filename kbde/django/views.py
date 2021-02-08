@@ -21,7 +21,7 @@ class DetailView(mixins.Base,
                  views.generic.DetailView):
 
     def get_queryset(self):
-        return self.get_user_read_instances()
+        return self.get_user_read_queryset()
 
 
 class ListView(mixins.Base,
@@ -30,7 +30,7 @@ class ListView(mixins.Base,
                views.generic.ListView):
 
     def get_queryset(self):
-        queryset = self.get_user_read_instances()
+        queryset = self.get_user_read_queryset()
 
         ordering = self.get_ordering()
         if ordering:
@@ -54,7 +54,7 @@ class UpdateView(mixins.Base,
                  views.generic.UpdateView):
 
     def get_queryset(self):
-        return self.get_user_update_instances()
+        return self.get_user_update_queryset()
 
 
 class DeleteView(mixins.Base,
@@ -62,4 +62,4 @@ class DeleteView(mixins.Base,
                  views.generic.DeleteView):
 
     def get_queryset(self):
-        return self.get_user_delete_instances()
+        return self.get_user_delete_queryset()
