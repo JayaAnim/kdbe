@@ -215,6 +215,7 @@ try:
         'STYLESHEETS': {
             'base': {
                 'source_filenames': (
+                    'common/style/base.sass',
                     'common/style/base.scss',
                 ),
                 'output_filename': 'common/style/base.css',
