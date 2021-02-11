@@ -11,6 +11,8 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
+- `v58`:
+  - Fixes `django.mixins.PostToGet`.
 - `v57`:
   - Adds support for a `base.sass` file, instead of just `base.scss`, in Django Pipeline.
 - `v56`:
