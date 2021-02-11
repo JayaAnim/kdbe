@@ -15,7 +15,7 @@ import inspect
 class PostToGet:
     
     def post(self, *args, **kwargs):
-        return super().get(*args, **kwargs)
+        return self.get(*args, **kwargs)
 
 
 class Permissions:
