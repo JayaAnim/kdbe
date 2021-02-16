@@ -200,13 +200,19 @@ class RelatedObject:
     related_model = None
     related_orm_path = None
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
+    def dispatch(self, *args, **kwargs):
+        self.related_object = self.get_related_object()
+        return super().dispatch(*args, **kwargs)
 
-        related_orm_path = self.get_related_orm_path()
-        related_object = self.get_related_object()
-        
-        return queryset.filter(**{related_orm_path: related_object})
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data["related_object"] = self.related_object
+        return context_data
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            **{self.get_related_orm_path(): self.related_object},
+        )
 
     def get_related_orm_path(self):
         assert self.related_orm_path, (
@@ -254,19 +260,15 @@ class RelatedObject:
             return related_queryset
         else:
             return related_model.objects.all()
-
-
-class RelatedObjectEdit(RelatedObject):
     
     def get_form(self, **kwargs):
         form = super().get_form(**kwargs)
 
         if hasattr(form, "instance"):
-
             related_orm_path = self.get_related_orm_path()
 
             if "__" not in related_orm_path:
-                setattr(form.instance, related_orm_path, self.get_related_object())
+                setattr(form.instance, related_orm_path, self.related_object)
 
         return form
 
@@ -276,7 +278,7 @@ class RelatedObjectEdit(RelatedObject):
         related_orm_path = self.get_related_orm_path()
 
         if "__" not in related_orm_path:
-            kwargs[related_orm_path] = self.get_related_object()
+            kwargs[related_orm_path] = self.related_object
 
         serializer.save(**kwargs)
 
