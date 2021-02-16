@@ -11,6 +11,10 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
+- `v59`:
+  - Memquery module updates.
+  - Removes `django.mixins.RelatedObjectEdit` and moves that functionality into `django.mixins.RelatedObject`.
+  - Adds `related_object` to `context_data` in `django.mixins.RelatedObject`.
 - `v58`:
   - Fixes `django.mixins.PostToGet`.
 - `v57`:
