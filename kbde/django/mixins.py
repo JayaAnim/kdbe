@@ -108,10 +108,21 @@ class UserAllowedInstances:
             f"{self.__class__} must define `.model`"
         )
         return self.model
+
+
+
+class UrlPath:
         
+    @classmethod
+    def get_urls_path(cls, url_path, **view_kwargs):
+        return urls.path(
+            url_path,
+            cls.as_view(**view_kwargs),
+            name=cls.__name__,
+        )
 
 
-class Base(Permissions):
+class Base(UrlPath, Permissions):
     page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
 
     @classmethod
@@ -119,11 +130,7 @@ class Base(Permissions):
         if hasattr(cls, "template_name"):
             view_kwargs.setdefault("template_name", cls.page_template_name)
 
-        return urls.path(
-            url_path,
-            cls.as_view(**view_kwargs),
-            name=cls.__name__,
-        )
+        return super().get_urls_path(url_path, **view_kwargs)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
