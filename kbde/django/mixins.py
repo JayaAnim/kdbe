@@ -312,6 +312,15 @@ class SearchQueryset:
 
 
 class SuccessUrlNext:
-    
-    def get_success_url(self):
-        return self.request.GET.get("next") or super().get_success_url()
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        next_url = self.get_next_url()
+        if next_url is not None:
+            response = http.HttpResponseRedirect(next_url)
+
+        return response
+
+    def get_next_url(self):
+        return self.request.GET.get("next")
