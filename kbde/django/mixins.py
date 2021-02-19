@@ -22,15 +22,19 @@ class Permissions:
     permission_classes = None
 
     def dispatch(self, *args, **kwargs):
-        return self.check_permissions() or super().dispatch(*args, **kwargs)
+        return (
+            self.check_permissions(is_dispatching=True) or
+            super().dispatch(*args, **kwargs)
+        )
 
-    def check_permissions(self):
+    def check_permissions(self, is_dispatching=False):
         """
         Check all permissions in self.permission_classes
         Calls permission.check() on each permission.
         Returns the first result of those calls which is not True
         If they are all true, returns None
         """
+        self.is_dispatching = is_dispatching
         permission_classes = self.get_permission_classes()
 
         assert permission_classes is not None, (

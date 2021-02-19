@@ -51,7 +51,7 @@ class RedirectWithNext(Permission):
         url = f"{redirect_url}?next={view.request.get_full_path()}"
 
         redirect_message = self.get_redirect_message(view)
-        if redirect_message is not None:
+        if view.is_dispatching and redirect_message is not None:
             messages.add_message(
                 view.request,
                 self.get_redirect_message_level(view),
