@@ -11,6 +11,10 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
+- `v61`:
+  - Adds a flag to the `django.mixins.Permissions` class to inform permission classes of whether or not a view is dispatching.
+- `v60`:
+  - Improves `django.mixins.SuccessUrlNext`.
 - `v59`:
   - Memquery module updates.
   - Removes `django.mixins.RelatedObjectEdit` and moves that functionality into `django.mixins.RelatedObject`.

@@ -22,15 +22,19 @@ class Permissions:
     permission_classes = None
 
     def dispatch(self, *args, **kwargs):
-        return self.check_permissions() or super().dispatch(*args, **kwargs)
+        return (
+            self.check_permissions(is_dispatching=True) or
+            super().dispatch(*args, **kwargs)
+        )
 
-    def check_permissions(self):
+    def check_permissions(self, is_dispatching=False):
         """
         Check all permissions in self.permission_classes
         Calls permission.check() on each permission.
         Returns the first result of those calls which is not True
         If they are all true, returns None
         """
+        self.is_dispatching = is_dispatching
         permission_classes = self.get_permission_classes()
 
         assert permission_classes is not None, (
@@ -319,6 +323,15 @@ class SearchQueryset:
 
 
 class SuccessUrlNext:
-    
-    def get_success_url(self):
-        return self.request.GET.get("next") or super().get_success_url()
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        next_url = self.get_next_url()
+        if next_url is not None:
+            response = http.HttpResponseRedirect(next_url)
+
+        return response
+
+    def get_next_url(self):
+        return self.request.GET.get("next")
