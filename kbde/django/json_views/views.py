@@ -5,10 +5,14 @@ from kbde.django import mixins as kbde_mixins
 from collections import abc
 
 
+no_object = object()
+
+
 class JsonResponseMixin(kbde_mixins.UrlPath, views.generic.base.ContextMixin):
-    response_fields = None
+    fields = None
     response_class = http.JsonResponse
     content_type = "application/json"
+    child_views = {}
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -16,23 +20,56 @@ class JsonResponseMixin(kbde_mixins.UrlPath, views.generic.base.ContextMixin):
         return csrf.csrf_exempt(view)
 
     def render_to_response(self, context, **response_kwargs):
-        response_data = self.get_response_data(context)
         response_kwargs.setdefault('content_type', self.content_type)
 
-        return self.response_class(response_data, **response_kwargs)
+        if context is not None:
+            response_context = self.get_response_context(context)
+        else:
+            response_context = {}
+
+        return self.response_class(response_context, **response_kwargs)
         
-    def get_response_data(self, context):
+    def get_response_context(self, context):
+        """
+        Creates a response context, which defines shape of the response data
+        """
         return {
-            field_name: context[field_name] for
-            field_name in self.get_response_fields()
+            "data": self.get_response_data(context),
         }
 
-    def get_response_fields(self):
-        assert self.response_fields is not None, (
-            f"{self.__class__} must define .response_fields or override "
-            f".get_response_fields()"
+    def get_response_data(self, context):
+        """
+        Returns the data which will go in the response's `data` field
+        Gets object data, then renders all child views
+        """
+        object_data = self.get_object_data(context)
+        return self.process_child_views(object_data)
+        
+    def get_object_data(self, context):
+        return {
+            field_name: context[field_name] for
+            field_name in self.get_fields()
+        }
+
+    def get_fields(self):
+        assert self.fields is not None, (
+            f"{self.__class__} must define .fields or override "
+            f".get_fields()"
         )
-        return self.response_fields
+        return self.fields
+
+    def process_child_views(self, object_data):
+        child_views = self.get_child_views()
+
+        for field_name, view_class in child_views.items():
+            view = view_class()
+            value = object_data[field_name]
+            object_data[field_name] = view.get_response_data(value)
+
+        return object_data
+
+    def get_child_views(self):
+        return self.child_views
 
 
 class JsonView(JsonResponseMixin, views.generic.View):
@@ -44,12 +81,15 @@ class JsonView(JsonResponseMixin, views.generic.View):
 
 class SingleObjectMixin:
     
-    def get_response_data(self, context):
+    def get_response_context(self, context):
         return {
-            "data": {
-                field_name: getattr(context["object"], field_name)
-                for field_name in self.get_response_fields()
-            }
+            "data": self.get_response_data(context["object"]),
+        }
+
+    def get_object_data(self, obj):
+        return {
+            field_name: getattr(obj, field_name)
+            for field_name in self.get_fields()
         }
 
 
@@ -57,25 +97,46 @@ class DetailView(SingleObjectMixin, JsonResponseMixin, views.generic.DetailView)
     pass
 
 
-class ListView(JsonResponseMixin, views.generic.ListView):
+class RenderDetailView:
+    detail_view_class = None
 
-    def get_response_data(self, context):
-        response_fields = self.get_response_fields()
-        data = [
-            {
-                field_name: getattr(obj, field_name) for
-                field_name in response_fields
-            }
-            for obj in context["object_list"]
-        ]
+    def render_detail_view(self, context):
+        detail_view = self.get_detail_view()
+        return detail_view.get_response_data(context)
 
-        response_data = {
-            "data": data,
+    def get_detail_view(self):
+        detail_view_class = self.get_detail_view_class()
+        return detail_view_class(**self.get_detail_view_kwargs())
+
+    def get_detail_view_class(self):
+        assert self.detail_view_class is not None, (
+            f"{self.__class__} must define .detail_view_class or override "
+            f"self.get_detail_view_class()"
+        )
+        return self.detail_view_class
+
+    def get_detail_view_kwargs(self):
+        return {}
+
+
+class ListView(RenderDetailView, JsonResponseMixin, views.generic.ListView):
+
+    def get_response_context(self, context):
+        response_context = {
+            "data": self.get_response_data(context["object_list"]),
         }
 
-        response_data.update(self.get_pagination_data(context))
+        response_context.update(self.get_pagination_data(context))
         
-        return response_data
+        return response_context
+
+    def get_object_data(self, object_list):
+        detail_view = self.get_detail_view()
+
+        return [
+            self.render_detail_view(obj)
+            for obj in object_list
+        ]
 
     def get_pagination_data(self, context):
         paginator = context.get("paginator")
@@ -94,7 +155,7 @@ class ListView(JsonResponseMixin, views.generic.ListView):
         }
 
 
-class FormMixin:
+class FormMixin(RenderDetailView):
     all_field_attrs = [
         "required",
         "label",
@@ -137,6 +198,19 @@ class FormMixin:
     }
 
     form_error_status_code = 422
+    form_success_status_code = 200
+
+    def form_valid(self, form):
+        super().form_valid(form)
+
+        context = {
+            "form": form,
+        }
+
+        return self.render_to_response(
+            context,
+            status=self.form_success_status_code,
+        )
 
     def render_to_response(self, context, **response_kwargs):
         if context["form"].errors:
@@ -144,17 +218,20 @@ class FormMixin:
 
         return super().render_to_response(context, **response_kwargs)
 
-    def get_response_data(self, context):
+    def get_response_context(self, context):
         form = context["form"]
-        response_data = {}
+        response_context = {}
 
         if form.errors:
-            response_data["errors"] = form.errors
+            response_context["errors"] = form.errors
 
-        response_data["form"] = self.get_form_description_data(form)
-        response_data["data"] = self.get_form_data(form)
+        if hasattr(form, "cleaned_data") and not form.errors:
+            response_context["data"] = self.render_detail_view(form.cleaned_data)
+        else:
+            response_context["data"] = self.get_form_data(form)
+            response_context["form"] = self.get_form_description_data(form)
 
-        return response_data
+        return response_context
 
     def get_form_description_data(self, form):
         all_field_attrs = self.get_all_field_attrs()
@@ -198,16 +275,25 @@ class FormMixin:
     def get_field_attr_map(self):
         return self.field_attr_map
 
+    def get_success_url(self):
+        return ""
+
+
+class ModelFormMixin(FormMixin):
+
+    def render_detail_view(self, cleaned_data):
+        return super().render_detail_view(self.object)
+
 
 class FormView(FormMixin, JsonResponseMixin, views.generic.FormView):
     pass
 
 
-class CreateView(FormMixin, JsonResponseMixin, views.generic.CreateView):
-    pass
+class CreateView(ModelFormMixin, JsonResponseMixin, views.generic.CreateView):
+    form_success_status_code = 201
 
 
-class UpdateView(FormMixin, JsonResponseMixin, views.generic.UpdateView):
+class UpdateView(ModelFormMixin, JsonResponseMixin, views.generic.UpdateView):
     pass
 
 
@@ -216,9 +302,11 @@ class DeleteView(SingleObjectMixin, JsonResponseMixin, views.generic.DeleteView)
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
-        context_data = self.get_context_data(**kwargs)
 
         return self.render_to_response(
-            context_data,
+            None,
             status=self.delete_success_status_code,
         )
+
+    def get_success_url(self):
+        return ""
