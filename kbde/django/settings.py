@@ -213,12 +213,12 @@ try:
 
     PIPELINE = {
         'STYLESHEETS': {
-            'base': {
+            'page': {
                 'source_filenames': (
-                    'common/style/base.sass',
-                    'common/style/base.scss',
+                    'common/style/page.sass',
+                    'common/style/page.scss',
                 ),
-                'output_filename': 'common/style/base.css',
+                'output_filename': 'common/style/page.css',
             }
         },
         'COMPILERS': (

@@ -11,6 +11,13 @@ wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | s
 
 # Release notes, starting at v9
 
+- `v63`:
+  - Changes the main css file names from `base` to `page` when using `django-pipeline`.
+  - Moves `coreui.scss` to `coreui.sass` in `django.coreui`.
+  - Adds view partials for `django` and `django.coreui`.
+  - License update.
+  - Adds view unique identifiers for each instance, `view.id`.
+  - Adds reusable `django.views.LoginView` class, and `django.urls.auth` module.
 - `v62`:
   - Renames the template block `page_css` to `page_styles` in `django/templates/kbde/page.html`.
 - `v61`:

@@ -1,0 +1,10 @@
+{% load bootstrap4 %}
+
+
+<form method="POST">
+    {% csrf_token %}
+
+    {% bootstrap_form form %}
+
+    <button class="btn btn-primary">Log in</button>
+</form>
