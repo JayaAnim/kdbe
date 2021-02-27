@@ -1,0 +1,29 @@
+{% load render_partial %}
+
+
+<ul class="nav nav-tabs" id="tabs_{{ view.id }}" role="tablist">
+    {% for title, view_path in view.get_tabs %}
+    <li class="nav-item" role="presentation">
+        <a class="nav-link {% if not forloop.counter0 %}active{% endif %}"
+           id="tabs_{{ view.id }}_tab_{{ forloop.counter }}"
+           data-toggle="tab"
+           href="#tabs_{{ view.id }}_tab_content_{{ forloop.counter }}"
+           role="tab"
+           aria-controls="tabs_{{ view.id }}_tab_content_{{ forloop.counter }}"
+           aria-selected="true">
+            {{ title }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+<div class="tab-content" id="tab_content_{{ view.id }}">
+    {% for title, view_path in view.get_tabs %}
+    <div class="tab-pane fade show {% if not forloop.counter0 %}active{% endif %}"
+         id="tabs_{{ view.id }}_tab_content_{{ forloop.counter}}"
+         role="tabpanel"
+         aria-labelledby="tabs_{{ view.id }}_tab_{{ forloop.counter }}">
+        {% render_partial view_path %}
+    </div>
+    {% endfor %}
+</div>

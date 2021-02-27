@@ -3,13 +3,12 @@ from django.core import exceptions
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
 from django.templatetags import static
-from django.contrib.postgres import search as pg_search
 from django.conf import settings
 
 from kbde.import_tools import utils as import_utils
 from kbde.django import permissions
 
-import inspect
+import uuid
 
 
 class PostToGet:
@@ -117,10 +116,12 @@ class UserAllowedInstances:
 
 class Base(Permissions):
     page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
+    content_template_name = None
 
     @classmethod
     def get_urls_path(cls, url_path, **view_kwargs):
         if hasattr(cls, "template_name"):
+            view_kwargs.setdefault("content_template_name", cls.template_name)
             view_kwargs.setdefault("template_name", cls.page_template_name)
 
         return urls.path(
@@ -129,24 +130,31 @@ class Base(Permissions):
             name=cls.__name__,
         )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id = uuid.uuid4()
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data["content_template_name"] = self.get_kbde_template_name()
+        context_data["content_template_name"] = self.get_content_template_name()
         return context_data
 
     def get_template_names(self):
         return [
             getattr(self, "template_name", None) or
-            self.get_kbde_template_name()
+            self.get_class_template_name(file_extension="html")
         ]
 
-    def get_kbde_template_name(self):
+    def get_content_template_name(self, file_extension="html"):
+        return self.content_template_name or self.get_class_template_name(file_extension)
+
+    def get_class_template_name(self, file_extension):
         path_name = self.__class__.__name__
 
         # Template name is {module_name}/{path_name}.html
         module_name_list = self.__class__.__module__.split(".")[:-1]
         module_name = "/".join(module_name_list)
-        template_name = f"{module_name}/{path_name}.html"
+        template_name = f"{module_name}/{path_name}.{file_extension}"
 
         return template_name
 
@@ -299,6 +307,8 @@ class SearchQueryset:
     search_vector_args = None
 
     def get_queryset(self):
+        from django.contrib.postgres import search as pg_search
+
         assert self.search_vector_args, (
             f"{self.__class__} must define `.search_vector_args`"
         )
@@ -306,7 +316,6 @@ class SearchQueryset:
         q = super().get_queryset()
 
         search = self.request.GET.get(self.search_url_kwarg)
-
         if search:
             q = q.annotate(
                 search=pg_search.SearchVector(*self.search_vector_args)
