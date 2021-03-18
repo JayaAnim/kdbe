@@ -1,0 +1,31 @@
+{% load render_partial %}
+
+
+<div class="accordion" id="accordion_{{ view.id }}">
+
+    {% for title, view_path in view.get_items %}
+    <div class="card">
+        <div class="card-header" id="accordion_{{ view.id }}_heading_{{ forloop.counter }}">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#accordion_{{ view.id }}_collapse_{{ forloop.counter }}"
+                        aria-expanded="false"
+                        aria-controls="accordion_{{ view.id }}_collapse_{{ forloop.counter }}">
+                    {{ title }}
+                </button>
+            </h2>
+        </div>
+
+        <div id="accordion_{{ view.id }}_collapse_{{ forloop.counter }}"
+             class="collapse multi-collapse"
+             aria-labelledby="accordion_{{ view.id }}_heading_{{ forloop.counter }}">
+            <div class="card-body">
+                {% render_partial view_path %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
