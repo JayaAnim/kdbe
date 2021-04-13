@@ -12,22 +12,22 @@ class Loader:
 
             if len(load_object_list) >= self.chunk_size:
                 # Flush the object list into the destination
-                self.load_into_destination(load_object_list)
+                self.load_data(load_object_list)
                 load_object_list = []
 
         if load_object_list:
-            self.load_into_destination(load_object_list)
+            self.load_data(load_object_list)
 
-    def load_into_destination(self, object_list):
+    def load_data(self, object_list):
         raise NotImplementedError(
-            f"{self.__class__} must implement .load_into_destination()"
+            f"{self.__class__} must implement .load_data()"
         )
 
 
 class FileLoader(Loader):
     file_path = None
     
-    def load_into_destination(self, object_list):
+    def load_data(self, object_list):
         with open(self.get_file_path(), "a") as open_file:
             self.load_file(open_file, object_list)
 
@@ -83,7 +83,7 @@ class SnowflakeLoader(Loader):
         super().__init__(*args, **kwargs)
         self.connection = self.get_snowflake_connection()
 
-    def load_into_destination(self, object_list):
+    def load_data(self, object_list):
         field_names = self.get_field_names()
 
         with tempfile.NamedTemporaryFile("w", delete=False) as temp:
