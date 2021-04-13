@@ -17,7 +17,7 @@ Extractors are responsible for pulling data from a source. These sources can be 
 
 You can define an extractor for your specific data source. In this case, a JSON file:
 
-```
+```python
 from kbde.etl import extract
 
 
@@ -27,7 +27,7 @@ class MyJsonFileExtractor(extractor.JsonExtractor):
 
 You can then instantiate that extractor, and extract data from the file:
 
-```
+```python
 extractor_instance = MyJsonFileExtractor()
 data = extractor_instance.extract()
 ```
@@ -36,7 +36,7 @@ At this point, `data` is an iterable of all data within the source. This is true
 
 To examine the data:
 
-```
+```python
 for obj in data:
     print(obj)
 ```
@@ -58,7 +58,7 @@ This endpoint accepts a GET parameter, `page`, which controls which subset of ob
 
 A specific implementation of an extractor for this endpoint might looks like this:
 
-```
+```python
 from kbde.etl import extract
 import requests
 
@@ -72,7 +72,7 @@ class ObuildsUserExtractor(extract.Extractor):
 
 The above extractor would present all user objects within that API endpoint as a single iterable of objects:
 
-```
+```python
 all_users = ObuildsUserExtractor().extract()
 ```
 
@@ -88,7 +88,7 @@ Loaders take an interable of data, and insert the data into a destination. The i
 
 You can define a loader for your data destination. In this case, we will deposit data into a CSV file. The example assumes that each object in your data stream has `id`, `name`, and `email` attributes.
 
-```
+```python
 from kbde.etl import load
 
 
@@ -103,7 +103,7 @@ class MyCsvLoader(load.CsvLoader):
 
 You can instantiate the loader, and feed data from another source:
 
-```
+```python
 loader_instance = MyCsvLoader()
 loader_instance.load(data)
 ```
@@ -131,7 +131,7 @@ class NewlineJsonLoader(load.Loader):
 
 The above loader would take an unlimited number of objects from an iterable, and place them into an NDJSON file, in chunks of 1000:
 
-```
+```python
 NewlineJsonLoader().load(data)
 ```
 
