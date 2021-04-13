@@ -1,14 +1,13 @@
 KBDE
 ===
 
+kBuilds Basic Development Environment. A foundational library for Python and Django.
+
 
 # Installing
 
-## System-wide
+KBDE can be installed to a specific project, as with any Python dependency. It can also be installed system-wide to take advantage of commandline tools.
 
-```
-sudo python3 -m pip install git+https://gitlab.com/kb_git/kbde
-```
 
 ## In a Python project
 
@@ -19,6 +18,17 @@ git+https://gitlab.com/kb_git/kbde@v1
 ```
 
 >Be sure to replace `v1` with the correct version.
+
+
+## System-wide
+
+To take advantage of some useful commandline tools, you can install KBDE system-wide.
+
+```
+sudo python3 -m pip install git+https://gitlab.com/kb_git/kbde
+```
+
+See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 
 # Release notes, starting at v9
