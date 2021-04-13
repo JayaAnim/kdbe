@@ -2,15 +2,29 @@ KBDE
 ===
 
 
-# Install system-level kbde
+# Installing
+
+## System-wide
 
 ```
-wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | sudo bash 
+sudo python3 -m pip install git+https://gitlab.com/kb_git/kbde
 ```
+
+## In a Python project
+
+The following line can be added to your `requirements.txt` file:
+
+```
+git+https://gitlab.com/kb_git/kbde@v1
+```
+
+>Be sure to replace `v1` with the correct version.
 
 
 # Release notes, starting at v9
 
+- `v64`:
+  - Adds ETL library.
 - `v63`:
   - Moves `coreui.scss` to `coreui.sass` in `django.coreui`.
   - Adds view partials for `django` and `django.coreui`.
