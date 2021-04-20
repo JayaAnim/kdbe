@@ -36,6 +36,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 - `v65`:
   - Removes `django.mixins.EmailForm`.
   - Moves `django.mixins` and `django.views` into a single `django.views` module.
+  - Adds basic JSON views module to `django`.
 - `v64`:
   - Adds ETL library.
 - `v63`:
