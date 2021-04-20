@@ -57,6 +57,11 @@ class Permissions:
                 
             result = permission_class().check(self)
 
+            assert result is None or isinstance(result, http.HttpResponse), (
+                f"{permission_class} .check() must return either "
+                f"None or a response object"
+            )
+
             if result is not None:
                 return result
 
@@ -175,6 +180,36 @@ class Form:
         return self.submit_button_class
 
 
+class Delete:
+    template_name = "kbde/Delete.html"
+    prompt_text = "Are you sure you want to delete {obj}?"
+    submit_button_text = "Delete"
+    submit_button_class = "btn btn-danger"
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        
+        context_data.update({
+            "prompt_text": self.get_formatted_prompt_text(),
+            "submit_button_text": self.get_submit_button_text(),
+            "submit_button_class": self.get_submit_button_class(),
+        })
+
+        return context_data
+
+    def get_formatted_prompt_text(self):
+        return self.get_prompt_text().format(obj=self.object)
+
+    def get_prompt_text(self):
+        return self.prompt_text
+
+    def get_submit_button_text(self):
+        return self.submit_button_text
+
+    def get_submit_button_class(self):
+        return self.submit_button_class
+
+
 class UserAllowedQueryset:
     """
     Provides methods to pull only model instances which the
@@ -238,27 +273,6 @@ class OpenGraph:
         if finders.find(path):
             path = static.static(path)
         return path
-
-
-class Delete:
-    previous_url = None
-    prompt_text = "Are you sure that you want to delete {}?"
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-
-        data.update({
-            "prompt_text": self.get_prompt_text(),
-            "previous_url": self.get_previous_url(),
-        })
-
-        return data
-
-    def get_prompt_text(self):
-        return self.prompt_text.format(self.object)
-
-    def get_previous_url(self):
-        return self.previous_url
 
 
 class RelatedObject:

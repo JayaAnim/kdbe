@@ -4,6 +4,9 @@ from django.contrib.auth import views as auth_views
 from . import mixins
 
 
+not_found = object()
+
+
 class View(mixins.Base, views.generic.View):
     pass
 
@@ -59,7 +62,8 @@ class UpdateView(mixins.Form,
         return self.get_user_update_queryset()
 
 
-class DeleteView(mixins.UserAllowedQueryset,
+class DeleteView(mixins.Delete,
+                 mixins.UserAllowedQueryset,
                  mixins.Base,
                  views.generic.DeleteView):
 
@@ -107,3 +111,102 @@ class MarkdownView(TemplateView):
             self.markdown_template_name or 
             self.get_class_template_name(file_extension="md")
         )
+
+
+class TableView(ListView):
+    template_name = "kbde/Table.html"
+    table_head_template_name = "kbde/partials/table_head.html"
+    table_row_template_name = "kbde/partials/table_row.html"
+    table_empty_template_name = "kbde/partials/table_empty.html"
+    table_class = "table"
+    table_empty_message = None
+    fields = None
+    labels = None
+    include_row_data = True
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update(self.get_table(context_data["object_list"]))
+
+        return context_data
+
+    def get_table(self, object_list):
+        label_list = self.get_label_list()
+
+        row_list = []
+        for obj in object_list:
+            row = {
+                "object": obj,
+            }
+
+            if self.include_row_data:
+                row_data = self.get_row_data_from_object(obj)
+                assert len(row_data) == len(label_list)
+                row["data"] = row_data
+
+            row_list.append(row)
+
+        return {
+            "labels": label_list,
+            "rows": row_list,
+            "table_head_template_name": self.get_table_head_template_name(),
+            "table_row_template_name": self.get_table_row_template_name(),
+            "table_empty_template_name": self.get_table_empty_template_name(),
+            "table_class": self.get_table_class(),
+            "empty_message": self.get_table_empty_message(),
+        }
+
+    def get_label_list(self):
+        labels = self.get_labels()
+        return [labels[field] for field in self.get_fields()]
+
+    def get_row_data_from_object(self, obj):
+        return [
+            self.get_value_from_object(obj, field) for field in self.get_fields()
+        ]
+
+    def get_value_from_object(self, obj, field):
+        explicit_value = getattr(obj, field, not_found)
+        if explicit_value != not_found:
+            return explicit_value
+
+        # Try to get with a getter method
+        get_method_name = f"get_{field}"
+        get_method = getattr(obj, get_method_name, not_found)
+        if get_method != not_found:
+            return get_method()
+
+        assert False, (
+            f"Could not get value for field `{field}` on object `{obj}`"
+        )
+
+    def get_table_head_template_name(self):
+        return self.table_head_template_name
+
+    def get_table_row_template_name(self):
+        return self.table_row_template_name
+
+    def get_table_empty_template_name(self):
+        return self.table_empty_template_name
+
+    def get_table_class(self):
+        return self.table_class
+
+    def get_table_empty_message(self):
+        assert self.table_empty_message, (
+            f"{self.__class__} must define .table_empty_message"
+        )
+        return self.table_empty_message
+
+    def get_fields(self):
+        assert self.fields, (
+            f"{self.__class__} must define .fields"
+        )
+        return self.fields
+
+    def get_labels(self):
+        assert self.labels, (
+            f"{self.__class__} must define .labels"
+        )
+        return self.labels
