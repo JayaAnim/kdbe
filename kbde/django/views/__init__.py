@@ -8,7 +8,7 @@ class View(mixins.Base, views.generic.View):
     pass
 
 
-class TemplateView(mixins.Base, mixins.PostToGet, views.generic.TemplateView):
+class TemplateView(mixins.PostToGet, mixins.Base, views.generic.TemplateView):
     pass
 
 
@@ -16,18 +16,18 @@ class RedirectView(mixins.Base, views.generic.RedirectView):
     pass
 
 
-class DetailView(mixins.Base,
-                 mixins.PostToGet,
+class DetailView(mixins.PostToGet,
                  mixins.UserAllowedQueryset,
+                 mixins.Base,
                  views.generic.DetailView):
 
     def get_queryset(self):
         return self.get_user_read_queryset()
 
 
-class ListView(mixins.Base,
-               mixins.PostToGet,
+class ListView(mixins.PostToGet,
                mixins.UserAllowedQueryset,
+               mixins.Base,
                views.generic.ListView):
 
     def get_queryset(self):
@@ -42,24 +42,25 @@ class ListView(mixins.Base,
         return queryset
 
 
-class FormView(mixins.Base, views.generic.FormView):
+class FormView(mixins.Form, mixins.Base, views.generic.FormView):
     pass
 
 
-class CreateView(mixins.Base, views.generic.CreateView):
+class CreateView(mixins.Form, mixins.Base, views.generic.CreateView):
     pass
 
 
-class UpdateView(mixins.Base,
+class UpdateView(mixins.Form,
                  mixins.UserAllowedQueryset,
+                 mixins.Base,
                  views.generic.UpdateView):
 
     def get_queryset(self):
         return self.get_user_update_queryset()
 
 
-class DeleteView(mixins.Base,
-                 mixins.UserAllowedQueryset,
+class DeleteView(mixins.UserAllowedQueryset,
+                 mixins.Base,
                  views.generic.DeleteView):
 
     def get_queryset(self):
@@ -69,8 +70,7 @@ class DeleteView(mixins.Base,
 # Auth
 
 
-class LoginView(mixins.Base, auth_views.LoginView):
-    template_name = "kbde/LoginView.html"
+class LoginView(mixins.Form, mixins.Base, auth_views.LoginView):
     permission_classes = []
 
 
