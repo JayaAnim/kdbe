@@ -1,4 +1,4 @@
-from django import http, urls
+from django import http, urls, utils
 from django.core import exceptions
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.staticfiles import finders
@@ -11,10 +11,11 @@ from kbde.django import permissions
 import uuid
 
 
-class PostToGet:
-    
-    def post(self, *args, **kwargs):
-        return self.get(*args, **kwargs)
+class ViewId:
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id = uuid.uuid4()
 
 
 class Permissions:
@@ -31,7 +32,7 @@ class Permissions:
         Check all permissions in self.permission_classes
         Calls permission.check() on each permission.
         Returns the first result of those calls which is not True
-        If they are all true, returns None
+        If they are all True, returns None
         """
         self.is_dispatching = is_dispatching
         permission_classes = self.get_permission_classes()
@@ -68,7 +69,78 @@ class Permissions:
         return settings.DEFAULT_PERMISSION_CLASSES
 
 
-class UserAllowedInstances:
+class UrlPath:
+        
+    @classmethod
+    def get_urls_path(cls, url_path, **view_kwargs):
+        return urls.path(
+            url_path,
+            cls.as_view(**view_kwargs),
+            name=cls.__name__,
+        )
+
+
+class PageTemplate(UrlPath):
+    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
+    template_name = None
+    is_page_view = False
+
+    @classmethod
+    def get_urls_path(cls, url_path, **view_kwargs):
+        view_kwargs["is_page_view"] = True
+
+        return super().get_urls_path(url_path, **view_kwargs)
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        if self.is_page_view:
+            context_data["content_template_name"] = self.get_content_template_name()
+
+        return context_data
+
+    def get_template_names(self):
+        if self.is_page_view:
+            template_name = self.get_page_template_name()
+        else:
+            template_name = self.get_content_template_name()
+
+        return [template_name]
+
+    def get_page_template_name(self):
+        assert self.page_template_name, (
+            f"{self.__class__} must define .page_template_name"
+        )
+        return self.page_template_name
+
+    def get_content_template_name(self, file_extension="html"):
+        return (
+            self.template_name or
+            self.get_class_template_name(file_extension)
+        )
+
+    def get_class_template_name(self, file_extension):
+        path_name = self.__class__.__name__
+
+        # Template name is {module_name}/{path_name}.html
+        module_name_list = self.__class__.__module__.split(".")[:-1]
+        module_name = "/".join(module_name_list)
+        template_name = f"{module_name}/{path_name}.{file_extension}"
+
+        return template_name
+
+
+class Base(Permissions, ViewId, PageTemplate):
+    pass
+
+
+class PostToGet:
+    
+    def post(self, *args, **kwargs):
+        return self.get(*args, **kwargs)
+
+
+class UserAllowedQueryset:
     """
     Provides methods to pull only model instances which the
         currently-logged-in user can interact with
@@ -113,58 +185,6 @@ class UserAllowedInstances:
         return self.model
 
 
-class UrlPath:
-        
-    @classmethod
-    def get_urls_path(cls, url_path, **view_kwargs):
-        return urls.path(
-            url_path,
-            cls.as_view(**view_kwargs),
-            name=cls.__name__,
-        )
-
-
-class Base(UrlPath, Permissions):
-    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
-    content_template_name = None
-
-    @classmethod
-    def get_urls_path(cls, url_path, **view_kwargs):
-        if hasattr(cls, "template_name"):
-            view_kwargs.setdefault("content_template_name", cls.template_name)
-            view_kwargs.setdefault("template_name", cls.page_template_name)
-
-        return super().get_urls_path(url_path, **view_kwargs)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.id = uuid.uuid4()
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data["content_template_name"] = self.get_content_template_name()
-        return context_data
-
-    def get_template_names(self):
-        return [
-            getattr(self, "template_name", None) or
-            self.get_class_template_name(file_extension="html")
-        ]
-
-    def get_content_template_name(self, file_extension="html"):
-        return self.content_template_name or self.get_class_template_name(file_extension)
-
-    def get_class_template_name(self, file_extension):
-        path_name = self.__class__.__name__
-
-        # Template name is {module_name}/{path_name}.html
-        module_name_list = self.__class__.__module__.split(".")[:-1]
-        module_name = "/".join(module_name_list)
-        template_name = f"{module_name}/{path_name}.{file_extension}"
-
-        return template_name
-
-
 class OpenGraph:
     """
     A view mixin which enables OG
@@ -204,14 +224,6 @@ class Delete:
 
     def get_previous_url(self):
         return self.previous_url
-
-
-class EmailForm:
-    
-    def form_valid(self, form):
-        # Send the email via the form
-        form.send_email()
-        return super().form_valid(form)
 
 
 class RelatedObject:
@@ -304,8 +316,7 @@ class RelatedObject:
 class SoftDelete:
     
     def get_queryset(self):
-        q = super().get_queryset()
-        return q.filter(deleted=False)
+        return super().get_queryset().filter(deleted=False)
 
 
 class SearchQueryset:

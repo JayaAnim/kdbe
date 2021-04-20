@@ -1,16 +1,43 @@
 KBDE
 ===
 
+kBuilds Basic Development Environment. A foundational library for Python and Django.
 
-# Install system-level kbde
+
+# Installing
+
+KBDE can be installed to a specific project, as with any Python dependency. It can also be installed system-wide to take advantage of commandline tools.
+
+
+## In a Python project
+
+The following line can be added to your `requirements.txt` file:
 
 ```
-wget https://gitlab.com/kb_git/kbde/-/raw/master/scripts/bootstrap.bash -O - | sudo bash 
+git+https://gitlab.com/kb_git/kbde@v1
 ```
+
+>Be sure to replace `v1` with the correct version.
+
+
+## System-wide
+
+To take advantage of some useful commandline tools, you can install KBDE system-wide.
+
+```
+sudo python3 -m pip install git+https://gitlab.com/kb_git/kbde
+```
+
+See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 
 # Release notes, starting at v9
 
+- `v65`:
+  - Removes `django.mixins.EmailForm`.
+  - Moves `django.mixins` and `django.views` into a single `django.views` module.
+- `v64`:
+  - Adds ETL library.
 - `v63`:
   - Moves `coreui.scss` to `coreui.sass` in `django.coreui`.
   - Adds view partials for `django` and `django.coreui`.

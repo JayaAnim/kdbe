@@ -18,7 +18,7 @@ class RedirectView(mixins.Base, views.generic.RedirectView):
 
 class DetailView(mixins.Base,
                  mixins.PostToGet,
-                 mixins.UserAllowedInstances,
+                 mixins.UserAllowedQueryset,
                  views.generic.DetailView):
 
     def get_queryset(self):
@@ -27,7 +27,7 @@ class DetailView(mixins.Base,
 
 class ListView(mixins.Base,
                mixins.PostToGet,
-               mixins.UserAllowedInstances,
+               mixins.UserAllowedQueryset,
                views.generic.ListView):
 
     def get_queryset(self):
@@ -51,7 +51,7 @@ class CreateView(mixins.Base, views.generic.CreateView):
 
 
 class UpdateView(mixins.Base,
-                 mixins.UserAllowedInstances,
+                 mixins.UserAllowedQueryset,
                  views.generic.UpdateView):
 
     def get_queryset(self):
@@ -59,7 +59,7 @@ class UpdateView(mixins.Base,
 
 
 class DeleteView(mixins.Base,
-                 mixins.UserAllowedInstances,
+                 mixins.UserAllowedQueryset,
                  views.generic.DeleteView):
 
     def get_queryset(self):
@@ -103,7 +103,7 @@ class MarkdownView(TemplateView):
         return utils.safestring.mark_safe(html)
 
     def get_markdown_template_name(self):
-        if self.markdown_template_name is not None:
-            return self.markdown_template_name
-
-        return self.get_content_template_name(file_extension="md")
+        return (
+            self.markdown_template_name or 
+            self.get_class_template_name(file_extension="md")
+        )
