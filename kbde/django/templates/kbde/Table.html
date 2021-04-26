@@ -1,3 +1,5 @@
+{% load bootstrap4 %}
+
 {% if rows %}
     <div class="table-container">
         <table class="{{ table_class }}">
@@ -15,3 +17,9 @@
 {% else %}
     {% include table_empty_template_name %}
 {% endif %}
+
+{% block paginator %}
+    {% if paginate and paginator %}
+        {% bootstrap_pagination page_obj pages_to_show=pages_to_show %}
+    {% endif %}
+{% endblock %}

@@ -2,6 +2,7 @@ from django import views, template, utils
 from django.contrib.auth import views as auth_views
 
 from . import mixins
+from .. import forms
 
 
 not_found = object()
@@ -123,6 +124,8 @@ class TableView(ListView):
     fields = None
     labels = None
     include_row_data = True
+    paginate = True
+    pages_to_show = 5
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -155,6 +158,8 @@ class TableView(ListView):
             "table_empty_template_name": self.get_table_empty_template_name(),
             "table_class": self.get_table_class(),
             "empty_message": self.get_table_empty_message(),
+            "paginate": self.get_paginate(),
+            "pages_to_show": self.get_pages_to_show(),
         }
 
     def get_label_list(self):
@@ -210,3 +215,19 @@ class TableView(ListView):
             f"{self.__class__} must define .labels"
         )
         return self.labels
+
+    def get_paginate(self):
+        return self.paginate
+
+    def get_pages_to_show(self):
+        return self.pages_to_show
+
+
+class SearchFormView(FormView):
+    form_class = forms.SearchForm
+    method = "GET"
+    permission_classes = []
+    prompt_text = ""
+
+    def get_initial(self):
+        return self.request.GET

@@ -8,8 +8,12 @@
 {% endblock %}
 
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+<form method="{{ method }}" enctype="multipart/form-data">
+    {% block csrf_token %}
+        {% if method.upper == "POST" %}
+            {% csrf_token %}
+        {% endif %}
+    {% endblock %}
 
     {% block form_errors %}
         {% comment %}

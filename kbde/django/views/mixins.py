@@ -151,6 +151,7 @@ class Form:
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
     submit_button_class = "btn btn-primary"
+    method = "POST"
     
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -160,12 +161,13 @@ class Form:
             "field_error_message": self.get_field_error_message(),
             "submit_button_text": self.get_submit_button_text(),
             "submit_button_class": self.get_submit_button_class(),
+            "method": self.get_method(),
         })
 
         return context_data
 
     def get_prompt_text(self):
-        assert self.prompt_text, (
+        assert self.prompt_text is not None, (
             f"{self.__class__} must define .prompt_text or override .get_prompt_text()"
         )
         return self.prompt_text
@@ -178,6 +180,9 @@ class Form:
 
     def get_submit_button_class(self):
         return self.submit_button_class
+
+    def get_method(self):
+        return self.method
 
 
 class Delete:
