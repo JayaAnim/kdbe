@@ -20,6 +20,6 @@
 
 {% block paginator %}
     {% if paginate and paginator %}
-        {% bootstrap_pagination page_obj pages_to_show=pages_to_show %}
+        {% bootstrap_pagination page_obj pages_to_show=pages_to_show extra=extra %}
     {% endif %}
 {% endblock %}
