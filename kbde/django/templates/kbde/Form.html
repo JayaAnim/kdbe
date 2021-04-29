@@ -8,6 +8,8 @@
 {% endblock %}
 
 
+{{ form.media }}
+
 <form method="{{ method }}" enctype="multipart/form-data">
     {% block csrf_token %}
         {% if method.upper == "POST" %}
