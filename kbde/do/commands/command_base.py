@@ -7,6 +7,7 @@ import os, io, yaml, json
 class Base(command.Command):
     
     api_client_class = None
+    list_arguments = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -14,6 +15,10 @@ class Base(command.Command):
         self.api_client = self.get_api_client()
 
     def handle(self, **options):
+        for key, value in options.items():
+            if value and key in self.list_arguments:
+                options[key] = value.split(",")
+
         try:
             result = self.handle_client(**options)
 
