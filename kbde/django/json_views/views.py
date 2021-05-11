@@ -1,6 +1,6 @@
 from django import http, views, forms
 from django.views.decorators import csrf
-from kbde.django import mixins as kbde_mixins
+from kbde.django.views import mixins as kbde_mixins
 
 from collections import abc
 
@@ -97,7 +97,7 @@ class DetailView(SingleObjectMixin, JsonResponseMixin, views.generic.DetailView)
     pass
 
 
-class RenderDetailView:
+class RenderDetailMixin:
     detail_view_class = None
 
     def render_detail_view(self, context):
@@ -119,7 +119,7 @@ class RenderDetailView:
         return {}
 
 
-class ListView(RenderDetailView, JsonResponseMixin, views.generic.ListView):
+class ListView(RenderDetailMixin, JsonResponseMixin, views.generic.ListView):
 
     def get_response_context(self, context):
         response_context = {
@@ -155,7 +155,7 @@ class ListView(RenderDetailView, JsonResponseMixin, views.generic.ListView):
         }
 
 
-class FormMixin(RenderDetailView):
+class FormMixin(RenderDetailMixin):
     all_field_attrs = [
         "required",
         "label",
@@ -279,14 +279,14 @@ class FormMixin(RenderDetailView):
         return ""
 
 
+class FormView(FormMixin, JsonResponseMixin, views.generic.FormView):
+    pass
+
+
 class ModelFormMixin(FormMixin):
 
     def render_detail_view(self, cleaned_data):
         return super().render_detail_view(self.object)
-
-
-class FormView(FormMixin, JsonResponseMixin, views.generic.FormView):
-    pass
 
 
 class CreateView(ModelFormMixin, JsonResponseMixin, views.generic.CreateView):
