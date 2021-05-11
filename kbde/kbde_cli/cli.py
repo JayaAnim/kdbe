@@ -6,7 +6,7 @@ import sys
 
 class KbdeCli:
     """
-    A cli application for kbde
+    A cli application for KBDE
     """
 
     def __init__(self):
@@ -85,16 +85,23 @@ class KbdeCli:
         command_modules = []
 
         for module_info in module_infos:
-            
             # Import the module
+            """
             try:
                 module = importlib.import_module(
                     f"{commands_module.__name__}.{module_info.name}"
                 )
-            except ModuleNotFoundError:
+            except ModuleNotFoundError as e:
                 # There was a dependency issue with this module
                 # Skip it
+                print(e)
+                print("dep issue with", f"{commands_module.__name__}.{module_info.name}")
                 continue
+            """
+
+            module = importlib.import_module(
+                f"{commands_module.__name__}.{module_info.name}"
+            )
 
             if not hasattr(module, "Command"):
                 continue
@@ -140,7 +147,7 @@ class KbdeCli:
         modules = []
 
         for module_info in module_infos:
-
+            """
             # Import the module
             try:
                 module = importlib.import_module(f"kbde.{module_info.name}")
@@ -148,6 +155,8 @@ class KbdeCli:
                 # There was some kind of dependency issue with this module
                 # Skip it
                 continue
+            """
+            module = importlib.import_module(f"kbde.{module_info.name}")
 
             # Check if the module has a path
             # File-based modules will not have this attribute, but
@@ -158,30 +167,3 @@ class KbdeCli:
             modules.append(module)
             
         return modules
-
-
-class OutputWrapper:
-
-    def write(self, message):
-        sys.stdout.write(f"{message}\n")
-
-
-class Command:
-    """
-    A base command to be picked up by kbde_cli
-    """
-
-    def __init__(self):
-        self.stdout = OutputWrapper()
-
-    def add_arguments(self, parser):
-        """
-        Adds commands to the parser
-        """
-        return None
-
-    def handle(self, **options):
-        """
-        Execute this command
-        """
-        raise NotImplementedError(f"{self.__class__.__name__} must implement `.handle(self, **options)`")

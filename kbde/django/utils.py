@@ -2,6 +2,15 @@ from django.core import mail
 from django.conf import settings
 
 
+VERIFICATION_CHANNEL_EMAIL = "email"
+VERIFICATION_CHANNEL_SMS = "sms"
+
+VERIFICATION_CHANNELS = [
+    VERIFICATION_CHANNEL_EMAIL,
+    VERIFICATION_CHANNEL_SMS
+]
+
+
 def get_url_host_from_request(request):
     http_origin = request.META.get("HTTP_ORIGIN")
     http_host = request.META.get("HTTP_HOST")
@@ -78,6 +87,72 @@ def send_email(to_email_list,
 
     return message
 
+def send_verification_message(to, channel):
+    """
+    Uses the Twilio verification API to send a verification code through a certain channel
+    https://www.twilio.com/verify/api
+    """
+    assert channel in VERIFICATION_CHANNELS, f"{channel} is not a valid verification channel"
+
+    from twilio import rest as twilio_rest
+
+    client = twilio_rest.Client(
+        settings.TWILIO_ACCOUNT_SID,
+        settings.TWILIO_AUTH_TOKEN,
+    )
+
+    verification = client.verify.services(
+        settings.TWILIO_VERIFICATION_SERVICE_SID,
+    ).verifications.create(
+        to=to,
+        channel=channel,
+    )
+
+    return verification
+
+def verify_verification(to, code):
+    """
+    Checks a verification code against the Twilio verificaton API
+    """
+    from twilio import rest as twilio_rest
+
+    client = twilio_rest.Client(
+        settings.TWILIO_ACCOUNT_SID,
+        settings.TWILIO_AUTH_TOKEN,
+    )
+
+    verificaton_check = client.verify.services(
+        settings.TWILIO_VERIFICATION_SERVICE_SID,
+    ).verification_checks.create(
+        to=to,
+        code=code,
+    )
+
+    return verificaton_check
+
+def send_email_verification(email):
+    return send_verification_message(
+        get_debugged_email(email),
+        VERIFICATION_CHANNEL_EMAIL
+    )
+
+def verify_email_verification(email, code):
+    return verify_verification(
+        get_debugged_email(email),
+        code
+    )
+
+def send_sms_verification(phone_number):
+    return send_verification_message(
+        get_debugged_phone_number(phone_number),
+        VERIFICATION_CHANNEL_SMS
+    )
+
+def verify_sms_verification(phone_number, code):
+    return verify_verification(
+        get_debugged_phone_number(phone_number),
+        code
+    )
 
 def send_sms(to_phone_number, message, from_phone_number=None):
     """
@@ -110,78 +185,38 @@ def send_sms(to_phone_number, message, from_phone_number=None):
 
     return message
 
-
-def send_sms_verificaton(phone_number):
+def get_debugged_value(value, setting_name):
     """
-    Uses the Twilio verification API to send a code to a phone_number
-    https://www.twilio.com/verify/api
+    Takes a value
+    Returns the value or the debug value from the settings
     """
-    from twilio import rest as twilio_rest
+    assert isinstance(value, str), f"`value` must be a string {value}"
 
-    client = twilio_rest.Client(
-        settings.TWILIO_ACCOUNT_SID,
-        settings.TWILIO_AUTH_TOKEN,
-    )
-
-    phone_number = get_debugged_phone_number(phone_number)
-
-    verification = client.verify.services(
-        settings.TWILIO_VERIFICATION_SERVICE_SID,
-    ).verifications.create(
-        to=phone_number,
-        channel="sms",
-    )
-
-    return verification
-
-
-def verify_sms_verification(phone_number, code):
-    """
-    Checks a verification code against the Twilio verificaton API
-    """
-    from twilio import rest as twilio_rest
-
-    client = twilio_rest.Client(
-        settings.TWILIO_ACCOUNT_SID,
-        settings.TWILIO_AUTH_TOKEN,
-    )
-
-    phone_number = get_debugged_phone_number(phone_number)
-
-    verificaton_check = client.verify.services(
-        settings.TWILIO_VERIFICATION_SERVICE_SID,
-    ).verification_checks.create(
-        to=phone_number,
-        code=code,
-    )
-
-    return verificaton_check
-
-
-def get_debugged_phone_number(phone_number):
-    """
-    Takes a phone_number
-    Returns the phone_number or the DEBUG_PHONE_NUMBER from settings
-    """
-    assert isinstance(phone_number, str), "`phone_number` must be a string"
-
-    assert hasattr(settings, "DEBUG_PHONE_NUMBER"), (
-        "must set `DEBUG_PHONE_NUMBER` in settings"
+    assert hasattr(settings, setting_name), (
+        f"must set `{setting_name}` in settings"
     )
 
     # If in DEBUG mode, make sure that DEBUG_PHONE_NUMBER is set to something
     if settings.DEBUG:
-        assert settings.DEBUG_PHONE_NUMBER, (
-            "Must set `DEBUG_PHONE_NUMBER` when in DEBUG mode"
+        assert getattr(settings, setting_name, None), (
+            f"Must set `{setting_name}` when in DEBUG mode"
         )
 
-    if settings.DEBUG_PHONE_NUMBER:
-        assert isinstance(settings.DEBUG_PHONE_NUMBER, str), (
-            "`settings.DEBUG_PHONE_NUMBER` must be a string"
-        )
-        phone_number = settings.DEBUG_PHONE_NUMBER
+    debug_value = getattr(settings, setting_name)
 
-    return phone_number
+    if debug_value:
+        assert isinstance(debug_value, str), (
+           f"`settings.{setting_name}` must be a string"
+        )
+        value = debug_value
+
+    return value
+
+def get_debugged_email(email):
+    return get_debugged_value(email, "DEBUG_EMAIL")
+
+def get_debugged_phone_number(phone_number):
+    return get_debugged_value(str(phone_number), "DEBUG_PHONE_NUMBER")
 
 
 def send_to_trello(board_email,

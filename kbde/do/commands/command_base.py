@@ -1,9 +1,10 @@
-from kbde import kbde_cli, api_client
+from kbde.kbde_cli import command
+from kbde.api_client import client
 
 import os, io, yaml, json
 
 
-class Base(kbde_cli.Command):
+class Base(command.Command):
     
     api_client_class = None
 
@@ -16,7 +17,7 @@ class Base(kbde_cli.Command):
         try:
             result = self.handle_client(**options)
 
-        except api_client.Client.ApiClientException as e:
+        except client.Client.ApiClientException as e:
             try:
                 result = json.loads(str(e))
             except ValueError:

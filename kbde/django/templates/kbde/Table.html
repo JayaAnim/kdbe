@@ -1,0 +1,25 @@
+{% load bootstrap4 %}
+
+{% if rows %}
+    <div class="table-container">
+        <table class="{{ table_class }}">
+            <thead>
+                {% include table_head_template_name %}
+            </thead>
+
+            <tbody>
+                {% for row in rows %}
+                    {% include table_row_template_name %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    {% include table_empty_template_name %}
+{% endif %}
+
+{% block paginator %}
+    {% if paginate and paginator %}
+        {% bootstrap_pagination page_obj pages_to_show=pages_to_show extra=extra %}
+    {% endif %}
+{% endblock %}

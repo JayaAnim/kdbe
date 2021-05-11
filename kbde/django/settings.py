@@ -213,11 +213,12 @@ try:
 
     PIPELINE = {
         'STYLESHEETS': {
-            'base': {
+            'page': {
                 'source_filenames': (
-                    'common/style/base.scss',
+                    'common/style/page.sass',
+                    'common/style/page.scss',
                 ),
-                'output_filename': 'common/style/base.css',
+                'output_filename': 'common/style/page.css',
             }
         },
         'COMPILERS': (
@@ -239,3 +240,8 @@ try:
 
 except ImportError:
     pass
+
+
+# KBDE Permissions
+
+DEFAULT_PERMISSION_CLASSES = None

@@ -1,7 +1,7 @@
-from kbde import api_client
+from kbde.api_client import client
 
 
-class Base(api_client.Client):
+class Base(client.Client):
     host = "https://api.digitalocean.com/v2"
 
     headers = {

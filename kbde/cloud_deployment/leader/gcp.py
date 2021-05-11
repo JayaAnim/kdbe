@@ -1,4 +1,4 @@
-from kbde import api_client
+from kbde.api_client import client as api_client
 
 from . import base
 

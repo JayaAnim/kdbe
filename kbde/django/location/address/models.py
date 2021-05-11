@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.gis import geos
 from kbde.django import models as kbde_models
-from kbde import api_client
+from kbde.api_client import client as api_client
 
 import urllib
 

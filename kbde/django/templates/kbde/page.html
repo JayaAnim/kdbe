@@ -19,7 +19,7 @@
 
     <link rel="icon" href="{% block page_icon_url %}{% endblock %}">
 
-    {% block page_css %}
+    {% block page_styles %}
         <link rel="stylesheet" href="{% static 'coreui/dist/css/coreui.css' %}">
     {% endblock %}
 
@@ -33,6 +33,7 @@
 <body style="visibility:hidden;">
 
     {% block page %}
+        {% include content_template_name %}
     {% endblock %}
 
     {% block page_body_scripts %}
