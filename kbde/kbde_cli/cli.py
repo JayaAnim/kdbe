@@ -1,8 +1,6 @@
 import kbde, argparse, pkgutil, importlib, inspect
 from kbde.shell import mixins as shell_mixins
 
-import sys
-
 
 class KbdeCli:
     """
