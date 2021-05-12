@@ -1,5 +1,6 @@
-import string
 from kbde.url import url
+
+import string, json
 
 
 class Client:
@@ -75,7 +76,7 @@ class Client:
             "headers": headers,
             }
 
-        if function == self.session.get:
+        if function in [self.session.get, self.session.delete]:
             # Add the remaining params to the request call
             kwargs["params"] = params
 
@@ -163,7 +164,7 @@ class Client:
             try:
                 response_json = response.json()
                 response_json["status_code"] = response.status_code
-                raise self.ApiClientException(response_json)
+                raise self.ApiClientException(json.dumps(response_json))
             except ValueError:
                 raise e
 

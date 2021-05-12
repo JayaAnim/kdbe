@@ -1,9 +1,19 @@
+import sys
+
+
+class OutputWrapper:
+
+    def write(self, message):
+        sys.stdout.write(f"{message}\n")
 
 
 class Command:
     """
-    A base command to be picked up by obde_cli
+    A base command to be picked up by kbde_cli
     """
+
+    def __init__(self):
+        self.stdout = OutputWrapper()
 
     def add_arguments(self, parser):
         """
