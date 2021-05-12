@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v66`:
+  - Light updates to `api_client` module.
+  - Adds DigitalOcean API client module. This module is still missing features.
 - `v65`:
   - Removes `django.mixins.EmailForm`.
   - Moves `django.mixins` and `django.views` into a single `django.views` module.
