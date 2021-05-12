@@ -12,7 +12,7 @@ class Base(command.Command):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.api_client = self.get_api_client()
+        self.api_client = self.get_api_client_class()()
 
     def handle(self, **options):
         for key, value in options.items():
@@ -40,12 +40,6 @@ class Base(command.Command):
         raise NotImplementedError(
             f"{self.__class__.__name__} must implement .handle_client()"
         )
-        
-    def get_api_client(self):
-        api_token = os.getenv("KBDE_DO_API_TOKEN")
-        api_client_class = self.get_api_client_class()
-
-        return api_client_class(api_token=api_token)
 
     def get_api_client_class(self):
         return self.api_client_class
