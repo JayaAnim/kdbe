@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v67`:
+  - Simple "Login Link" authentication with Django. This is not ready for production use.
 - `v66`:
   - Light updates to `api_client` module.
   - Adds DigitalOcean API client module. This module is still missing features.
