@@ -1,0 +1,7 @@
+{% load bootstrap4 %}
+
+{% if object.confirmed %}
+    {% bootstrap_alert "Thank you for confirming login" %}
+{% else %}
+    {% bootstrap_alert "Login attempt blocked" %}
+{% endif %}
