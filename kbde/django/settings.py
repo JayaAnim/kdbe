@@ -75,7 +75,6 @@ try:
         ]
 
     DEFAULT_FILE_STORAGE = "kbde.django.storage_backends.MediaStorage"
-    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/media/"
 
 except ImportError:
     pass

@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v68`:
+  - Removes `MEDIA_URL` from `django.settings`. This was always being overwritten by the storage backend.
 - `v67`:
   - Simple "Login Link" authentication with Django. This is not ready for production use.
 - `v66`:
