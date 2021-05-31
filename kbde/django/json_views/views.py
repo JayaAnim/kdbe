@@ -1,6 +1,7 @@
 from django import http, views, forms
 from django.views.decorators import csrf
 from kbde.django.views import mixins as kbde_mixins
+from kbde.django.token_auth import views as token_auth_views
 
 from collections import abc
 
@@ -8,7 +9,10 @@ from collections import abc
 no_object = object()
 
 
-class JsonResponseMixin(kbde_mixins.UrlPath, views.generic.base.ContextMixin):
+class JsonResponseMixin(token_auth_views.TokenUserMixin,
+                        kbde_mixins.UrlPath,
+                        kbde_mixins.Permissions,
+                        views.generic.base.ContextMixin):
     fields = None
     response_class = http.JsonResponse
     content_type = "application/json"
