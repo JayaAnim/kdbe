@@ -27,7 +27,7 @@ def send_email(to_email_list,
                from_email=None,
                cc_email_list=[],
                bcc_email_list=[],
-               attachment_list=[]):
+               **kwargs):
     """
     Use this if you don't want to accidentally email your production users
     Ensures that a DEBUG_EMAIL setting exists
@@ -49,7 +49,7 @@ def send_email(to_email_list,
         "must pass `text_message` or `html_message`"
     )
 
-    message = mail.EmailMultiAlternatives()
+    message = mail.EmailMultiAlternatives(**kwargs)
 
     # Text message exits
     if text_message:
@@ -71,7 +71,6 @@ def send_email(to_email_list,
     message.from_email = from_email or message.from_email
     message.cc = cc_email_list
     message.bcc = bcc_email_list
-    message.attachments = attachment_list
 
     # Modify message if in DEBUG mode
     if settings.DEBUG_EMAIL:
