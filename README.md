@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v69`:
+  - Adds an installable `django.bootstrap` app which provides static files for Bootstrap 5.
 - `v68`:
   - Removes `MEDIA_URL` from `django.settings`. This was always being overwritten by the storage backend.
   - Changes the `django.utils.send_email` function to inject remaining kwargs into the constructor of the `EmailMultiAlternatives` object. This function signature has been modified so that `attachment_list` has been removed, and can now be passed as the kwarg, `attachments`.
