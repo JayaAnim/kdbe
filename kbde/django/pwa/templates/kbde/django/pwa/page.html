@@ -1,0 +1,8 @@
+{% extends "kbde/page.html" %}
+
+
+{% block page_head_scripts %}
+    {{ block.super }}
+    <link rel="manifest" href="{% url 'pwa:Manifest' %}">
+    <script src="{% url 'pwa:ServiceWorker' %}"></script>
+{% endblock %}
