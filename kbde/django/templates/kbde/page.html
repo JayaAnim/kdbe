@@ -20,7 +20,12 @@
     <link rel="icon" href="{% block page_icon_url %}{% endblock %}">
 
     {% block page_styles %}
+        {% comment %}
         <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.css' %}">
+        {% endcomment %}
+        <style>
+        @import "staticfiles/bootstrap/scss/bootstrap.scss";
+        </style>
     {% endblock %}
 
     {% block page_head_scripts %}
