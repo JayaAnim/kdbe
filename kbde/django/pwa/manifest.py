@@ -1,4 +1,7 @@
 from django.conf import settings
+from django.templatetags import static
+
+import copy
 
 
 class Manifest:
@@ -14,7 +17,7 @@ class Manifest:
         "lang",
         "orientation",
         "prefer_related_applications",
-        "related_applications"
+        "related_applications",
         "scope",
         "screenshots",
         "short_name",
@@ -35,7 +38,7 @@ class Manifest:
                 f"Manifest requires {field}, but no value was given"
             )
 
-        self.data = kwargs
+        self.data = copy.deepcopy(kwargs)
         
     @classmethod
     def from_settings(cls, settings_prefix="PWA_"):
@@ -44,7 +47,7 @@ class Manifest:
         for field in cls.fields:
             setting_name = f"{settings_prefix}{field.upper().rstrip('_')}"
 
-            value = getattr(settings, setting_name, None)
+            value = getattr(settings, setting_name)
 
             if field in cls.required_fields:
                 assert value is not None, (
@@ -65,6 +68,11 @@ class Manifest:
             value = self.data.get(field)
             if value is None:
                 continue
+
+            if field == "icons":
+                value = value.copy()
+                for icon in value:
+                    icon["src"] = static.static(icon["src"])
 
             data[field.rstrip("_")] = value
 
