@@ -11,7 +11,7 @@ class Page(kbde_views.TemplateView):
     content_type = "text/css"
 
     def get(self, *args, **kwargs):
-        if settings.DEBUG_CSS:
+        if settings.DEBUG_SASS:
             management.call_command("collectstatic", "--no-input")
 
         return super().get(*args, **kwargs)
