@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v70`:
+  - Adds an installable `django.sass` app which provides a view which provides a view which can compile Sass.
+  - Downgrades `django.bootstrap` to v4 of Bootstrap. We will upgrade back to v5 once we can modify existing KBDE Boostrap components, which are dependent on v4.
 - `v69`:
   - Adds an installable `django.bootstrap` app which provides static files for Bootstrap 5.
 - `v68`:

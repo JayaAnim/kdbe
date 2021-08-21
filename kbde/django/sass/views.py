@@ -1,23 +1,19 @@
-from django.core import management
-from django.conf import settings
+from django import http
+from django.utils import decorators
+from django.views.decorators import cache
 from kbde.django import views as kbde_views
 
-from . import response
+from . import sass
 
 
-class Page(kbde_views.TemplateView):
-    response_class = response.SassResponse
+class Page(kbde_views.View):
     permission_classes = []
-    content_type = "text/css"
 
+    @decorators.method_decorator(
+        cache.cache_control(max_age=60*60*24*365)
+    )
     def get(self, *args, **kwargs):
-        if settings.DEBUG_SASS:
-            management.call_command("collectstatic", "--no-input")
-
-        return super().get(*args, **kwargs)
-
-    def get_template_names(self):
-        return [
-            "sass/page.sass",
-            "sass/page.scss",
-        ]
+        return http.HttpResponse(
+            sass.SassCompiler().get_css(self.request.GET),
+            content_type="text/css",
+        )
