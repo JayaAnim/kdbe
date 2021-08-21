@@ -20,7 +20,12 @@
     <link rel="icon" href="{% block page_icon_url %}{% endblock %}">
 
     {% block page_styles %}
-        <link rel="stylesheet" href="{% static 'coreui/dist/css/coreui.css' %}">
+        {% comment %}
+        <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.css' %}">
+        {% endcomment %}
+        <style>
+        @import "staticfiles/bootstrap/scss/bootstrap.scss";
+        </style>
     {% endblock %}
 
     {% block page_head_scripts %}
@@ -37,7 +42,7 @@
     {% endblock %}
 
     {% block page_body_scripts %}
-        <script src="{% static 'coreui/dist/js/coreui.bundle.js' %}"></script>
+        <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
         {% include 'kbde/timezone.html' %}
         {% include 'kbde/device_id.html' %}
         {% include 'kbde/validate_forms.html' %}

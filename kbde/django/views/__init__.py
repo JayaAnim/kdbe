@@ -25,6 +25,14 @@ class DetailView(mixins.PostToGet,
                  mixins.Base,
                  views.generic.DetailView):
 
+    def get_object(self, *args, **kwargs):
+        obj = self.kwargs.get("object")
+
+        if obj is not None:
+            return obj
+
+        return super().get_object(*args, **kwargs)
+
     def get_queryset(self):
         return self.get_user_read_queryset()
 
@@ -35,6 +43,11 @@ class ListView(mixins.PostToGet,
                views.generic.ListView):
 
     def get_queryset(self):
+        object_list = self.kwargs.get("object_list")
+
+        if object_list is not None:
+            return object_list
+
         queryset = self.get_user_read_queryset()
 
         ordering = self.get_ordering()

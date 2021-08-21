@@ -128,7 +128,8 @@ class PageTemplate(UrlPath):
         path_name = self.__class__.__name__
 
         # Template name is {module_name}/{path_name}.html
-        module_name_list = self.__class__.__module__.split(".")[:-1]
+        module_name_list = self.__class__.__module__.split(".")
+
         module_name = "/".join(module_name_list)
         template_name = f"{module_name}/{path_name}.{file_extension}"
 
@@ -408,3 +409,12 @@ class SuccessUrlNext:
 
     def get_next_url(self):
         return self.request.GET.get("next")
+
+
+class SuccessUrlNextRequired(SuccessUrlNext):
+    
+    def get_success_url(self):
+        assert self.get_next_url() is not None, (
+            f"{self.__class__} must be called with a `next` GET parameter"
+        )
+        return ""
