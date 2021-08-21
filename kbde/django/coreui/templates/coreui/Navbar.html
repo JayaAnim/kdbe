@@ -1,0 +1,26 @@
+<nav class="{% block navbar_classes %}navbar navbar-expand-lg navbar-dark bg-primary{% endblock %}">
+    <a class="navbar-brand" href="{{ view.get_brand_url }}">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav mr-auto">
+            {% for title, url in view.get_left_items %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url }}">{{ title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            {% for title, url in view.get_right_items %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url }}">{{ title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</nav>

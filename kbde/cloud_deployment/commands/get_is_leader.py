@@ -1,9 +1,9 @@
-from kbde import kbde_cli
+from kbde.kbde_cli import command
 
 from kbde.cloud_deployment.leader import gcp
 
 
-class Command(kbde_cli.Command):
+class Command(command.Command):
 
     def handle(self, **options):
         

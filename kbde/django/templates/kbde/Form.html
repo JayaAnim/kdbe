@@ -1,0 +1,44 @@
+{% load bootstrap4 %}
+
+
+{% block prompt %}
+    {% if prompt_text %}
+        <h2>{{ prompt_text }}</h2>
+    {% endif %}
+{% endblock %}
+
+
+{{ form.media }}
+
+<form method="{{ method }}" enctype="multipart/form-data">
+    {% block csrf_token %}
+        {% if method.upper == "POST" %}
+            {% csrf_token %}
+        {% endif %}
+    {% endblock %}
+
+    {% block form_errors %}
+        {% comment %}
+            If there are form non-field errors, display them here.
+            If there are no non-fields errors, but there are still field errors,
+            tell the user to correct the field errors below.
+            Otherwise, show nothing
+        {% endcomment%}
+        
+        {% if form.non_field_errors %}
+            {% bootstrap_form_errors form type="non_fields" %}
+        {% elif form.errors %}
+            {% bootstrap_alert field_error_message alert_type="danger" %}
+        {% endif %}
+    {% endblock %}
+
+    {% block content %}
+        {% for field in form %}
+            {% bootstrap_field field %}
+        {% endfor %}
+    {% endblock %}
+
+    {% block buttons %}
+        <button class="{{ submit_button_class }}">{{ submit_button_text }}</button>
+    {% endblock %}
+</form>
