@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 
-from kbde import kbde_cli
+from kbde.kbde_cli import cli
 
 
-cli = kbde_cli.KbdeCli()
-cli.run()
+cli.KbdeCli().run()

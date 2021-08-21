@@ -1,0 +1,13 @@
+{% block prompt %}
+    {% if prompt_text %}
+        <h2>{{ prompt_text }}</h2>
+    {% endif %}
+{% endblock %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    {% block buttons %}
+        <button class="{{ submit_button_class }}">{{ submit_button_text }}</button>
+    {% endblock %}
+</form>

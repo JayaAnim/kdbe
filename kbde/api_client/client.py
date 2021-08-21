@@ -1,6 +1,6 @@
-import requests
-import string
-from . import url
+from kbde.url import url
+
+import string, json
 
 
 class Client:
@@ -38,6 +38,8 @@ class Client:
         self.params = params
 
     def make_session(self, username, password):
+        import requests
+
         session = requests.Session()
 
         if username is not None:
@@ -74,7 +76,7 @@ class Client:
             "headers": headers,
             }
 
-        if function == self.session.get:
+        if function in [self.session.get, self.session.delete]:
             # Add the remaining params to the request call
             kwargs["params"] = params
 
@@ -154,13 +156,15 @@ class Client:
         return function(url, **kwargs)
 
     def get_response_data(self, response):
+        import requests
+
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             try:
                 response_json = response.json()
                 response_json["status_code"] = response.status_code
-                raise self.ApiClientException(response_json)
+                raise self.ApiClientException(json.dumps(response_json))
             except ValueError:
                 raise e
 

@@ -2,19 +2,19 @@
 
 class ManagerBase:
 
-    def __init__(self,object_list):
+    def __init__(self, object_list):
         self.object_list = object_list
         self.index_dict = {}
 
-    def add(self,obj):
-        for index_key,index in self.index_dict.items():
-            self.add_to_index(index,obj,index_key)
+    def add(self, obj):
+        for index_key, index in self.index_dict.items():
+            self.add_to_index(index, obj, index_key)
         self.object_list.append(obj)
 
-    def get(self,**args):
-        filter_result = self.filter(**args)
-        
+    def get(self, **kwargs):
+        filter_result = self.filter(**kwargs)
         result_count = len(filter_result)
+
         if result_count > 1:
             raise self.QueryException("query returned more than 1 result. it returned {0}".format(result_count))
         if result_count < 1:
@@ -22,56 +22,61 @@ class ManagerBase:
 
         return filter_result[0]
 
-    def count(self,**args):
-        return len(self.filter(**args))
+    def count(self, **kwargs):
+        return len(self.filter(**kwargs))
 
-    def filter(self,**args):
+    def filter(self, **kwargs):
         filter_result = None
-        for key,value in args.items():
+
+        for key, value in kwargs.items():
+
             if key not in self.index_dict:
                 self.index(key)
-            index = self.index_dict.get(key)
 
-            result = index.get(value,[])
+            index = self.index_dict.get(key)
+            result = index.get(value, [])
+
             if filter_result is None:
                 filter_result = result
             else:
-                filter_result = self.intersection(filter_result,result)
+                filter_result = self.intersection(filter_result, result)
 
             if not filter_result:
                 break
         
         if filter_result is None:
-            return self.object_list
+            return self.object_list.copy()
 
         return filter_result
 
-    def intersection(self,list_1,list_2):
+    def intersection(self, list_1, list_2):
         """
         Returns the intersection
         """
         return [o for o in list_1 if o in list_2]
 
-    def index(self,key):
+    def index(self, key):
         #Make sure we haven't indexed by this key yet
         if key in self.index_dict:
-            raise self.IndexException("key `{0}` has already been indexed".format(key))
-        new_index = self.make_index(self.object_list,key)
-        self.index_dict[key] = new_index
+            raise self.IndexException(f"key `{key}` has already been indexed")
 
-    def make_index(self,object_list,key):
+        self.index_dict[key] = self.make_index(self.object_list, key)
+
+    def make_index(self, object_list, key):
         new_index = {}
+
         for obj in object_list:
-            self.add_to_index(new_index,obj,key)
+            self.add_to_index(new_index, obj, key)
+
         return new_index
 
-    def add_to_index(self,index,obj,key):
-        value = self.get_value(obj,key)
-        value_list = index.get(value,[])
+    def add_to_index(self, index, obj, key):
+        value = self.get_value(obj, key)
+        value_list = index.get(value, [])
         value_list.append(obj)
         index[value] = value_list
         
-    def get_value(self,obj,key):
+    def get_value(self, obj, key):
         """
         Takes an object and a key
         Accesses object at key
@@ -91,11 +96,11 @@ class ManagerBase:
 
 class DictManager(ManagerBase):
 
-    def get_value(self,obj,key):
+    def get_value(self, obj, key):
         return obj[key]
 
 
 class ObjectManager(ManagerBase):
 
-    def get_value(self,obj,key):
-        return getattr(obj,key)
+    def get_value(self, obj, key):
+        return getattr(obj, key)
