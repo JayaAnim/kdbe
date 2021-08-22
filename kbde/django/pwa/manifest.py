@@ -29,6 +29,8 @@ class Manifest:
         "icons",
         "name",
     ]
+    field_defaults = {
+    }
 
     def __init__(self, **kwargs):
         # Verify requred args
@@ -47,7 +49,7 @@ class Manifest:
         for field in cls.fields:
             setting_name = f"{settings_prefix}{field.upper().rstrip('_')}"
 
-            value = getattr(settings, setting_name)
+            value = getattr(settings, setting_name, None)
 
             if field in cls.required_fields:
                 assert value is not None, (

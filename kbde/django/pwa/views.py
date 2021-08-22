@@ -23,14 +23,6 @@ class ServiceWorker(kbde_views.TemplateView):
     page_template_name = "kbde/django/pwa/views/ServiceWorker.js"
     permission_classes = []
     content_type = "text/javascript"
-    static_exclude_extensions = [
-        "scss",
-        "sass",
-        "html",
-        "yaml",
-        "map",
-        "md",
-    ]
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -45,10 +37,4 @@ class ServiceWorker(kbde_views.TemplateView):
     def get_cache_paths(self):
         storage = static_storage.StaticFilesStorage()
         file_paths = static_utils.get_files(storage)
-
-        for path in file_paths:
-            extension = path.split(".")[-1]
-            if extension in self.static_exclude_extensions:
-                continue
-
-            yield static.static(path)
+        return [static.static(path) for path in file_paths]

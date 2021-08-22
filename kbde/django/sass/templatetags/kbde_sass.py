@@ -8,7 +8,7 @@ register = template.Library()
 SASS_CACHE_BUST = getattr(settings, "SASS_CACHE_BUST", True)
 
 
-@register.inclusion_tag("kbde/sass/stylesheet_tag.html")
+@register.inclusion_tag("kbde/django/sass/stylesheet_tag.html")
 def stylesheet_tag(**kwargs):
     keys = sorted(kwargs.keys())
 
