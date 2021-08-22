@@ -30,6 +30,9 @@ class Manifest:
         "name",
     ]
     field_defaults = {
+        "display": "fullscreen",
+        "prefer_related_applications": False,
+        "start_url": "/",
     }
 
     def __init__(self, **kwargs):
@@ -40,7 +43,12 @@ class Manifest:
                 f"Manifest requires {field}, but no value was given"
             )
 
-        self.data = copy.deepcopy(kwargs)
+        # Add defaults for args which are not passed
+        data = copy.deepcopy(self.field_defaults)
+        copied_kwargs = copy.deepcopy(kwargs)
+        data.update(copied_kwargs)
+
+        self.data = data
         
     @classmethod
     def from_settings(cls, settings_prefix="PWA_"):
