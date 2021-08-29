@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v71`:
+  - Overhauls `django.sass` to be a Python module instead of a Django app. This module includes middleware only. This middleware enables use of embedded Sass.
 - `v70`:
   - Adds an installable `django.sass` app which provides a view which provides a view which can compile Sass.
   - Downgrades `django.bootstrap` to v4 of Bootstrap. We will upgrade back to v5 once we can modify existing KBDE Boostrap components, which are dependent on v4.
