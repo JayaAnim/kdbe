@@ -38,3 +38,11 @@ class ServiceWorker(kbde_views.TemplateView):
         storage = static_storage.StaticFilesStorage()
         file_paths = static_utils.get_files(storage)
         return [static.static(path) for path in file_paths]
+
+
+class InstallMixin:
+    page_template_name = "kbde/django/pwa/page.html"
+
+
+class Install(InstallMixin, kbde_views.TemplateView):
+    permission_classes = []
