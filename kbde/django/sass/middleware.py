@@ -52,7 +52,7 @@ class EmbeddedSassMiddleware:
         return compile_sass(sass_document)
 
     def get_sass(self, document):
-        style_tags = document.find_all("style")
+        style_tags = document.find_all("style", {"sass": True})
 
         sass_strings = []
 
