@@ -1,15 +1,7 @@
-from django.conf import settings
-from django.contrib.staticfiles import (
-    utils as static_utils,
-    storage as static_storage,
-)
-from django.templatetags import static
 from kbde.django import views as kbde_views
 from kbde.django.json_views import views as json_views
 
 from . import manifest
-
-import json
 
 
 class Manifest(json_views.JsonView):
@@ -23,32 +15,3 @@ class ServiceWorker(kbde_views.TemplateView):
     page_template_name = "kbde/django/pwa/views/ServiceWorker.js"
     permission_classes = []
     content_type = "text/javascript"
-    static_exclude_extensions = [
-        "scss",
-        "sass",
-        "html",
-        "yaml",
-        "map",
-        "md",
-    ]
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-
-        context_data["cache_paths_json"] = self.get_cache_paths_json()
-
-        return context_data
-
-    def get_cache_paths_json(self):
-        return json.dumps(list(self.get_cache_paths()))
-
-    def get_cache_paths(self):
-        storage = static_storage.StaticFilesStorage()
-        file_paths = static_utils.get_files(storage)
-
-        for path in file_paths:
-            extension = path.split(".")[-1]
-            if extension in self.static_exclude_extensions:
-                continue
-
-            yield static.static(path)

@@ -33,6 +33,9 @@ def send_email(to_email_list,
     Ensures that a DEBUG_EMAIL setting exists
     Modifies outbound messages to be sent to the DEBUG_EMAIL when in DEBUG mode
     """
+    to_email_list = list(to_email_list)
+    cc_email_list = list(cc_email_list)
+    bcc_email_list = list(bcc_email_list)
 
     # Make sure that the DEBUG_EMAIL setting is present
     assert hasattr(settings, "DEBUG_EMAIL"), (

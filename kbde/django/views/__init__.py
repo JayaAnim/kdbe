@@ -187,15 +187,16 @@ class TableView(ListView):
         ]
 
     def get_value_from_object(self, obj, field):
-        explicit_value = getattr(obj, field, not_found)
-        if explicit_value != not_found:
-            return explicit_value
-
         # Try to get with a getter method
         get_method_name = f"get_{field}"
         get_method = getattr(obj, get_method_name, not_found)
         if get_method != not_found:
             return get_method()
+
+        # Get explicit value from the object
+        explicit_value = getattr(obj, field, not_found)
+        if explicit_value != not_found:
+            return explicit_value
 
         assert False, (
             f"Could not get value for field `{field}` on object `{obj}`"

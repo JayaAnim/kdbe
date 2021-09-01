@@ -33,6 +33,12 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v72`:
+  - Changes `django.sass` middleware to only target `<style>` tags which have the `sass` attribute.
+  - Allows `django.views.mixins.RelatedObject` to accept a `related_object` kwarg for use with partials.
+- `v71`:
+  - Overhauls `django.sass` to be a Python module instead of a Django app. This module includes middleware only. This middleware enables use of embedded Sass.
+  - Provides very basic system, `django.pwa`, for making a site into a PWA.
 - `v70`:
   - Adds an installable `django.sass` app which provides a view which provides a view which can compile Sass.
   - Downgrades `django.bootstrap` to v4 of Bootstrap. We will upgrade back to v5 once we can modify existing KBDE Boostrap components, which are dependent on v4.

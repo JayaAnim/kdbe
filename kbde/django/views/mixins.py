@@ -309,6 +309,11 @@ class RelatedObject:
         return self.related_orm_path
 
     def get_related_object(self):
+        related_object = self.kwargs.get("related_object")
+
+        if related_object is not None:
+            return related_object
+
         related_queryset = self.get_related_queryset()
 
         related_pk = self.kwargs.get("related_pk")
