@@ -11,13 +11,6 @@ class AuthToken(models.Model):
         on_delete=models.CASCADE,
     )
     key = models.UUIDField(default=uuid.uuid4)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="created_auth_tokens",
-    )
     time_created = models.DateTimeField(auto_now_add=True)
     expire_time = models.DateTimeField(null=True, blank=True)
 

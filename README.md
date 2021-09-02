@@ -31,8 +31,12 @@ sudo python3 -m pip install git+https://gitlab.com/kb_git/kbde
 See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 
-# Release notes, starting at v9
+# Release notes
 
+- `v73`:
+  - Adds `default_auto_field` to all Django app configs.
+  - Adds `django.token_auth` so Django views can authenticate users based on tokens and authorization headers. Includes Token model.
+  - Changes the access order for `django.views.TableView`.
 - `v72`:
   - Changes `django.sass` middleware to only target `<style>` tags which have the `sass` attribute.
   - Allows `django.views.mixins.RelatedObject` to accept a `related_object` kwarg for use with partials.
