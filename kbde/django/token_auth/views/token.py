@@ -42,5 +42,4 @@ class AuthTokenCreate(json_views.FormView):
     def get_or_create_auth_token(self, user):
         return self.auth_token_model.objects.get_or_create(
             user=user,
-            created_by=None,
         )

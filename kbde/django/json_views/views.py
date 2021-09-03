@@ -2,6 +2,7 @@ from django import http, views, forms
 from django.views.decorators import csrf
 from kbde.django.views import mixins as kbde_mixins
 from kbde.django.token_auth.views import mixins as token_auth_mixins
+from kbde.django.json import encoder as kbde_encoder
 
 from collections import abc
 
@@ -15,6 +16,7 @@ class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
                         views.generic.base.ContextMixin):
     fields = None
     response_class = http.JsonResponse
+    response_json_encoder = kbde_encoder.Encoder
     content_type = "application/json"
     child_views = {}
 
@@ -25,6 +27,7 @@ class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
 
     def render_to_response(self, context, **response_kwargs):
         response_kwargs.setdefault('content_type', self.content_type)
+        response_kwargs.setdefault("encoder", self.response_json_encoder)
 
         if context is not None:
             response_context = self.get_response_context(context)
@@ -180,7 +183,7 @@ class FormMixin(RenderDetailMixin):
             "choices",
         ],
         forms.TypedChoiceField: [
-            "choices"
+            "choices",
             "empty_value",
         ],
         forms.DateField: [
@@ -254,14 +257,16 @@ class FormMixin(RenderDetailMixin):
 
     def get_field_description_data(self, field, attrs):
         description_data = {}
+
         for field_attr in attrs:
             if not hasattr(field, field_attr):
                 continue
 
             value = getattr(field, field_attr)
 
-            if not isinstance(value, str) and isinstance(value, abc.Iterable):
-                value = list(value)
+            # Check to see if the value is callable
+            if callable(value):
+                value = value()
 
             description_data[field_attr] = value
 
