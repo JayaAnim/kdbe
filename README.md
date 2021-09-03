@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes, starting at v9
 
+- `v73`:
+  - Changes `django.views.FormView` to have a configurable `action` parameter.
 - `v72`:
   - Changes `django.sass` middleware to only target `<style>` tags which have the `sass` attribute.
   - Allows `django.views.mixins.RelatedObject` to accept a `related_object` kwarg for use with partials.
