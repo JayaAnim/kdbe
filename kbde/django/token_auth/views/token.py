@@ -14,7 +14,7 @@ class AuthTokenDetail(json_views.DetailView):
     ]
 
 
-class AuthTokenCreate(json_views.FormView):
+class AuthTokenCreate(json_views.ModelFormMixin, json_views.FormView):
     form_class = auth_forms.AuthenticationForm
     auth_token_model = models.AuthToken
     permission_classes = []
@@ -26,18 +26,10 @@ class AuthTokenCreate(json_views.FormView):
         self.auth_token = None
 
     def form_valid(self, form):
-        self.auth_token, created = self.get_or_create_auth_token(
+        self.object, created = self.get_or_create_auth_token(
             form.get_user(),
         )
         return super().form_valid(form)
-
-    def get_response_context(self, context):
-        response_context = super().get_response_context(context)
-
-        if self.auth_token is not None:
-            response_context["auth_token"] = self.auth_token
-
-        return response_context
 
     def get_or_create_auth_token(self, user):
         return self.auth_token_model.objects.get_or_create(
