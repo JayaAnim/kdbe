@@ -10,7 +10,7 @@
 
 {{ form.media }}
 
-<form method="{{ method }}" enctype="multipart/form-data">
+<form method="{{ method }}" action="{{ action }}" enctype="multipart/form-data">
     {% block csrf_token %}
         {% if method.upper == "POST" %}
             {% csrf_token %}

@@ -153,6 +153,7 @@ class Form:
     submit_button_text = "GO"
     submit_button_class = "btn btn-primary"
     method = "POST"
+    action = ""
     
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -163,6 +164,7 @@ class Form:
             "submit_button_text": self.get_submit_button_text(),
             "submit_button_class": self.get_submit_button_class(),
             "method": self.get_method(),
+            "action": self.get_action(),
         })
 
         return context_data
@@ -184,6 +186,9 @@ class Form:
 
     def get_method(self):
         return self.method
+
+    def get_action(self):
+        return self.action
 
 
 class Delete:

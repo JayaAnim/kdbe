@@ -33,10 +33,13 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
-- `v73`:
   - Adds `default_auto_field` to all Django app configs.
   - Adds `django.token_auth` so Django views can authenticate users based on tokens and authorization headers. Includes Token model.
-  - Changes the access order for `django.views.TableView`.
+
+
+- `v73`:
+  - Changes `django.views.FormView` to have a configurable `action` parameter.
+  - Changes the order in which `django.views.TableView` accesses objects to get values. It now favors "getter" methods over explicit values on the object itself.
 - `v72`:
   - Changes `django.sass` middleware to only target `<style>` tags which have the `sass` attribute.
   - Allows `django.views.mixins.RelatedObject` to accept a `related_object` kwarg for use with partials.
