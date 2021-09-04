@@ -11,11 +11,15 @@ class AuthToken(models.Model):
         on_delete=models.CASCADE,
     )
     key = models.UUIDField(default=uuid.uuid4)
-    time_created = models.DateTimeField(auto_now_add=True)
+    time_created = models.DateTimeField(default=utils.timezone.now)
     expire_time = models.DateTimeField(null=True, blank=True)
 
-    # Amount of time, in mintues, which an AuthToken will be valid
-    time_valid = getattr(settings, "AUTH_TOKEN_TIME_VALID", None)
+    # Amount of time, in seconds, which an AuthToken will be valid
+    time_valid = getattr(
+        settings,
+        "AUTH_TOKEN_TIME_VALID",
+        settings.SESSION_COOKIE_AGE,
+    )
 
     def save(self, *args, **kwargs):
         if not self.pk and self.expire_time is None:
@@ -37,7 +41,7 @@ class AuthToken(models.Model):
             )
 
             self.expire_time = (
-                self.time_created + datetime.timedelta(minutes=self.time_valid)
+                self.time_created + datetime.timedelta(seconds=self.time_valid)
             )
 
     def get_is_valid(self):
