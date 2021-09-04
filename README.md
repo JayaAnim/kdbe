@@ -31,8 +31,12 @@ sudo python3 -m pip install git+https://gitlab.com/kb_git/kbde
 See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 
-# Release notes, starting at v9
+# Release notes
 
+- `v74`:
+  - Adds `default_auto_field` to all Django app configs.
+  - Adds `django.token_auth` so Django views can authenticate users based on tokens and authorization headers. Includes Token model.
+  - Improvements to `django.json_views`.
 - `v73`:
   - Changes `django.views.FormView` to have a configurable `action` parameter.
   - Changes the order in which `django.views.TableView` accesses objects to get values. It now favors "getter" methods over explicit values on the object itself.

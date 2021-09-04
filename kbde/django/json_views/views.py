@@ -1,6 +1,9 @@
-from django import http, views, forms
+from django import http, views, forms, shortcuts
+from django.conf import settings
 from django.views.decorators import csrf
 from kbde.django.views import mixins as kbde_mixins
+from kbde.django.token_auth.views import mixins as token_auth_mixins
+from kbde.django.json import encoder as kbde_encoder
 
 from collections import abc
 
@@ -8,19 +11,48 @@ from collections import abc
 no_object = object()
 
 
-class JsonResponseMixin(kbde_mixins.UrlPath, views.generic.base.ContextMixin):
+class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
+                        kbde_mixins.UrlPath,
+                        kbde_mixins.Permissions,
+                        views.generic.base.ContextMixin):
     fields = None
     response_class = http.JsonResponse
+    response_json_encoder = kbde_encoder.Encoder
     content_type = "application/json"
     child_views = {}
+    login_url = None
+    unauthenticated_status_code = 401
 
     @classmethod
     def as_view(cls, **initkwargs):
         view = super().as_view(**initkwargs)
         return csrf.csrf_exempt(view)
 
+    def dispatch(self, *args, **kwargs):
+        response = super().dispatch(*args, **kwargs)
+
+        if (
+            isinstance(response, http.HttpResponseRedirect)
+            and response.url.startswith(self.get_login_url())
+        ):
+            return self.render_to_response(
+                None,
+                status=self.unauthenticated_status_code,
+            )
+
+        return response
+
+    def get_login_url(self):
+        login_url = self.login_url or settings.LOGIN_URL
+        assert login_url, (
+            f"{self.__class__} must define .login_url, or you must define "
+            f"LOGIN_URL in your settings"
+        )
+        return shortcuts.resolve_url(login_url)
+
     def render_to_response(self, context, **response_kwargs):
         response_kwargs.setdefault('content_type', self.content_type)
+        response_kwargs.setdefault("encoder", self.response_json_encoder)
 
         if context is not None:
             response_context = self.get_response_context(context)
@@ -176,7 +208,7 @@ class FormMixin(RenderDetailMixin):
             "choices",
         ],
         forms.TypedChoiceField: [
-            "choices"
+            "choices",
             "empty_value",
         ],
         forms.DateField: [
@@ -213,8 +245,11 @@ class FormMixin(RenderDetailMixin):
         )
 
     def render_to_response(self, context, **response_kwargs):
-        if context["form"].errors:
-            response_kwargs["status"] = self.form_error_status_code
+        if context is not None:
+            form = context.get("form")
+
+            if form and form.errors:
+                response_kwargs["status"] = self.form_error_status_code
 
         return super().render_to_response(context, **response_kwargs)
 
@@ -250,14 +285,16 @@ class FormMixin(RenderDetailMixin):
 
     def get_field_description_data(self, field, attrs):
         description_data = {}
+
         for field_attr in attrs:
             if not hasattr(field, field_attr):
                 continue
 
             value = getattr(field, field_attr)
 
-            if not isinstance(value, str) and isinstance(value, abc.Iterable):
-                value = list(value)
+            # Check to see if the value is callable
+            if callable(value):
+                value = value()
 
             description_data[field_attr] = value
 
