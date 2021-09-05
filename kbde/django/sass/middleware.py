@@ -32,7 +32,7 @@ class EmbeddedSassMiddleware:
             css_style_tag.string = self.get_css(sass_document)
             document.html.head.append(css_style_tag)
 
-        response.content = document.prettify()
+        response.content = str(document)
         response['content-length'] = str(len(response.content))
 
         return response

@@ -35,6 +35,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v75`:
   - Patches `django.sass.middleware` to not act on responses which are not HTML. This was affecting sites which served static content via `whitenoise`.
+  - Removes `prettify()` call when rendering page HTML with `django.sass.middleware`.
 - `v74`:
   - Adds `default_auto_field` to all Django app configs.
   - Adds `django.token_auth` so Django views can authenticate users based on tokens and authorization headers. Includes Token model.
