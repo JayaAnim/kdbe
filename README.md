@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v76`:
+  - Provides fixes to SuccessUrl mixins in `django.view.mixins`.
 - `v75`:
   - Patches `django.sass.middleware` to not act on responses which are not HTML. This was affecting sites which served static content via `whitenoise`.
   - Removes `prettify()` call when rendering page HTML with `django.sass.middleware`.
