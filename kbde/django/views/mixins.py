@@ -410,7 +410,13 @@ class SuccessUrlNext:
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        return self.get_next_response(response)
 
+    def delete(self, *args, **kwargs):
+        response = super().delete(*args, **kwargs)
+        return self.get_next_response(response)
+
+    def get_next_response(self, response):
         next_url = self.get_next_url()
         if next_url is not None:
             response = http.HttpResponseRedirect(next_url)
@@ -422,9 +428,12 @@ class SuccessUrlNext:
 
 
 class SuccessUrlNextRequired(SuccessUrlNext):
+    success_url = "/"
     
-    def get_success_url(self):
-        assert self.get_next_url() is not None, (
-            f"{self.__class__} must be called with a `next` GET parameter"
-        )
-        return ""
+    def dispatch(self, *args, **kwargs):
+        if self.get_next_url() is None:
+            raise exceptions.SuspiciousOperation(
+                "Must be called with a `next` GET parameter"
+            )
+
+        return super().dispatch(*args, **kwargs)
