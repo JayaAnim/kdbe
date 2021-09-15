@@ -418,7 +418,7 @@ class SuccessUrlNext:
 
     def get_next_response(self, response):
         next_url = self.get_next_url()
-        if next_url is not None:
+        if next_url:
             response = http.HttpResponseRedirect(next_url)
 
         return response
@@ -429,11 +429,13 @@ class SuccessUrlNext:
 
 class SuccessUrlNextRequired(SuccessUrlNext):
     success_url = "/"
-    
-    def dispatch(self, *args, **kwargs):
-        if self.get_next_url() is None:
+
+    def get_next_url(self):
+        next_url = super().get_next_url()
+        
+        if not next_url:
             raise exceptions.SuspiciousOperation(
                 "Must be called with a `next` GET parameter"
             )
 
-        return super().dispatch(*args, **kwargs)
+        return next_url

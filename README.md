@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v77`:
+  - Provides fixes to SuccessUrl mixins in `django.view.mixins`.
 - `v76`:
   - Provides fixes to SuccessUrl mixins in `django.view.mixins`.
 - `v75`:
