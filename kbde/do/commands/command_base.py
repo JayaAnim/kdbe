@@ -1,7 +1,6 @@
 from kbde.kbde_cli import command
-from kbde.api_client import client
 
-import os, io, yaml, json
+import os, io, json
 
 
 class Base(command.Command):
@@ -9,12 +8,12 @@ class Base(command.Command):
     api_client_class = None
     list_arguments = []
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def handle(self, **options):
+        from kbde.api_client import client
+        import yaml
 
         self.api_client = self.get_api_client_class()()
 
-    def handle(self, **options):
         for key, value in options.items():
             if value and key in self.list_arguments:
                 options[key] = value.split(",")

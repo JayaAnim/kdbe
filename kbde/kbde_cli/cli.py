@@ -84,19 +84,6 @@ class KbdeCli:
 
         for module_info in module_infos:
             # Import the module
-            """
-            try:
-                module = importlib.import_module(
-                    f"{commands_module.__name__}.{module_info.name}"
-                )
-            except ModuleNotFoundError as e:
-                # There was a dependency issue with this module
-                # Skip it
-                print(e)
-                print("dep issue with", f"{commands_module.__name__}.{module_info.name}")
-                continue
-            """
-
             module = importlib.import_module(
                 f"{commands_module.__name__}.{module_info.name}"
             )
@@ -145,15 +132,6 @@ class KbdeCli:
         modules = []
 
         for module_info in module_infos:
-            """
-            # Import the module
-            try:
-                module = importlib.import_module(f"kbde.{module_info.name}")
-            except ModuleNotFoundError:
-                # There was some kind of dependency issue with this module
-                # Skip it
-                continue
-            """
             module = importlib.import_module(f"kbde.{module_info.name}")
 
             # Check if the module has a path
