@@ -54,6 +54,12 @@ class Command(shell_mixins.RunCommand, command.Command):
         if not destination_db:
             destination_db = source_db
 
+        # Take a dump of the source
+        self.run_command(
+            f"DOKKU_HOST={source_host} dokku_client.sh "
+            f"postgres:export {source_db} > {source_db}.dump"
+        )
+
         # See if there is a database with the destination_db
         try:
             self.run_command(
@@ -75,11 +81,13 @@ class Command(shell_mixins.RunCommand, command.Command):
             )
             self.stdout.write(result)
 
-        # Take a dump of the source
-        self.run_command(
-            f"DOKKU_HOST={source_host} dokku_client.sh "
-            f"postgres:export {source_db} > {source_db}.dump"
-        )
+        if overwrite:
+            # Clear out the old schema
+            self.run_command(
+                f"echo 'drop schema public cascade; create schema public' | "
+                f"DOKKU_HOST={destination_host} dokku_client.sh "
+                f"postgres:connect {destination_db}"
+            )
 
         # Load the dump into the destination
         self.run_command(
