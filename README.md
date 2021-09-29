@@ -33,10 +33,13 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v78`:
+  - Adds more template functionality for `django.views`.
+  - Adds to `kbde_cli` commands.
 - `v77`:
-  - Provides fixes to SuccessUrl mixins in `django.view.mixins`.
+  - Provides fixes to SuccessUrl mixins in `django.views.mixins`.
 - `v76`:
-  - Provides fixes to SuccessUrl mixins in `django.view.mixins`.
+  - Provides fixes to SuccessUrl mixins in `django.views.mixins`.
 - `v75`:
   - Patches `django.sass.middleware` to not act on responses which are not HTML. This was affecting sites which served static content via `whitenoise`.
   - Removes `prettify()` call when rendering page HTML with `django.sass.middleware`.
