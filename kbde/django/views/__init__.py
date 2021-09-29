@@ -72,6 +72,14 @@ class UpdateView(mixins.Form,
                  mixins.Base,
                  views.generic.UpdateView):
 
+    def get_object(self, *args, **kwargs):
+        obj = self.kwargs.get("object")
+
+        if obj is not None:
+            return obj
+
+        return super().get_object(*args, **kwargs)
+
     def get_queryset(self):
         return self.get_user_update_queryset()
 
@@ -266,6 +274,7 @@ class ModalView(TemplateView):
     default_modal_button_class = "btn btn-primary"
     modal_header_text = None
     modal_body_template_name = None
+    modal_show = False
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -275,6 +284,7 @@ class ModalView(TemplateView):
             "modal_button_class": self.get_modal_button_class(),
             "modal_header_text": self.get_modal_header_text(),
             "modal_body_template_name": self.get_modal_body_template_name(),
+            "modal_show": self.get_modal_show()
         })
 
         return context_data
@@ -305,3 +315,9 @@ class ModalView(TemplateView):
             f"override .get_modal_body_template_name()"
         )
         return self.modal_body_template_name
+
+    def get_modal_show(self):
+        return self.kwargs.get(
+            "modal_show",
+            self.modal_show,
+        )
