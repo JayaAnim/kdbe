@@ -1,18 +1,21 @@
-{% load bootstrap4 %}
-
-
 {% block form %}
 
-    {% block prompt %}
-        {% if prompt_text %}
-            <h2>{{ prompt_text }}</h2>
-        {% endif %}
+    {% block form_media %}
+        {{ form.media }}
     {% endblock %}
 
+    <form id="form-{{ view.id }}"
+          method="{{ method }}"
+          action="{{ action }}"
+          enctype="multipart/form-data"
+    >
 
-    {{ form.media }}
+        {% block prompt_text %}
+            {% if prompt_text %}
+                <div class="form-prompt-text">{{ prompt_text }}</div>
+            {% endif %}
+        {% endblock %}
 
-    <form method="{{ method }}" action="{{ action }}" enctype="multipart/form-data">
         {% block csrf_token %}
             {% if method.upper == "POST" %}
                 {% csrf_token %}
@@ -28,20 +31,46 @@
             {% endcomment%}
             
             {% if form.non_field_errors %}
-                {% bootstrap_form_errors form type="non_fields" %}
+                {% for error_message in form.non_field_errors %}
+                    <div class="form-error-message non-field-error-message">
+                        {{ error_message }}
+                    </div>
+                {% endfor %}
             {% elif form.errors %}
-                {% bootstrap_alert field_error_message alert_type="danger" %}
+                <div class="form-error-message field-error-message">
+                    {{ field_error_message }}
+                </div>
             {% endif %}
         {% endblock %}
 
         {% block content %}
-            {% for field in form %}
-                {% bootstrap_field field %}
-            {% endfor %}
+            <div class="form-fields">
+                {% for field in form %}
+                    <div class="field-group">
+                        <div class="field-label">
+                            {{ field.label }}
+                        </div>
+
+                        <div class="field-container">
+                            {{ field }}
+                        </div>
+
+                        {% if field.errors %}
+                            <div class="field-errors">
+                                {% for error_message in field.errors %}
+                                    <div class="field-error-message">
+                                        {{ error_message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
         {% endblock %}
 
         {% block buttons %}
-            <button class="{{ submit_button_class }}">{{ submit_button_text }}</button>
+            <button class="submit-button">{{ submit_button_text }}</button>
         {% endblock %}
     </form>
 

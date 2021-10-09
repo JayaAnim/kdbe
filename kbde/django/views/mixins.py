@@ -151,7 +151,6 @@ class Form:
     prompt_text = None
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
-    submit_button_class = "btn btn-primary"
     method = "POST"
     action = ""
     
