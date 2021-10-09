@@ -1,0 +1,25 @@
+{% load render_partial %}
+
+<div class="list-container">
+    {% block list_container %}
+        <div class="object-list">
+            {% block object_list %}
+                {% for object in object_list %}
+                    <div class="list-item">
+                        {% block list_item %}
+                            {% render_partial list_item_partial object=object %}
+                        {% endblock %}
+                    </div>
+                {% endfor %}
+            {% endblock %}
+        </div>
+
+        {% if paginator %}
+            <div class="paginator-container">
+                {% block paginator_container %}
+                        {{ paginator }}
+                {% endblock %}
+            </div>
+        {% endif %}
+    {% endblock %}
+</div>

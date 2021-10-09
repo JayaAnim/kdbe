@@ -161,7 +161,6 @@ class Form:
             "prompt_text": self.get_prompt_text(),
             "field_error_message": self.get_field_error_message(),
             "submit_button_text": self.get_submit_button_text(),
-            "submit_button_class": self.get_submit_button_class(),
             "method": self.get_method(),
             "action": self.get_action(),
         })
@@ -180,9 +179,6 @@ class Form:
     def get_submit_button_text(self):
         return self.submit_button_text
 
-    def get_submit_button_class(self):
-        return self.submit_button_class
-
     def get_method(self):
         return self.method
 
@@ -190,34 +186,9 @@ class Form:
         return self.action
 
 
-class Delete:
-    template_name = "kbde/Delete.html"
+class Delete(Form):
     prompt_text = "Are you sure you want to delete {obj}?"
     submit_button_text = "Delete"
-    submit_button_class = "btn btn-danger"
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        
-        context_data.update({
-            "prompt_text": self.get_formatted_prompt_text(),
-            "submit_button_text": self.get_submit_button_text(),
-            "submit_button_class": self.get_submit_button_class(),
-        })
-
-        return context_data
-
-    def get_formatted_prompt_text(self):
-        return self.get_prompt_text().format(obj=self.object)
-
-    def get_prompt_text(self):
-        return self.prompt_text
-
-    def get_submit_button_text(self):
-        return self.submit_button_text
-
-    def get_submit_button_class(self):
-        return self.submit_button_class
 
 
 class UserAllowedQueryset:
