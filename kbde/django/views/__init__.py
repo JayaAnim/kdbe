@@ -279,3 +279,8 @@ class SearchFormView(FormView):
 
     def get_initial(self):
         return self.request.GET
+
+
+class Messages(TemplateView):
+    template_name = "kbde/views/Messages.html"
+    permission_classes = []
