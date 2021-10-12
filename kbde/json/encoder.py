@@ -22,7 +22,7 @@ class DateTimeSerializer(SerializerBase):
 class Encoder(json.JSONEncoder):
     type_serializer_map = {
         decimal.Decimal: ToStringSerializer,
-        datetime.datetime: ToStringSerializer,
+        datetime.datetime: DateTimeSerializer,
         datetime.date: DateTimeSerializer,
         datetime.time: DateTimeSerializer,
         uuid.UUID: ToStringSerializer,
