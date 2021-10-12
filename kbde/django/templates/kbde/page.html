@@ -31,9 +31,11 @@
     <body style="visibility:hidden;">
         {% block body %}
 
-            {% block content %}
-                {% include content_template_name %}
-            {% endblock %}
+            <div class="page-content">
+                {% block page_content %}
+                    {% include content_template_name %}
+                {% endblock %}
+            </div>
 
             {% block body_scripts %}
                 {% include 'kbde/timezone.html' %}
