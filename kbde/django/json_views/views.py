@@ -11,8 +11,7 @@ from collections import abc
 no_object = object()
 
 
-class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
-                        kbde_mixins.UrlPath,
+class JsonResponseMixin(kbde_mixins.UrlPath,
                         kbde_mixins.Permissions,
                         views.generic.base.ContextMixin):
     fields = None
@@ -22,15 +21,41 @@ class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
     child_views = {}
     login_url = None
     unauthenticated_status_code = 401
+    request_user_attrs = getattr(
+        settings,
+        "JSON_REQUEST_USER_ATTRS",
+        [
+            "user",
+            "token_user",
+        ],
+    )
 
     @classmethod
     def as_view(cls, **initkwargs):
         view = super().as_view(**initkwargs)
         return csrf.csrf_exempt(view)
 
+    def setup(self, request, *args, **kwargs):
+        request_users = [
+            getattr(self, attr, None) for attr in self.request_user_attrs
+        ]
+        request_users = [
+            user for user in request_users if user is not None
+        ]
+        authenticated_request_users = [
+            user for user in request_users if user.is_authenticated
+        ]
+
+        if authenticated_request_users:
+            request = authenticated_request_users[0]
+
+        return super().setup(request, *args, **kwargs)
+
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
 
+        # If the response is trying to redirect the user to the login page,
+        # return an "unauthenticated_status_code" instead
         if (
             isinstance(response, http.HttpResponseRedirect)
             and response.url.startswith(self.get_login_url())
@@ -51,7 +76,7 @@ class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
         return shortcuts.resolve_url(login_url)
 
     def render_to_response(self, context, **response_kwargs):
-        response_kwargs.setdefault('content_type', self.content_type)
+        response_kwargs.setdefault("content_type", self.content_type)
         response_kwargs.setdefault("encoder", self.response_json_encoder)
 
         if context is not None:
@@ -74,6 +99,9 @@ class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
         Returns the data which will go in the response's `data` field
         Gets object data, then renders all child views
         """
+        if context is None:
+            return None
+
         object_data = self.get_object_data(context)
         return self.process_child_views(object_data)
         
@@ -101,7 +129,7 @@ class JsonResponseMixin(token_auth_mixins.TokenUserMixin,
         return object_data
 
     def get_child_views(self):
-        return self.child_views
+        return self.child_views.copy()
 
 
 class JsonView(JsonResponseMixin, views.generic.View):
