@@ -4,6 +4,8 @@ from django.contrib.auth import views as auth_views
 from . import mixins
 from .. import forms
 
+import math
+
 
 not_found = object()
 
@@ -46,14 +48,14 @@ class ListView(mixins.PostToGet,
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
-        context_data.update(self.get_pagination_context_data())
+        context_data.update(self.get_pagination_context_data(context_data))
 
         return context_data
 
-    def get_pagination_context_data(self):
+    def get_pagination_context_data(self, context_data):
         return {
-            "pages_to_show": self.get_pages_to_show(),
-            "extra": self.get_extra(),
+            "page_numbers": self.get_page_numbers(context_data),
+            "extra_params": self.get_extra_params_str(),
         }
 
     def get_queryset(self):
@@ -72,19 +74,45 @@ class ListView(mixins.PostToGet,
 
         return queryset
 
+    def get_page_numbers(self, context_data):
+        page_obj = context_data.get("page_obj")
+
+        if page_obj is None:
+            return None
+
+        pages_to_show = self.get_pages_to_show()
+
+        first_page = int(page_obj.paginator.num_pages - (pages_to_show / 2))
+        last_page = math.ceil(page_obj.paginator.num_pages + (pages_to_show / 2))
+
+        page_offset = 1 - first_page
+
+        adjusted_first_page = first_page + page_offset
+        adjusted_last_page = last_page + page_offset
+
+        if page_obj.paginator.num_pages < adjusted_last_page:
+            adjusted_last_page = page_obj.paginator.num_pages
+
+        return range(adjusted_first_page, adjusted_last_page+1)
+
     def get_pages_to_show(self):
         return self.pages_to_show
 
-    def get_extra(self):
-        extra_kwargs = self.get_extra_kwargs()
-        extra_args = [f"{key}={value}" for key, value in extra_kwargs.items()]
+    def get_extra_params_str(self):
+        extra_params = self.get_extra_params()
+        extra_params = [f"{key}={value}" for key, value in extra_params.items()]
 
-        return "&".join(extra_args)
+        extra_params_str = "&".join(extra_params)
 
-    def get_extra_kwargs(self):
-        extra_kwargs = {key: self.request.GET[key] for key in self.request.GET}
-        extra_kwargs.pop("page", None)
-        return extra_kwargs
+        if extra_params_str:
+            extra_params_str = f"&{extra_params_str}"
+
+        return extra_params_str
+
+    def get_extra_params(self):
+        extra_params = {key: self.request.GET[key] for key in self.request.GET}
+        extra_params.pop("page", None)
+        return extra_params
 
 
 class FormView(mixins.Form, mixins.Base, views.generic.FormView):
@@ -164,14 +192,11 @@ class MarkdownView(TemplateView):
 
 
 class TableView(ListView):
-    template_name = "kbde/views/table/Table.html"
-    table_head_template_name = "kbde/views/table/partials/table_head.html"
-    table_row_template_name = "kbde/views/table/partials/table_row.html"
-    table_empty_template_name = "kbde/views/table/partials/table_empty.html"
+    template_name = "kbde/views/Table.html"
     table_empty_message = None
     fields = None
     labels = None
-    include_row_data = False
+    include_row_data = True
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -199,9 +224,6 @@ class TableView(ListView):
         return {
             "labels": label_list,
             "rows": row_list,
-            "table_head_template_name": self.get_table_head_template_name(),
-            "table_row_template_name": self.get_table_row_template_name(),
-            "table_empty_template_name": self.get_table_empty_template_name(),
             "empty_message": self.get_table_empty_message(),
         }
 
@@ -229,15 +251,6 @@ class TableView(ListView):
         assert False, (
             f"Could not get value for field `{field}` on object `{obj}`"
         )
-
-    def get_table_head_template_name(self):
-        return self.table_head_template_name
-
-    def get_table_row_template_name(self):
-        return self.table_row_template_name
-
-    def get_table_empty_template_name(self):
-        return self.table_empty_template_name
 
     def get_table_empty_message(self):
         assert self.table_empty_message, (

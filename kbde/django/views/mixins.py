@@ -147,7 +147,7 @@ class PostToGet:
 
 
 class Form:
-    template_name = "kbde/Form.html"
+    template_name = "kbde/views/Form.html"
     prompt_text = None
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
@@ -189,6 +189,9 @@ class Form:
 class Delete(Form):
     prompt_text = "Are you sure you want to delete {obj}?"
     submit_button_text = "Delete"
+
+    def get_prompt_text(self):
+        return self.prompt_text.format(obj=self.object)
 
 
 class UserAllowedQueryset:
