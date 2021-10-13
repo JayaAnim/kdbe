@@ -55,11 +55,11 @@
                     {% block form_fields %}
                         {% for field in form %}
                             <div class="field-group">
-                                <div class="field-label">
+                                <label class="field-label">
                                     {{ field.label }}
-                                </div>
+                                </label>
 
-                                <div class="field-container">
+                                <div class="field-container {% if field.errors %}has-error{% endif %}">
                                     {{ field }}
                                 </div>
 

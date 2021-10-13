@@ -10,7 +10,7 @@
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-                {% include 'kbde/open_graph.html' %}
+                {% include 'kbde/django/open_graph.html' %}
             {% endblock %}
 
             <title>{% block page_title %}{% endblock %}</title>
@@ -38,11 +38,11 @@
             </div>
 
             {% block body_scripts %}
-                {% include 'kbde/timezone.html' %}
-                {% include 'kbde/device_id.html' %}
-                {% include 'kbde/validate_forms.html' %}
-                {% include 'kbde/fouc.html' %}
-                {% include 'kbde/analytics.html' %}
+                {% include 'kbde/django/timezone.html' %}
+                {% include 'kbde/django/device_id.html' %}
+                {% include 'kbde/django/validate_forms.html' %}
+                {% include 'kbde/django/fouc.html' %}
+                {% include 'kbde/django/analytics.html' %}
             {% endblock %}
 
         {% endblock %}

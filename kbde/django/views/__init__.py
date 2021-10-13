@@ -81,19 +81,13 @@ class ListView(mixins.PostToGet,
             return None
 
         pages_to_show = self.get_pages_to_show()
+        page_numbers = list(range(pages_to_show))
 
-        first_page = int(page_obj.paginator.num_pages - (pages_to_show / 2))
-        last_page = math.ceil(page_obj.paginator.num_pages + (pages_to_show / 2))
+        first_page = page_obj.number - int((pages_to_show - 1) / 2)
+        if first_page < 1:
+            first_page = 1
 
-        page_offset = 1 - first_page
-
-        adjusted_first_page = first_page + page_offset
-        adjusted_last_page = last_page + page_offset
-
-        if page_obj.paginator.num_pages < adjusted_last_page:
-            adjusted_last_page = page_obj.paginator.num_pages
-
-        return range(adjusted_first_page, adjusted_last_page+1)
+        return [p + first_page for p in page_numbers]
 
     def get_pages_to_show(self):
         return self.pages_to_show
@@ -163,7 +157,7 @@ class MarkdownView(TemplateView):
     """
     A component view which renders a markdown_template into HTML
     """
-    template_name = "kbde/views/MarkdownView.html"
+    template_name = "kbde/django/views/MarkdownView.html"
     markdown_template_name = None
 
     def get_context_data(self, **kwargs):
@@ -192,7 +186,7 @@ class MarkdownView(TemplateView):
 
 
 class TableView(ListView):
-    template_name = "kbde/views/Table.html"
+    template_name = "kbde/django/views/Table.html"
     table_empty_message = None
     fields = None
     labels = None
@@ -282,5 +276,5 @@ class SearchFormView(FormView):
 
 
 class Messages(TemplateView):
-    template_name = "kbde/views/Messages.html"
+    template_name = "kbde/django/views/Messages.html"
     permission_classes = []

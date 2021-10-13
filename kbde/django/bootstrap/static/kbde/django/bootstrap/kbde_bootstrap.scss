@@ -1,0 +1,64 @@
+// Forms
+
+.form-container{
+    .form-error-message{
+        @extend .alert, .alert-danger;
+    }
+    .form-fields{
+        .field-group{
+            margin-bottom: 18px;
+
+            .field-label{
+                @extend .form-label;
+            }
+
+            .field-container{
+                input{
+                    @extend .form-control;
+                }
+                select{
+                    @extend .form-select;
+                }
+            }
+            .field-container.has-error{
+                input{
+                    @extend .is-invalid;
+                }
+                select{
+                    @extend .is-invalid;
+                }
+            }
+
+            .field-errors{
+                .field-error-message{
+                    @extend .invalid-feedback;
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+
+// Alert
+
+
+// Paginator
+
+.paginator{
+    @extend .pagination;
+
+    .page-item-active{
+        @extend .active;
+    }
+    .page-item-disabled{
+        @extend .disabled;
+    }
+}
+
+
+// Table
+
+.table-container{
+    @extend .table-responsive;
+}
