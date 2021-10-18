@@ -1,30 +1,71 @@
 // Forms
 
 .form-container{
+
     .form-error-message{
         @extend .alert, .alert-danger;
     }
-    .form-fields{
-        .field-group{
-            margin-bottom: 18px;
 
+    .form-fields{
+
+        .field-group{
+
+            // Field label
             .field-label{
                 @extend .form-label;
             }
 
-            .field-container{
+            // Base field types
+            // https://getbootstrap.com/docs/5.1/forms/form-control/
+
+            .field-container:not(.field-container-checkbox){
                 input{
                     @extend .form-control;
                 }
+                // https://getbootstrap.com/docs/5.1/forms/select/
                 select{
                     @extend .form-select;
                 }
             }
+
+            // Color fields
+            // https://getbootstrap.com/docs/5.1/forms/form-control/#color
+            .field-container-color{
+                input{
+                    @extend .form-control-color;
+                }
+            }
+
+            //Checkboxes and radios
+            // https://getbootstrap.com/docs/5.1/forms/checks-radios/
+            .field-container-checkbox{
+                @extend .form-check;
+                padding-left: 0;
+                
+                label{
+                    @extend .form-check-label;
+                }
+                input{
+                    @extend .form-check-input;
+                }
+                ul{
+                    list-style-type: none;
+                }
+            }
+
+            // Validation
+            // https://getbootstrap.com/docs/5.1/forms/validation/
             .field-container.has-error{
                 input{
                     @extend .is-invalid;
                 }
+                textarea{
+                    @extend .is-invalid;
+                }
                 select{
+                    @extend .is-invalid;
+                }
+                label{
                     @extend .is-invalid;
                 }
             }
@@ -37,10 +78,21 @@
             }
         }
     }
+
+    .form-buttons{
+        button{
+            @extend .btn, .btn-primary;
+        }
+    }
 }
 
 
 // Alert
+.message-container{
+    .message{
+        @extend .alert;
+    }
+}
 
 
 // Paginator

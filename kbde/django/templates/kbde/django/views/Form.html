@@ -54,25 +54,29 @@
                 <div class="form-fields">
                     {% block form_fields %}
                         {% for field in form %}
-                            <div class="field-group">
-                                <label class="field-label">
-                                    {{ field.label }}
-                                </label>
+                            {% with input_type=field.field.widget.input_type %}
+                                <div class="field-group {% if input_type %}field-group-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %}">
+                                    {% if field.label %}
+                                        <label class="field-label {% if input_type %}field-label-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %}">
+                                            {{ field.label }}
+                                        </label>
+                                    {% endif %}
 
-                                <div class="field-container {% if field.errors %}has-error{% endif %}">
-                                    {{ field }}
-                                </div>
-
-                                {% if field.errors %}
-                                    <div class="field-errors">
-                                        {% for error_message in field.errors %}
-                                            <div class="field-error-message">
-                                                {{ error_message }}
-                                            </div>
-                                        {% endfor %}
+                                    <div class="field-container {% if input_type %}field-container-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %}">
+                                        {{ field }}
                                     </div>
-                                {% endif %}
-                            </div>
+
+                                    {% if field.errors %}
+                                        <div class="field-errors {% if input_type %}field-errors-{{ input_type }}{% endif %}">
+                                            {% for error_message in field.errors %}
+                                                <div class="field-error-message {% if input_type %}field-error-message-{{ input_type }}{% endif %}">
+                                                    {{ error_message }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endwith %}
                         {% endfor %}
                     {% endblock %}
                 </div>
