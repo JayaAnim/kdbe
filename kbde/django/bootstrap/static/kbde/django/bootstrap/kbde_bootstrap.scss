@@ -9,65 +9,119 @@
     .form-fields{
 
         .field-group{
+            // TODO: remove this. It's for dev;
+            margin-bottom: 50px !important;
 
-            // Field label
             .field-label{
                 @extend .form-label;
             }
 
-            // Base field types
-            // https://getbootstrap.com/docs/5.1/forms/form-control/
+            .field-container{
 
-            .field-container:not(.field-container-checkbox){
-                input{
+                // Text, Email, Number
+                &.field-container-text, &.field-container-email, &.field-container-number{
+                    input{
+                        @extend .form-control;
+                    }
+                }
+
+                // Textarea
+                textarea{
                     @extend .form-control;
                 }
-                // https://getbootstrap.com/docs/5.1/forms/select/
+
+                // File
+                &.field-container-file{
+                    input{
+                        @extend .form-control;
+                    }
+                }
+
+                // Color
+                &.field-container-color{
+                    input{
+                        @extend .form-control, .form-control-color;
+                    }
+                }
+
+                // Select
                 select{
                     @extend .form-select;
                 }
+
+                // Checkboxes and radios
+                &.field-container-checkbox, &.field-container-radio{
+                    @extend .form-check;
+
+                    label{
+                        @extend .form-check-label;
+                    }
+                    input{
+                        @extend .form-check-input;
+                    }
+                    ul{
+                        margin-bottom: 0;
+                        padding-left: 0;
+                        list-style: none;
+                    }
+                }
+
+                // Validation
+                &.has-error{
+
+                    // Text, Email, Number
+                    &.field-container-text, &.field-container-email, &.field-container-number{
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+
+                    // Textarea
+                    textarea{
+                        @extend .is-invalid;
+                    }
+
+                    // File
+                    &.field-container-file{
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+
+                    // Color
+                    &.field-container-color{
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+
+                    // Select
+                    select{
+                        @extend .is-invalid;
+                    }
+
+                    // Checkboxes and radios
+                    &.field-container-checkbox, &.field-container-radio{
+                        label{
+                            color: $danger;
+                        }
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+                }
+
+                &.disabled{
+                    &.field-container-checkbox, &.field-container-radio{
+                        label{
+                            opacity: .5;
+                        }
+                    }
+                }
             }
 
-            // Color fields
-            // https://getbootstrap.com/docs/5.1/forms/form-control/#color
-            .field-container-color{
-                input{
-                    @extend .form-control-color;
-                }
-            }
-
-            //Checkboxes and radios
-            // https://getbootstrap.com/docs/5.1/forms/checks-radios/
-            .field-container-checkbox{
-                @extend .form-check;
-                padding-left: 0;
-                
-                label{
-                    @extend .form-check-label;
-                }
-                input{
-                    @extend .form-check-input;
-                }
-                ul{
-                    list-style-type: none;
-                }
-            }
-
-            // Validation
-            // https://getbootstrap.com/docs/5.1/forms/validation/
-            .field-container.has-error{
-                input{
-                    @extend .is-invalid;
-                }
-                textarea{
-                    @extend .is-invalid;
-                }
-                select{
-                    @extend .is-invalid;
-                }
-                label{
-                    @extend .is-invalid;
-                }
+            .field-help-text{
+                @extend .form-text;
             }
 
             .field-errors{
@@ -80,7 +134,7 @@
     }
 
     .form-buttons{
-        button{
+        .submit-button{
             @extend .btn, .btn-primary;
         }
     }
