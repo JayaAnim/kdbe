@@ -17,7 +17,10 @@
             .field-container{
 
                 // Text, Email, Number
-                &.field-container-text, &.field-container-email, &.field-container-number{
+                &.field-container-text,
+                &.field-container-email,
+                &.field-container-number,
+                &.field-container-password{
                     input{
                         @extend .form-control;
                     }
@@ -68,7 +71,10 @@
                 &.has-error{
 
                     // Text, Email, Number
-                    &.field-container-text, &.field-container-email, &.field-container-number{
+                    &.field-container-text,
+                    &.field-container-email,
+                    &.field-container-number,
+                    &.field-container-password{
                         input{
                             @extend .is-invalid;
                         }
@@ -140,9 +146,22 @@
 
 
 // Alert
-.message-container{
+.messages-container{
     .message{
         @extend .alert;
+        
+        &.info{
+            @extend .alert-info;
+        }
+        &.success{
+            @extend .alert-success;
+        }
+        &.warning{
+            @extend .alert-warning;
+        }
+        &.error{
+            @extend .alert-danger;
+        }
     }
 }
 
