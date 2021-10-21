@@ -3,7 +3,7 @@ from kbde.django import views as kbde_views
 from . import views
 
 
-class Filter(views.FilterMixin, kbde_views.FormView):
+class Filter(views.FiltersetMixin, kbde_views.FormView):
     method = "GET"
     submit_button_text = "Apply Filters"
 

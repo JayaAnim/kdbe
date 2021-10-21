@@ -2,13 +2,20 @@ from django.core import exceptions
 from django_filters import views as filter_views
 
 
-class FilterMixin(filter_views.FilterMixin):
+class FiltersetMixin(filter_views.FilterMixin):
     model = None
     queryset = None
 
     def get(self, *args, **kwargs):
         self.filterset = self.get_filterset(self.get_filterset_class())
         return super().get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data()
+
+        context_data["filterset"] = self.filterset
+
+        return context_data
     
     def get_queryset(self):
         queryset = super().get_queryset()
