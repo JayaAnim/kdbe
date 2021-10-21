@@ -4,7 +4,6 @@ from . import views
 
 
 class Filter(views.FilterMixin, kbde_views.FormView):
-    template_name = "kbde/django/views/Form.html"
     method = "GET"
     submit_button_text = "Apply Filters"
 

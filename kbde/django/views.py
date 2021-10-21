@@ -152,7 +152,7 @@ class PostToGetMixin:
 
 
 class FormMixin:
-    template_name = "kbde/views/Form.html"
+    template_name = "kbde/django/views/Form.html"
     prompt_text = None
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
@@ -496,9 +496,11 @@ class ListView(PostToGetMixin,
         if first_page < 1:
             first_page = 1
 
-        page_numbers = [p + first_page for p in page_numbers]
+        last_page = first_page + pages_to_show - 1
+        if last_page > page_obj.paginator.num_pages:
+            first_page = first_page - (last_page - page_obj.paginator.num_pages)
 
-        return [p for p in page_numbers if p <= page_obj.paginator.num_pages]
+        return [p + first_page for p in page_numbers]
 
     def get_pages_to_show(self):
         return self.pages_to_show
