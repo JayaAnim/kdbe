@@ -81,16 +81,15 @@ class ListView(mixins.PostToGet,
             return None
 
         pages_to_show = self.get_pages_to_show()
-        if page_obj.paginator.num_pages < pages_to_show:
-            pages_to_show = page_obj.paginator.num_pages
-
         page_numbers = list(range(pages_to_show))
 
         first_page = page_obj.number - int((pages_to_show - 1) / 2)
         if first_page < 1:
             first_page = 1
 
-        return [p + first_page for p in page_numbers]
+        page_numbers = [p + first_page for p in page_numbers]
+
+        return [p for p in page_numbers if p <= page_obj.paginator.num_pages]
 
     def get_pages_to_show(self):
         return self.pages_to_show
