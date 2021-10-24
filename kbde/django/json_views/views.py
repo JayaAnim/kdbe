@@ -46,7 +46,7 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
         ]
 
         if authenticated_request_users:
-            request = authenticated_request_users[0]
+            request.user = authenticated_request_users[0]
 
         return super().setup(request, *args, **kwargs)
 
@@ -214,7 +214,7 @@ class ListView(RenderDetailMixin, JsonResponseMixin, views.generic.ListView):
         }
 
 
-class FormMixin(RenderDetailMixin):
+class FormDescriptionMixin:
     all_field_attrs = [
         "required",
         "label",
@@ -255,45 +255,6 @@ class FormMixin(RenderDetailMixin):
             "max_value",
         ],
     }
-
-    form_error_status_code = 422
-    form_success_status_code = 200
-
-    def form_valid(self, form):
-        super().form_valid(form)
-
-        context = {
-            "form": form,
-        }
-
-        return self.render_to_response(
-            context,
-            status=self.form_success_status_code,
-        )
-
-    def render_to_response(self, context, **response_kwargs):
-        if context is not None:
-            form = context.get("form")
-
-            if form and form.errors:
-                response_kwargs["status"] = self.form_error_status_code
-
-        return super().render_to_response(context, **response_kwargs)
-
-    def get_response_context(self, context):
-        form = context["form"]
-        response_context = {}
-
-        if form.errors:
-            response_context["errors"] = form.errors
-
-        if hasattr(form, "cleaned_data") and not form.errors:
-            response_context["data"] = self.render_detail_view(form.cleaned_data)
-        else:
-            response_context["data"] = self.get_form_data(form)
-            response_context["form"] = self.get_form_description_data(form)
-
-        return response_context
 
     def get_form_description_data(self, form):
         all_field_attrs = self.get_all_field_attrs()
@@ -338,6 +299,47 @@ class FormMixin(RenderDetailMixin):
 
     def get_field_attr_map(self):
         return self.field_attr_map
+
+
+class FormMixin(FormDescriptionMixin, RenderDetailMixin):
+    form_error_status_code = 422
+    form_success_status_code = 200
+
+    def form_valid(self, form):
+        super().form_valid(form)
+
+        context = {
+            "form": form,
+        }
+
+        return self.render_to_response(
+            context,
+            status=self.form_success_status_code,
+        )
+
+    def render_to_response(self, context, **response_kwargs):
+        if context is not None:
+            form = context.get("form")
+
+            if form and form.errors:
+                response_kwargs["status"] = self.form_error_status_code
+
+        return super().render_to_response(context, **response_kwargs)
+
+    def get_response_context(self, context):
+        form = context["form"]
+        response_context = {}
+
+        if form.errors:
+            response_context["errors"] = form.errors
+
+        if hasattr(form, "cleaned_data") and not form.errors:
+            response_context["data"] = self.render_detail_view(form.cleaned_data)
+        else:
+            response_context["data"] = self.get_form_data(form)
+            response_context["form"] = self.get_form_description_data(form)
+
+        return response_context
 
     def get_success_url(self):
         return ""

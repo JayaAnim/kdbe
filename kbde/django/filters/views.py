@@ -1,6 +1,7 @@
 from django.core import exceptions
 from django_filters import views as filter_views
 from kbde.django import views as kbde_views
+from kbde.django.json_views import views as json_views
 
 
 class FiltersetMixin(kbde_views.PostToGetMixin, filter_views.FilterMixin):
@@ -54,3 +55,13 @@ class FiltersetMixin(kbde_views.PostToGetMixin, filter_views.FilterMixin):
             f"{self.__class__} must define .queryset, .model, or override "
             f".get_filterset_queryset()"
         )
+
+
+class JsonFiltersetMixin(json_views.FormDescriptionMixin, FiltersetMixin):
+    
+    def get_response_context(self, context):
+        response_context = super().get_response_context(context)
+
+        response_context["filterset"] = self.get_form_description_data(self.filterset.form)
+
+        return response_context
