@@ -1,8 +1,9 @@
 from django.core import exceptions
 from django_filters import views as filter_views
+from kbde.django import views as kbde_views
 
 
-class FiltersetMixin(filter_views.FilterMixin):
+class FiltersetMixin(kbde_views.PostToGetMixin, filter_views.FilterMixin):
     model = None
     queryset = None
 

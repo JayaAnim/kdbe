@@ -1,0 +1,33 @@
+<div class="js-tabs-container">
+    {% block js_tabs_container %}
+        <ul class="{% block ul_class %}nav nav-tabs{% endblock %}" id="js-tabs-{{ view.id }}-tab-list" role="tablist">
+            {% block tab_list %}
+                {% for tab_title, partial_path in tab_partials %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if forloop.counter0 == 0 %}active{% endif %}"
+                                id="js-tabs-{{ view.id }}-tab-{{ forloop.counter0 }}"
+                                data-bs-toggle="tab"
+                                data-bs-target="#js-tabs-{{ view.id }}-tab-content-{{ forloop.counter0 }}"
+                                type="button"
+                                role="tab"
+                        >
+                            {{ tab_title }}
+                        </button>
+                    </li>
+                {% endfor %}
+            {% endblock %}
+        </ul>
+        <div class="tab-content" id="js-tabs-{{ view.id }}-tab-content">
+            {% block tab_content %}
+                {% for tab_title, partial_path in tab_partials %}
+                    <div class="tab-pane fade {% if forloop.counter0 == 0 %}show active{% endif %}"
+                         id="js-tabs-{{ view.id }}-tab-content-{{ forloop.counter0 }}"
+                         role="tabpanel"
+                    >
+                        {% include partial_path %}
+                    </div>
+                {% endfor %}
+            {% endblock %}
+        </div>
+    {% endblock %}
+</div>
