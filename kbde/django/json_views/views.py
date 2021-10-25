@@ -221,7 +221,6 @@ class FormDescriptionMixin:
         "label_suffix",
         "initial",
         "help_text",
-        "localize",
         "disabled",
     ]
 
@@ -264,10 +263,13 @@ class FormDescriptionMixin:
         for field_name in form.fields:
             bound_field = form[field_name]
             field_attrs = field_attr_map.get(bound_field.field.__class__, [])
-            description_data[field_name] = self.get_field_description_data(
+            field_description_data = self.get_field_description_data(
                 bound_field.field,
                 all_field_attrs + field_attrs,
             )
+            field_description_data["input_type"] = bound_field.field.widget.input_type
+
+            description_data[field_name] = field_description_data
 
         return description_data
 
