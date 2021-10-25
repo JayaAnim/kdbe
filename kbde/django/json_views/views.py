@@ -24,8 +24,8 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
         settings,
         "JSON_REQUEST_USER_ATTRS",
         [
-            "user",
             "token_user",
+            "session_header_user",
         ],
     )
 
@@ -36,7 +36,7 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
 
     def setup(self, request, *args, **kwargs):
         request_users = [
-            getattr(self, attr, None) for attr in self.request_user_attrs
+            getattr(request, attr, None) for attr in self.request_user_attrs
         ]
         request_users = [
             user for user in request_users if user is not None
@@ -122,7 +122,10 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
 
         for field_name, view_class in child_views.items():
             view = view_class()
+            view.request = self.request
+
             value = object_data[field_name]
+
             object_data[field_name] = view.get_response_data(value)
 
         return object_data
@@ -165,7 +168,9 @@ class RenderDetailMixin:
 
     def get_detail_view(self):
         detail_view_class = self.get_detail_view_class()
-        return detail_view_class(**self.get_detail_view_kwargs())
+        detail_view = detail_view_class(**self.get_detail_view_kwargs())
+        detail_view.request = self.request
+        return detail_view
 
     def get_detail_view_class(self):
         assert self.detail_view_class is not None, (
