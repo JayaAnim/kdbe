@@ -1,24 +1,29 @@
-from django import http, urls, utils
+from django import views, template, utils, http, urls
 from django.core import exceptions
-from django.contrib.auth import mixins as auth_mixins
+from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import finders
 from django.templatetags import static
 from django.conf import settings
 
-from kbde.import_tools import utils as import_utils
 from kbde.django import permissions
+from kbde.django import forms
 
-import uuid
+from kbde.import_tools import utils as import_utils
+
+import math, uuid
 
 
-class ViewId:
+not_found = object()
+
+
+class ViewIdMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id = uuid.uuid4()
 
 
-class Permissions:
+class PermissionsMixin:
     permission_classes = None
 
     def dispatch(self, *args, **kwargs):
@@ -74,7 +79,7 @@ class Permissions:
         return settings.DEFAULT_PERMISSION_CLASSES
 
 
-class UrlPath:
+class UrlPathMixin:
         
     @classmethod
     def get_urls_path(cls, url_path, **view_kwargs):
@@ -85,7 +90,7 @@ class UrlPath:
         )
 
 
-class PageTemplate(UrlPath):
+class PageTemplateMixin(UrlPathMixin):
     page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
     template_name = None
     is_page_view = False
@@ -136,22 +141,21 @@ class PageTemplate(UrlPath):
         return template_name
 
 
-class Base(Permissions, ViewId, PageTemplate):
+class BaseMixin(PermissionsMixin, ViewIdMixin, PageTemplateMixin):
     pass
 
 
-class PostToGet:
+class PostToGetMixin:
     
     def post(self, *args, **kwargs):
         return self.get(*args, **kwargs)
 
 
-class Form:
-    template_name = "kbde/Form.html"
+class FormMixin:
+    template_name = "kbde/django/views/Form.html"
     prompt_text = None
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
-    submit_button_class = "btn btn-primary"
     method = "POST"
     action = ""
     
@@ -162,7 +166,6 @@ class Form:
             "prompt_text": self.get_prompt_text(),
             "field_error_message": self.get_field_error_message(),
             "submit_button_text": self.get_submit_button_text(),
-            "submit_button_class": self.get_submit_button_class(),
             "method": self.get_method(),
             "action": self.get_action(),
         })
@@ -181,9 +184,6 @@ class Form:
     def get_submit_button_text(self):
         return self.submit_button_text
 
-    def get_submit_button_class(self):
-        return self.submit_button_class
-
     def get_method(self):
         return self.method
 
@@ -191,37 +191,15 @@ class Form:
         return self.action
 
 
-class Delete:
-    template_name = "kbde/Delete.html"
+class DeleteMixin(FormMixin):
     prompt_text = "Are you sure you want to delete {obj}?"
     submit_button_text = "Delete"
-    submit_button_class = "btn btn-danger"
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        
-        context_data.update({
-            "prompt_text": self.get_formatted_prompt_text(),
-            "submit_button_text": self.get_submit_button_text(),
-            "submit_button_class": self.get_submit_button_class(),
-        })
-
-        return context_data
-
-    def get_formatted_prompt_text(self):
-        return self.get_prompt_text().format(obj=self.object)
 
     def get_prompt_text(self):
-        return self.prompt_text
-
-    def get_submit_button_text(self):
-        return self.submit_button_text
-
-    def get_submit_button_class(self):
-        return self.submit_button_class
+        return self.prompt_text.format(obj=self.object)
 
 
-class UserAllowedQueryset:
+class UserAllowedQuerysetMixin:
     """
     Provides methods to pull only model instances which the
         currently-logged-in user can interact with
@@ -266,7 +244,7 @@ class UserAllowedQueryset:
         return self.model
 
 
-class OpenGraph:
+class OpenGraphMixin:
     """
     A view mixin which enables OG
     """
@@ -286,7 +264,7 @@ class OpenGraph:
         return path
 
 
-class RelatedObject:
+class RelatedObjectMixin:
     related_model = None
     related_orm_path = None
 
@@ -378,13 +356,13 @@ class RelatedObject:
         serializer.save(**kwargs)
 
 
-class SoftDelete:
+class SoftDeleteMixin:
     
     def get_queryset(self):
         return super().get_queryset().filter(deleted=False)
 
 
-class SearchQueryset:
+class SearchQuerysetMixin:
     search_url_kwarg = "search"
     search_vector_args = None
 
@@ -406,7 +384,7 @@ class SearchQueryset:
         return q
 
 
-class SuccessUrlNext:
+class SuccessUrlNextMixin:
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -427,7 +405,7 @@ class SuccessUrlNext:
         return self.request.GET.get("next")
 
 
-class SuccessUrlNextRequired(SuccessUrlNext):
+class SuccessUrlNextRequiredMixin(SuccessUrlNextMixin):
     success_url = "/"
 
     def get_next_url(self):
@@ -439,3 +417,280 @@ class SuccessUrlNextRequired(SuccessUrlNext):
             )
 
         return next_url
+
+
+class View(BaseMixin, views.generic.View):
+    pass
+
+
+class TemplateView(PostToGetMixin, BaseMixin, views.generic.TemplateView):
+    pass
+
+
+class RedirectView(BaseMixin, views.generic.RedirectView):
+    pass
+
+
+class DetailView(PostToGetMixin,
+                 UserAllowedQuerysetMixin,
+                 BaseMixin,
+                 views.generic.DetailView):
+
+    def get_object(self, *args, **kwargs):
+        obj = self.kwargs.get("object")
+
+        if obj is not None:
+            return obj
+
+        return super().get_object(*args, **kwargs)
+
+    def get_queryset(self):
+        return self.get_user_read_queryset()
+
+
+class ListView(PostToGetMixin,
+               UserAllowedQuerysetMixin,
+               BaseMixin,
+               views.generic.ListView):
+    pages_to_show = 5
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update(self.get_pagination_context_data(context_data))
+
+        return context_data
+
+    def get_pagination_context_data(self, context_data):
+        return {
+            "page_numbers": self.get_page_numbers(context_data),
+            "extra_params": self.get_extra_params_str(),
+        }
+
+    def get_queryset(self):
+        object_list = self.kwargs.get("object_list")
+
+        if object_list is not None:
+            return object_list
+
+        queryset = self.get_user_read_queryset()
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
+
+    def get_page_numbers(self, context_data):
+        page_obj = context_data.get("page_obj")
+
+        if page_obj is None:
+            return None
+
+        pages_to_show = self.get_pages_to_show()
+        if pages_to_show > page_obj.paginator.num_pages:
+            pages_to_show = page_obj.paginator.num_pages
+
+        page_numbers = list(range(pages_to_show))
+
+        first_page = page_obj.number - int((pages_to_show - 1) / 2)
+        if first_page < 1:
+            first_page = 1
+
+        last_page = first_page + pages_to_show - 1
+        if last_page > page_obj.paginator.num_pages:
+            first_page = first_page - (last_page - page_obj.paginator.num_pages)
+
+        return [p + first_page for p in page_numbers]
+
+    def get_pages_to_show(self):
+        return self.pages_to_show
+
+    def get_extra_params_str(self):
+        extra_params = self.get_extra_params()
+        extra_params = [f"{key}={value}" for key, value in extra_params.items()]
+
+        extra_params_str = "&".join(extra_params)
+
+        if extra_params_str:
+            extra_params_str = f"&{extra_params_str}"
+
+        return extra_params_str
+
+    def get_extra_params(self):
+        extra_params = {key: self.request.GET[key] for key in self.request.GET}
+        extra_params.pop("page", None)
+        return extra_params
+
+
+class FormView(FormMixin, BaseMixin, views.generic.FormView):
+    pass
+
+
+class CreateView(FormMixin, BaseMixin, views.generic.CreateView):
+    pass
+
+
+class UpdateView(FormMixin,
+                 UserAllowedQuerysetMixin,
+                 BaseMixin,
+                 views.generic.UpdateView):
+
+    def get_object(self, *args, **kwargs):
+        obj = self.kwargs.get("object")
+
+        if obj is not None:
+            return obj
+
+        return super().get_object(*args, **kwargs)
+
+    def get_queryset(self):
+        return self.get_user_update_queryset()
+
+
+class DeleteView(DeleteMixin,
+                 UserAllowedQuerysetMixin,
+                 BaseMixin,
+                 views.generic.DeleteView):
+
+    def get_queryset(self):
+        return self.get_user_delete_queryset()
+
+
+# Auth
+
+
+class LoginView(FormMixin, BaseMixin, auth_views.LoginView):
+    permission_classes = []
+
+
+# Custom Views
+
+
+class MarkdownView(TemplateView):
+    """
+    A component view which renders a markdown_template into HTML
+    """
+    template_name = "kbde/django/views/MarkdownView.html"
+    markdown_template_name = None
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+        context_data["markdown"] = self.get_markdown(context_data)
+        return context_data
+
+    def get_markdown(self, context_data):
+        import markdown
+
+        markdown_template_name = self.get_markdown_template_name()
+        markdown_content = template.loader.render_to_string(
+            markdown_template_name,
+            context_data,
+        )
+
+        html = markdown.markdown(markdown_content)
+
+        return utils.safestring.mark_safe(html)
+
+    def get_markdown_template_name(self):
+        return (
+            self.markdown_template_name or 
+            self.get_class_template_name(file_extension="md")
+        )
+
+
+class TableView(ListView):
+    template_name = "kbde/django/views/Table.html"
+    table_empty_message = None
+    fields = None
+    labels = None
+    include_row_data = True
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update(self.get_table(context_data["object_list"]))
+
+        return context_data
+
+    def get_table(self, object_list):
+        label_list = self.get_label_list()
+
+        row_list = []
+        for obj in object_list:
+            row = {
+                "object": obj,
+            }
+
+            if self.include_row_data:
+                row_data = self.get_row_data_from_object(obj)
+                assert len(row_data) == len(label_list)
+                row["data"] = row_data
+
+            row_list.append(row)
+
+        return {
+            "labels": label_list,
+            "rows": row_list,
+            "empty_message": self.get_table_empty_message(),
+        }
+
+    def get_label_list(self):
+        labels = self.get_labels()
+        return [labels[field] for field in self.get_fields()]
+
+    def get_row_data_from_object(self, obj):
+        return [
+            self.get_value_from_object(obj, field) for field in self.get_fields()
+        ]
+
+    def get_value_from_object(self, obj, field):
+        # Try to get with a getter method
+        get_method_name = f"get_{field}"
+        get_method = getattr(obj, get_method_name, not_found)
+        if get_method != not_found:
+            return get_method()
+
+        # Get explicit value from the object
+        explicit_value = getattr(obj, field, not_found)
+        if explicit_value != not_found:
+            return explicit_value
+
+        assert False, (
+            f"Could not get value for field `{field}` on object `{obj}`"
+        )
+
+    def get_table_empty_message(self):
+        assert self.table_empty_message, (
+            f"{self.__class__} must define .table_empty_message"
+        )
+        return self.table_empty_message
+
+    def get_fields(self):
+        assert self.fields, (
+            f"{self.__class__} must define .fields"
+        )
+        return self.fields
+
+    def get_labels(self):
+        assert self.labels, (
+            f"{self.__class__} must define .labels"
+        )
+        return self.labels
+
+
+class SearchFormView(FormView):
+    form_class = forms.SearchForm
+    method = "GET"
+    permission_classes = []
+    prompt_text = ""
+
+    def get_initial(self):
+        return self.request.GET
+
+
+class Messages(TemplateView):
+    template_name = "kbde/django/views/Messages.html"
+    permission_classes = []

@@ -1,8 +1,7 @@
 from django import http, views, forms, shortcuts
 from django.conf import settings
 from django.views.decorators import csrf
-from kbde.django.views import mixins as kbde_mixins
-from kbde.django.token_auth.views import mixins as token_auth_mixins
+from kbde.django import views as kbde_views
 from kbde.django.json import encoder as kbde_encoder
 
 from collections import abc
@@ -11,8 +10,8 @@ from collections import abc
 no_object = object()
 
 
-class JsonResponseMixin(kbde_mixins.UrlPath,
-                        kbde_mixins.Permissions,
+class JsonResponseMixin(kbde_views.UrlPathMixin,
+                        kbde_views.PermissionsMixin,
                         views.generic.base.ContextMixin):
     fields = None
     response_class = http.JsonResponse
@@ -47,7 +46,7 @@ class JsonResponseMixin(kbde_mixins.UrlPath,
         ]
 
         if authenticated_request_users:
-            request = authenticated_request_users[0]
+            request.user = authenticated_request_users[0]
 
         return super().setup(request, *args, **kwargs)
 
@@ -215,14 +214,13 @@ class ListView(RenderDetailMixin, JsonResponseMixin, views.generic.ListView):
         }
 
 
-class FormMixin(RenderDetailMixin):
+class FormDescriptionMixin:
     all_field_attrs = [
         "required",
         "label",
         "label_suffix",
         "initial",
         "help_text",
-        "localize",
         "disabled",
     ]
 
@@ -257,6 +255,55 @@ class FormMixin(RenderDetailMixin):
         ],
     }
 
+    def get_form_description_data(self, form):
+        all_field_attrs = self.get_all_field_attrs()
+        field_attr_map = self.get_field_attr_map()
+        description_data = {}
+
+        for field_name in form.fields:
+            bound_field = form[field_name]
+            field_attrs = field_attr_map.get(bound_field.field.__class__, [])
+            field_description_data = self.get_field_description_data(
+                bound_field.field,
+                all_field_attrs + field_attrs,
+            )
+            field_description_data["input_type"] = bound_field.field.widget.input_type
+
+            description_data[field_name] = field_description_data
+
+        return description_data
+
+    def get_field_description_data(self, field, attrs):
+        description_data = {}
+
+        for field_attr in attrs:
+            if not hasattr(field, field_attr):
+                continue
+
+            value = getattr(field, field_attr)
+
+            # Check to see if the value is callable
+            if callable(value):
+                value = value()
+
+            description_data[field_attr] = value
+
+        return description_data
+
+    def get_form_data(self, form):
+        return {
+            field_name: form[field_name].value()
+            for field_name in form.fields
+        }
+
+    def get_all_field_attrs(self):
+        return self.all_field_attrs
+
+    def get_field_attr_map(self):
+        return self.field_attr_map
+
+
+class FormMixin(FormDescriptionMixin, RenderDetailMixin):
     form_error_status_code = 422
     form_success_status_code = 200
 
@@ -295,50 +342,6 @@ class FormMixin(RenderDetailMixin):
             response_context["form"] = self.get_form_description_data(form)
 
         return response_context
-
-    def get_form_description_data(self, form):
-        all_field_attrs = self.get_all_field_attrs()
-        field_attr_map = self.get_field_attr_map()
-        description_data = {}
-
-        for field_name in form.fields:
-            bound_field = form[field_name]
-            field_attrs = field_attr_map.get(bound_field.field.__class__, [])
-            description_data[field_name] = self.get_field_description_data(
-                bound_field.field,
-                all_field_attrs + field_attrs,
-            )
-
-        return description_data
-
-    def get_field_description_data(self, field, attrs):
-        description_data = {}
-
-        for field_attr in attrs:
-            if not hasattr(field, field_attr):
-                continue
-
-            value = getattr(field, field_attr)
-
-            # Check to see if the value is callable
-            if callable(value):
-                value = value()
-
-            description_data[field_attr] = value
-
-        return description_data
-
-    def get_form_data(self, form):
-        return {
-            field_name: form[field_name].value()
-            for field_name in form.fields
-        }
-
-    def get_all_field_attrs(self):
-        return self.all_field_attrs
-
-    def get_field_attr_map(self):
-        return self.field_attr_map
 
     def get_success_url(self):
         return ""

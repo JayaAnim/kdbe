@@ -1,0 +1,112 @@
+<div class="form-container">
+    {% block form_container %}
+
+        {% block media %}
+            {{ form.media }}
+        {% endblock %}
+
+        {% if prompt_text %}
+            <div class="prompt-text">
+                {% block prompt_text %}
+                    {{ prompt_text }}
+                {% endblock %}
+            </div>
+        {% endif %}
+
+        <form id="form-{{ view.id }}"
+              method="{{ method }}"
+              action="{{ action }}"
+              enctype="multipart/form-data"
+        >
+            {% block form %}
+
+                {% if method.upper == "POST" %}
+                    {% block csrf_token %}
+                        {% csrf_token %}
+                    {% endblock %}
+                {% endif %}
+
+                {% if form.errors %}
+                    <div class="form-errors">
+                        {% block form_errors %}
+                            {% comment %}
+                                If there are form non-field errors, display them here.
+                                If there are no non-fields errors, but there are still field errors,
+                                tell the user to correct the field errors below.
+                                Otherwise, show nothing
+                            {% endcomment%}
+                            
+                            {% if form.non_field_errors %}
+                                {% for error_message in form.non_field_errors %}
+                                    <div class="form-error-message non-field-error-message">
+                                        {{ error_message }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="form-error-message field-error-message">
+                                    {{ field_error_message }}
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+                {% endif %}
+
+                <div class="form-fields">
+                    {% block form_fields %}
+                        {% for field in form %}
+                            {% with input_type=field.field.widget.input_type disabled=field.field.disabled required=field.field.required %}
+                                <div class="field-group {% if input_type %}field-group-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
+
+                                    {# Label #}
+                                    {% if field.label %}
+                                        {% if field.field.choices or input_type != "checkbox" %}
+                                            <label class="field-label {% if input_type %}field-label-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
+                                                {{ field.label }}
+                                            </label>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {# Field #}
+                                    <div class="field-container {% if input_type %}field-container-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
+                                        {{ field }}
+
+                                        {% if input_type == "checkbox" and not field.field.choices and field.label %}
+                                            <label class="checkbox-label">
+                                                {{ field.label }}
+                                            </label>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {# Help Text #}
+                                    {% if field.help_text %}
+                                        <div class="field-help-text {% if input_type %}field-help-text-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
+                                            {{ field.help_text }}
+                                        </div>
+                                    {% endif %}
+
+                                    {# Errors #}
+                                    {% if field.errors %}
+                                        <div class="field-errors {% if input_type %}field-errors-{{ input_type }}{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
+                                            {% for error_message in field.errors %}
+                                                <div class="field-error-message">
+                                                    {{ error_message }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    {% endblock %}
+                </div>
+
+                <div class="form-buttons">
+                    {% block form_buttons %}
+                        <button class="submit-button">{{ submit_button_text }}</button>
+                    {% endblock %}
+                </div>
+
+            {% endblock %}
+        </form>
+    {% endblock %}
+</div>

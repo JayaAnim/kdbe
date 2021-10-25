@@ -1,7 +1,7 @@
 from django.contrib.auth import forms as auth_forms
 from kbde.django.json_views import views as json_views
 
-from .. import models
+from . import models
 
 
 class AuthTokenDetail(json_views.DetailView):

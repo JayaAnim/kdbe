@@ -1,0 +1,41 @@
+// scss-docs-start import-stack
+// Configuration
+@import "staticfiles/bootstrap/scss/functions";
+@import "staticfiles/bootstrap/scss/variables";
+@import "staticfiles/bootstrap/scss/mixins";
+
+// Layout & components
+@import "staticfiles/bootstrap/scss/root";
+@import "staticfiles/bootstrap/scss/reboot";
+@import "staticfiles/bootstrap/scss/type";
+@import "staticfiles/bootstrap/scss/images";
+@import "staticfiles/bootstrap/scss/containers";
+@import "staticfiles/bootstrap/scss/grid";
+@import "staticfiles/bootstrap/scss/tables";
+@import "staticfiles/bootstrap/scss/forms";
+@import "staticfiles/bootstrap/scss/buttons";
+@import "staticfiles/bootstrap/scss/transitions";
+@import "staticfiles/bootstrap/scss/dropdown";
+@import "staticfiles/bootstrap/scss/button-group";
+@import "staticfiles/bootstrap/scss/nav";
+@import "staticfiles/bootstrap/scss/navbar";
+@import "staticfiles/bootstrap/scss/card";
+@import "staticfiles/bootstrap/scss/accordion";
+@import "staticfiles/bootstrap/scss/breadcrumb";
+@import "staticfiles/bootstrap/scss/pagination";
+@import "staticfiles/bootstrap/scss/badge";
+@import "staticfiles/bootstrap/scss/alert";
+@import "staticfiles/bootstrap/scss/progress";
+@import "staticfiles/bootstrap/scss/list-group";
+@import "staticfiles/bootstrap/scss/close";
+@import "staticfiles/bootstrap/scss/toasts";
+@import "staticfiles/bootstrap/scss/modal";
+@import "staticfiles/bootstrap/scss/tooltip";
+@import "staticfiles/bootstrap/scss/popover";
+@import "staticfiles/bootstrap/scss/carousel";
+@import "staticfiles/bootstrap/scss/spinners";
+@import "staticfiles/bootstrap/scss/offcanvas";
+@import "staticfiles/bootstrap/scss/placeholders";
+
+// Helpers
+@import "staticfiles/bootstrap/scss/helpers";
