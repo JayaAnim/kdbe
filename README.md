@@ -33,6 +33,21 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v79`:
+  - Adds a staticfile `kbde/django/bootstrap/bootstrap.scss` which provides a stripped-down Bootstrap5 which excludes utility classes.
+  - Adds `kbde/django/bootstrap/kbde_bootstrap.scss`, which maps KBDE components (such as alerts, forms, etc) to Bootstrap5 classes.
+  - Bumps `kbde.django.bootstrap` to Bootstrap5.
+  - Adds partials module to `kbde.django.bootstrap`.
+  - Creates integration module with `django-filter`, in `kbde.django.filters`.
+  - Restructured `kbde.django.forms`.
+  - Improvements added to `kbde.django.json_views`.
+  - New partials for HTML basics, like alerts, forms, etc.
+  - Moves pagination to `kbde.django.views.ListView`.
+  - Moves templates into structure which mirrors the module structrure in KBDE.
+  - Restructured `kbde.django.views.TableView` to be extensible, rather than composed of templates.
+  - `kbde.django.json_views` are no longer bound to `kbde.django.token_auth`.
+  - `kbde.django.views.__init__` and `kbde.django.views.mixins` were merged into `kbde.django.views`, and mixin classes were renamed.
+  - `kbde.django.views.DeleteView` now based on `kbde.django.views.FormView`.
 - `v78`:
   - Adds more template functionality for `django.views`.
   - Adds to `kbde_cli` commands.
