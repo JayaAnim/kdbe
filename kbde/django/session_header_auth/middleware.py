@@ -28,7 +28,6 @@ class SessionHeaderAuthMiddleware:
 
     def get_user_from_request(self, request):
         session = self.get_session_from_request(request)
-        print(session)
 
         if session is None:
             return auth_models.AnonymousUser()
