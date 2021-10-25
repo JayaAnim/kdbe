@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v80`:
+  - Adds support for authentication via putting the session key into a header. This is available in `kbde.django.session_header_auth`.
 - `v79`:
   - Adds a staticfile `kbde/django/bootstrap/bootstrap.scss` which provides a stripped-down Bootstrap5 which excludes utility classes.
   - Adds `kbde/django/bootstrap/kbde_bootstrap.scss`, which maps KBDE components (such as alerts, forms, etc) to Bootstrap5 classes.
