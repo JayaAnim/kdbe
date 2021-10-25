@@ -267,7 +267,11 @@ class FormDescriptionMixin:
                 bound_field.field,
                 all_field_attrs + field_attrs,
             )
-            field_description_data["input_type"] = bound_field.field.widget.input_type
+            field_description_data["input_type"] = getattr(
+                bound_field.field.widget,
+                "input_type",
+                None,
+            )
 
             description_data[field_name] = field_description_data
 
