@@ -155,8 +155,13 @@ class SingleObjectMixin:
         }
 
 
-class DetailView(SingleObjectMixin, JsonResponseMixin, views.generic.DetailView):
-    pass
+class DetailView(SingleObjectMixin,
+                 JsonResponseMixin,
+                 kbde_views.UserAllowedQuerysetMixin,
+                 views.generic.DetailView):
+
+    def get_queryset(self):
+        return self.get_user_read_queryset()
 
 
 class RenderDetailMixin:
@@ -183,7 +188,13 @@ class RenderDetailMixin:
         return {}
 
 
-class ListView(RenderDetailMixin, JsonResponseMixin, views.generic.ListView):
+class ListView(RenderDetailMixin,
+               JsonResponseMixin,
+               kbde_views.UserAllowedQuerysetMixin,
+               views.generic.ListView):
+
+    def get_queryset(self):
+        return self.get_user_read_queryset()
 
     def get_response_context(self, context):
         response_context = {
@@ -370,11 +381,19 @@ class CreateView(ModelFormMixin, JsonResponseMixin, views.generic.CreateView):
     form_success_status_code = 201
 
 
-class UpdateView(ModelFormMixin, JsonResponseMixin, views.generic.UpdateView):
-    pass
+class UpdateView(ModelFormMixin,
+                 JsonResponseMixin,
+                 kbde_views.UserAllowedQuerysetMixin,
+                 views.generic.UpdateView):
+
+    def get_queryset(self):
+        return self.get_user_update_queryset()
 
 
-class DeleteView(SingleObjectMixin, JsonResponseMixin, views.generic.DeleteView):
+class DeleteView(SingleObjectMixin,
+                 JsonResponseMixin,
+                 kbde_views.UserAllowedQuerysetMixin,
+                 views.generic.DeleteView):
     delete_success_status_code = 200
 
     def delete(self, *args, **kwargs):
@@ -384,6 +403,9 @@ class DeleteView(SingleObjectMixin, JsonResponseMixin, views.generic.DeleteView)
             None,
             status=self.delete_success_status_code,
         )
+
+    def get_queryset(self):
+        return self.get_user_delete_queryset()
 
     def get_success_url(self):
         return ""

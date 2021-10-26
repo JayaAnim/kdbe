@@ -356,34 +356,6 @@ class RelatedObjectMixin:
         serializer.save(**kwargs)
 
 
-class SoftDeleteMixin:
-    
-    def get_queryset(self):
-        return super().get_queryset().filter(deleted=False)
-
-
-class SearchQuerysetMixin:
-    search_url_kwarg = "search"
-    search_vector_args = None
-
-    def get_queryset(self):
-        from django.contrib.postgres import search as pg_search
-
-        assert self.search_vector_args, (
-            f"{self.__class__} must define `.search_vector_args`"
-        )
-
-        q = super().get_queryset()
-
-        search = self.request.GET.get(self.search_url_kwarg)
-        if search:
-            q = q.annotate(
-                search=pg_search.SearchVector(*self.search_vector_args)
-            ).filter(search=search)
-
-        return q
-
-
 class SuccessUrlNextMixin:
 
     def form_valid(self, form):
@@ -555,6 +527,14 @@ class DeleteView(DeleteMixin,
                  BaseMixin,
                  views.generic.DeleteView):
 
+    def get_object(self, *args, **kwargs):
+        obj = self.kwargs.get("object")
+
+        if obj is not None:
+            return obj
+
+        return super().get_object(*args, **kwargs)
+
     def get_queryset(self):
         return self.get_user_delete_queryset()
 
@@ -643,7 +623,8 @@ class TableView(ListView):
 
     def get_row_data_from_object(self, obj):
         return [
-            self.get_value_from_object(obj, field) for field in self.get_fields()
+            self.get_value_from_object(obj, field)
+            for field in self.get_fields()
         ]
 
     def get_value_from_object(self, obj, field):
