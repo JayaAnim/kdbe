@@ -1,6 +1,6 @@
 <div class="js-tabs-container">
     {% block js_tabs_container %}
-        <ul class="{% block ul_class %}nav nav-tabs{% endblock %}" id="js-tabs-{{ view.id }}-tab-list" role="tablist">
+        <ul class="{% block ul_class %}nav nav-options{% endblock %}" id="js-tabs-{{ view.id }}-tab-list" role="tablist">
             {% block tab_list %}
                 {% for tab_title, partial_path in tab_partials %}
                     <li class="nav-item" role="presentation">

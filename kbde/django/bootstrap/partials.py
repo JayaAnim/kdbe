@@ -3,6 +3,7 @@ from kbde.django import views as kbde_views
 
 class Modal(kbde_views.TemplateView):
     template_name = "kbde/django/bootstrap/partials/Modal.html"
+    modal_template_name = None
     modal_button_text = None
     modal_show = False
 
@@ -10,11 +11,19 @@ class Modal(kbde_views.TemplateView):
         context_data = super().get_context_data(**kwargs)
 
         context_data.update({
+            "modal_template_name": self.get_modal_template_name(),
             "modal_button_text": self.get_modal_button_text(),
             "modal_show": self.get_modal_show()
         })
 
         return context_data
+
+    def get_modal_template_name(self):
+        assert self.modal_template_name is not None, (
+            f"{self.__class__} must define .modal_template_name or override"
+            f".get_modal_template_name()"
+        )
+        return self.modal_template_name
 
     def get_modal_button_text(self):
         assert self.modal_button_text is not None, (
@@ -24,10 +33,7 @@ class Modal(kbde_views.TemplateView):
         return self.modal_button_text
 
     def get_modal_show(self):
-        return self.kwargs.get(
-            "modal_show",
-            self.modal_show,
-        )
+        return self.modal_show
 
 
 class JsTabs(kbde_views.TemplateView):
