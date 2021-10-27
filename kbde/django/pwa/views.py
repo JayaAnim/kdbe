@@ -4,14 +4,40 @@ from kbde.django.json_views import views as json_views
 from . import manifest
 
 
-class Manifest(json_views.JsonView):
+class ManifestMixin:
+    manifest_class = manifest.Manifest
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update({
+            "manifest": self.get_manifest().to_dict()
+        })
+
+        return context_data
+
+    def get_manifest(self):
+        return self.get_manifest_class().from_settings()
+
+    def get_manifest_class(self):
+        return self.manifest_class
+
+
+class Manifest(ManifestMixin, json_views.JsonView):
+    permission_classes = []
+    content_type = "application/manifest+json"
     
     def get_response_context(self, context):
-        manifest_instance = manifest.Manifest.from_settings()
-        return manifest_instance.to_dict()
+        return context["manifest"]
 
 
-class ServiceWorker(kbde_views.TemplateView):
+class ServiceWorker(ManifestMixin, kbde_views.TemplateView):
     page_template_name = "kbde/django/pwa/views/ServiceWorker.js"
+    permission_classes = []
+    content_type = "text/javascript"
+
+
+class Install(ManifestMixin, kbde_views.TemplateView):
+    page_template_name = "kbde/django/pwa/views/Install.js"
     permission_classes = []
     content_type = "text/javascript"
