@@ -63,9 +63,25 @@ class SessionHeaderAuthMiddleware:
         return user
 
     def get_session_from_request(self, request):
-        session_key = request.headers.get(settings.SESSION_COOKIE_NAME)
+        session_key = self.get_session_key_from_request(request)
 
         if session_key is None:
             return None
 
         return self.SessionStore(session_key)
+
+    def get_session_key_from_request(self, request):
+        auth_header = request.headers.get("authorization")
+        
+        if not auth_header:
+            return None
+
+        auth = auth_header.split()
+
+        if auth[0].lower() != settings.SESSION_COOKIE_NAME.lower():
+            return None
+
+        if len(auth) != 2:
+            return None
+
+        return auth[1]
