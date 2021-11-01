@@ -33,6 +33,11 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v81`:
+  - Changes the `kbde.django.session_header_auth` system to use the `authorization` header rather than a header with the key `settings.SESSION_COOKIE_NAME`.
+  - Improvements to the Django bootstrap components, `Modal` and `JsTabs`.
+  - Fixes the `git delete_merged_branches` `kbde_cli` command.
+  - WIP improvements to `kbde.django.pwa`.
 - `v80`:
   - Adds support for authentication via putting the session key into a header. This is available in `kbde.django.session_header_auth`.
   - `kbde.django.json_views` now use the `kbde.django.views.UserAllowedQuerysetMixin` to enforce permissions.
