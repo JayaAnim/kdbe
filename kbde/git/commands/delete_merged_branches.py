@@ -30,8 +30,11 @@ class Command(command.Command):
             ):
                 continue
 
-            # Delete the branch
-            repo.git.branch("-d", branch)
+            # Try to delete the branch
+            try:
+                repo.git.branch("-d", branch)
+            except git.exc.GitCommandError as e:
+                pass
 
     def get_protected_branch_prefixes(self):
         return [self.current_branch_prefix] + self.protected_branch_prefixes
