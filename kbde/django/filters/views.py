@@ -31,11 +31,14 @@ class FiltersetMixin(kbde_views.PostToGetMixin, filter_views.FilterMixin):
         else:
             filter_qs = self.filterset.queryset.none()
 
-        return queryset.filter(
+        queryset = queryset.filter(
             pk__in=filter_qs.values_list("pk", flat=True)
-        ).order_by(
-            queryset.query.order_by
         )
+        
+        for ordering in filter_qs.query.order_by:
+            queryset = queryset.order_by(ordering)
+
+        return queryset
 
     def get_filterset_kwargs(self, filterset_class):
         kwargs = {
