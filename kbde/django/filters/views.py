@@ -35,8 +35,8 @@ class FiltersetMixin(kbde_views.PostToGetMixin, filter_views.FilterMixin):
             pk__in=filter_qs.values_list("pk", flat=True)
         )
         
-        for ordering in filter_qs.query.order_by:
-            queryset = queryset.order_by(ordering)
+        if filter_qs.query.order_by:
+            queryset = queryset.order_by(*filter_qs.query.order_by)
 
         return queryset
 
