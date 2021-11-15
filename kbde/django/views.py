@@ -91,7 +91,7 @@ class UrlPathMixin:
 
 
 class PageTemplateMixin(UrlPathMixin):
-    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/page.html"
+    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/django/page.html"
     template_name = None
     is_page_view = False
 
@@ -653,13 +653,13 @@ class TableView(ListView):
         assert self.fields, (
             f"{self.__class__} must define .fields"
         )
-        return self.fields
+        return self.fields.copy()
 
     def get_labels(self):
         assert self.labels, (
             f"{self.__class__} must define .labels"
         )
-        return self.labels
+        return self.labels.copy()
 
 
 class SearchFormView(FormView):
