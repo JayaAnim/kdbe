@@ -194,7 +194,15 @@ class ListView(RenderDetailMixin,
                views.generic.ListView):
 
     def get_queryset(self):
-        return self.get_user_read_queryset()
+        queryset = self.get_user_read_queryset()
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
     def get_response_context(self, context):
         response_context = {
