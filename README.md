@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v83`:
+  - Fixes ordering for `kbde.django.json_views.ListView`.
 - `v82`:
   - Patches to `kbde.django.views`.
 - `v81`:
