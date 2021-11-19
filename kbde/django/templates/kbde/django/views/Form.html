@@ -1,3 +1,6 @@
+{% load render_partial %}
+
+
 <div class="form-container">
     {% block form_container %}
 
@@ -54,48 +57,7 @@
                 <div class="form-fields">
                     {% block form_fields %}
                         {% for field in form %}
-                            {% with input_type=field.field.widget.input_type disabled=field.field.disabled required=field.field.required %}
-                                <div class="field-group {% if input_type %}field-group-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
-
-                                    {# Label #}
-                                    {% if field.label %}
-                                        {% if field.field.choices or input_type != "checkbox" %}
-                                            <label class="field-label {% if input_type %}field-label-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
-                                                {{ field.label }}
-                                            </label>
-                                        {% endif %}
-                                    {% endif %}
-
-                                    {# Field #}
-                                    <div class="field-container {% if input_type %}field-container-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
-                                        {{ field }}
-
-                                        {% if input_type == "checkbox" and not field.field.choices and field.label %}
-                                            <label class="checkbox-label">
-                                                {{ field.label }}
-                                            </label>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    {# Help Text #}
-                                    {% if field.help_text %}
-                                        <div class="field-help-text {% if input_type %}field-help-text-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
-                                            {{ field.help_text }}
-                                        </div>
-                                    {% endif %}
-
-                                    {# Errors #}
-                                    {% if field.errors %}
-                                        <div class="field-errors {% if input_type %}field-errors-{{ input_type }}{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
-                                            {% for error_message in field.errors %}
-                                                <div class="field-error-message">
-                                                    {{ error_message }}
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endwith %}
+                            {% render_partial 'kbde.django.partials.FormFieldPartial' field=field %}
                         {% endfor %}
                     {% endblock %}
                 </div>
