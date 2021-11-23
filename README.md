@@ -33,8 +33,12 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v84`:
+  - Fixes ordering for `kbde.django.filters.views.FiltersetMixin`.
+  - Fixes Flatpickr form widget.
+  - Moves form fields into their own partials.
 - `v83`:
-  - Fixes ordering for `kbde.django.json_views.ListView`.
+  - Fixes ordering for `kbde.django.json_views.views.ListView`.
 - `v82`:
   - Patches to `kbde.django.views`.
 - `v81`:
