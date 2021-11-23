@@ -57,7 +57,7 @@
                 <div class="form-fields">
                     {% block form_fields %}
                         {% for field in form %}
-                            {% render_partial 'kbde.django.partials.FormFieldPartial' field=field %}
+                            {% render_partial form_field_partial_name field=field %}
                         {% endfor %}
                     {% endblock %}
                 </div>

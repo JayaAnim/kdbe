@@ -153,6 +153,7 @@ class PostToGetMixin:
 
 class FormMixin:
     template_name = "kbde/django/views/Form.html"
+    form_field_partial_name = "kbde.django.partials.FormFieldPartial"
     prompt_text = None
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
@@ -168,6 +169,7 @@ class FormMixin:
             "submit_button_text": self.get_submit_button_text(),
             "method": self.get_method(),
             "action": self.get_action(),
+            "form_field_template_name": self.get_form_field_partial_name(),
         })
 
         return context_data
@@ -189,6 +191,9 @@ class FormMixin:
 
     def get_action(self):
         return self.action
+
+    def get_form_field_partial_name(self):
+        return self.form_field_partial_name
 
 
 class DeleteMixin(FormMixin):
