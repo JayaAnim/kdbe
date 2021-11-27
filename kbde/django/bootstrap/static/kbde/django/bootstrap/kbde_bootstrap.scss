@@ -20,6 +20,8 @@
                 &.field-container-text,
                 &.field-container-email,
                 &.field-container-number,
+                &.field-container-tel,
+                &.field-container-url,
                 &.field-container-password{
                     input{
                         @extend .form-control;
@@ -74,6 +76,8 @@
                     &.field-container-text,
                     &.field-container-email,
                     &.field-container-number,
+                    &.field-container-tel,
+                    &.field-container-url,
                     &.field-container-password{
                         input{
                             @extend .is-invalid;
