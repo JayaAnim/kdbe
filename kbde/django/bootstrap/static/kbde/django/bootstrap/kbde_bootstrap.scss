@@ -36,7 +36,19 @@
                 // File
                 &.field-container-file{
                     input{
-                        @extend .form-control;
+                        &[type='file'] {
+                            @extend .form-control;
+                        }
+
+                        &[type='checkbox'] {
+                            @extend .form-check-input;
+                            margin-left: 0 !important;
+                        }
+                    }
+
+                    label[for$='-clear_id'] {
+                        @extend .form-check-label;
+                        margin-left: 1.25rem !important;
                     }
                 }
 
