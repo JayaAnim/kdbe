@@ -76,7 +76,7 @@ class PermissionsMixin:
         if self.permission_classes is not None:
             return self.permission_classes
 
-        return settings.DEFAULT_PERMISSION_CLASSES
+        return getattr(settings, "DEFAULT_PERMISSION_CLASSES", None)
 
 
 class UrlPathMixin:
