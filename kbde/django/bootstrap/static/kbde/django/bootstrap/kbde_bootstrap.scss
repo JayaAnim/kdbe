@@ -141,6 +141,10 @@
         .submit-button{
             @extend .btn, .btn-primary;
         }
+
+        .cancel-button{
+            @extend .btn, .btn-secondary;
+        }
     }
 }
 

@@ -1,7 +1,15 @@
-{% load bootstrap4 %}
 
-{% if object.confirmed %}
-    {% bootstrap_alert "Thank you for confirming login" %}
-{% else %}
-    {% bootstrap_alert "Login attempt blocked" %}
-{% endif %}
+<div class='messages-container'>
+
+    {% if object.confirmed %}
+        <div class='message success' role='alert'>
+            Thank you for confirming login
+        </div>
+    {% else %}
+        <div class='message error' role='alert'>
+            Login attempt blocked
+        </div>
+    {% endif %}
+
+</div>
+

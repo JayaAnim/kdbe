@@ -1,11 +1,15 @@
-{% extends "kbde/Form.html" %}
+{% extends "kbde/django/views/Form.html" %}
 
 
-{% block content %}
-{% endblock %}
+{% block form_errors %}{% endblock %}
+{% block form_fields %}{% endblock %}
 
+{% block form_buttons %}
+    <button class="submit-button confirm-button" name="confirmed" value="true">
+        Confirm
+    </button>
 
-{% block buttons %}
-    <button class="btn btn-success" name="confirmed" value="true">Confirm</button>
-    <button class="btn btn-danger" name="confirmed" value="false">This was not me</button>
+    <button class="cancel-button" name="confirmed" value="false">
+        This was not me
+    </button>
 {% endblock %}
