@@ -618,8 +618,9 @@ class TableView(ListView):
         }
 
     def get_label_list(self):
+        fields = self.get_fields()
         labels = self.get_labels()
-        return [labels[field] for field in self.get_fields()]
+        return [labels[field] for field in fields]
 
     def get_row_data_from_object(self, obj):
         return [
@@ -650,13 +651,13 @@ class TableView(ListView):
         return self.table_empty_message
 
     def get_fields(self):
-        assert self.fields, (
+        assert self.fields is not None, (
             f"{self.__class__} must define .fields"
         )
         return self.fields.copy()
 
     def get_labels(self):
-        assert self.labels, (
+        assert self.labels is not None, (
             f"{self.__class__} must define .labels"
         )
         return self.labels.copy()
