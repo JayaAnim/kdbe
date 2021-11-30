@@ -37,6 +37,12 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
   - Fixes ordering for `kbde.django.filters.views.FiltersetMixin`.
   - Fixes Flatpickr form widget.
   - Moves form fields into their own partials.
+  - Improvements to `kbde.django.bootstrap` sass.
+  - Django form fields are now partials.
+  - Changes how `kbde.django.permissions` `settings.DEFAULT_PERMISSION_CLASSES` is set.
+  - Fixes to `kbde.django.login_link` to use new `FormView`.
+  - Fixes to `kbde.django.forms.widget.Flatpickr`.
+  - `kbde.django.filters.views.FiltersetMixin` uses the same queryset as parent's `get_queryset()`.
 - `v83`:
   - Fixes ordering for `kbde.django.json_views.views.ListView`.
 - `v82`:
