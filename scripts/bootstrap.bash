@@ -3,14 +3,16 @@
 set -ueo pipefail
 
 
-# Make sure that pip is installed
+apt-get update
+
+# Install git
+apt-get -y install git
+
+# Install pip
 apt-get -y install python3-pip
+python3 -m pip install -U pip
+python3 -m pip install wheel
 
-# Clone the repo
-git clone https://gitlab.com/kb_git/kbde.git
-
-# Install
-python3 -m pip install kbde/
-
-# Cleanup
-rm kbde/ -rf
+# Install from local kbde or from repo
+python3 -m pip install ./kbde \
+    || python3 -m pip install git+https://gitlab.com/kb_git/kbde.git
