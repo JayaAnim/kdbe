@@ -40,7 +40,7 @@ class KbdeCli:
                 print(result)
 
         except shell_mixins.RunCommand.CommandException as e:
-            print(e.get_stdout())
+            print(e.get_stdout() or e.get_stderr())
 
     def process_commands_modules(self, subparsers):
         commands_modules = self.get_commands_modules()
