@@ -16,3 +16,6 @@ python3 -m pip install wheel
 # Install from local kbde or from repo
 python3 -m pip install ./kbde \
     || python3 -m pip install git+https://gitlab.com/kb_git/kbde.git
+
+# Install argcomplete
+kbde_cli.py argcomplete activate
