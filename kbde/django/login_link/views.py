@@ -23,7 +23,11 @@ class LoginLinkAuthenticate(kbde_views.UpdateView):
     form_class = forms.LoginLinkAuthenticate
     prompt_text = ""
     confirm_text = "Please access the login link to proceed."
+    check_auth_milliseconds = 5000
     permission_classes = []
+
+    def get_check_auth_milliseconds(self):
+        return self.check_auth_milliseconds
 
     def get_confirm_text(self):
         return self.confirm_text
