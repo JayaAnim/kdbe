@@ -1,15 +1,36 @@
 
 <div class='messages-container'>
 
-    {% if object.confirmed %}
-        <div class='message success' role='alert'>
-            Thank you for confirming login
-        </div>
-    {% else %}
-        <div class='message error' role='alert'>
-            Login attempt blocked
-        </div>
-    {% endif %}
+{% if object.confirmed %}
+
+    <script>
+        function countdownOrSendHome() {
+            var returnCountdown = $('.return-countdown')
+            var countdownVal = parseInt(returnCountdown.html())
+
+            if (countdownVal == 0) {
+                window.location = "/"
+            } else {
+                returnCountdown.html(countdownVal - 1)
+            }
+
+            setTimeout(countdownOrSendHome, 1000)
+        }
+
+        $(function() {
+            setTimeout(countdownOrSendHome, 1000)
+        })
+    </script>
+
+    <div class='message success' role='alert'>
+        Thank you for confirming login. Returning home in <label class='return-countdown'>3</label>.
+    </div>
+
+{% else %}
+    <div class='message error' role='alert'>
+        Login attempt blocked
+    </div>
+{% endif %}
 
 </div>
 

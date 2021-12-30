@@ -54,17 +54,18 @@ class LoginLinkAuthenticate(forms.Form):
 
     user_inactive_error = "The account is inactive"
     
-    def __init__(self, instance, request, *args, **kwargs):
+    def __init__(self, instance, request, confirm_text, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.instance = instance
         self.request = request
+        self.confirm_text = confirm_text
 
     def clean(self):
         if self.instance.confirmed is None:
             # This login link has not been confirmed
             # Raise validation error
-            raise exceptions.ValidationError("Link not confirmed")
+            raise exceptions.ValidationError(self.confirm_text)
 
         if self.instance.confirmed == False:
             # This login link has been declined by the user

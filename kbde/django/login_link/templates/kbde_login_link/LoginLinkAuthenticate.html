@@ -1,6 +1,20 @@
 {% extends "kbde/django/views/Form.html" %}
 
 
+{% block form %}
+
+    {% if not form.errors %}
+
+        <div class="form-error-message non-field-error-message">
+            {{ view.get_confirm_text }}
+        </div>
+
+    {% endif %}
+
+    {{ block.super }}
+
+{% endblock %}
+
 {% block form_buttons %}
 
 <script>
@@ -11,7 +25,7 @@ function check_auth(){
 }
 
 {% if form.errors %}
-    setTimeout(check_auth, 5000)
+    setTimeout(check_auth, {{ view.get_check_auth_milliseconds }})
 {% else %}
     check_auth()
 {% endif %}
