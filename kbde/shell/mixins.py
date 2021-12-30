@@ -4,7 +4,6 @@ import subprocess, sys
 class RunCommand:
 
     def run_command(self, command):
-
         try:
             result = subprocess.run(
                 command,
@@ -13,9 +12,7 @@ class RunCommand:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
-
         except subprocess.CalledProcessError as e:
-
             raise self.CommandException(**e.__dict__)
 
         return result.stdout.decode("latin1").strip()
@@ -23,7 +20,7 @@ class RunCommand:
     class CommandException(subprocess.CalledProcessError):
 
         def get_stdout(self):
-            return self.stderr.decode(sys.getfilesystemencoding())
+            return self.output.decode(sys.getfilesystemencoding())
 
         def get_stderr(self):
             return self.stderr.decode(sys.getfilesystemencoding())
