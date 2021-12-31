@@ -33,6 +33,11 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v85`:
+  - Improvements to the `kbde.django.link_login` app.
+  - System state module. Experimental only.
+  - Changes to the kbde commandline.
+  - Dockerfile improvements.
 - `v84`:
   - Fixes ordering for `kbde.django.filters.views.FiltersetMixin`.
   - Fixes Flatpickr form widget.
