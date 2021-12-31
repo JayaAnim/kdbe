@@ -49,7 +49,6 @@ class Installer(kbde_views.MarkdownView):
 
     def dispatch(self, *args, **kwargs):
         self.user_agent = self.get_user_agent()
-        print(self.user_agent.browser.family)
         return super().dispatch(*args, **kwargs)
         
     def get_user_agent(self):
