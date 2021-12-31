@@ -1,14 +1,16 @@
 from kbde.kbde_cli import command
-from .. import base, sudo, python
+#from .. import base, sudo, python
 
 
 class Command(command.Command):
+    """
     state_classes = [
         sudo.SudoNoPassword,
         python.Python_3_6,
         python.Python_3_7,
         python.Python_3_8,
     ]
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
