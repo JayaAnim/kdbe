@@ -21,12 +21,21 @@ class LoginLinkAuthenticate(kbde_views.UpdateView):
     template_name = "kbde_login_link/LoginLinkAuthenticate.html"
     model = models.LoginLink
     form_class = forms.LoginLinkAuthenticate
-    prompt_text = "Please access the login code to proceed"
+    prompt_text = ""
+    confirm_text = "Please access the login link to proceed."
+    check_auth_milliseconds = 3000
     permission_classes = []
+
+    def get_check_auth_milliseconds(self):
+        return self.check_auth_milliseconds
+
+    def get_confirm_text(self):
+        return self.confirm_text
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
+        kwargs["confirm_text"] = self.get_confirm_text()
         return kwargs
 
     def get_success_url(self):
