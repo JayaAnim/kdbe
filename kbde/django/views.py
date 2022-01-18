@@ -267,6 +267,7 @@ class OpenGraphMixin:
 class RelatedObjectMixin:
     related_model = None
     related_orm_path = None
+    related_slug_field = "slug"
 
     def dispatch(self, *args, **kwargs):
         self.related_object = self.get_related_object()
@@ -311,8 +312,7 @@ class RelatedObjectMixin:
             related_queryset = related_queryset.filter(pk=related_pk)
         else:
             # Filter by slug
-            related_slug_field = getattr(self, "related_slug_field", "slug")
-            related_queryset = related_queryset.filter(**{related_slug_field: related_slug})
+            related_queryset = related_queryset.filter(**{self.related_slug_field: related_slug})
 
         try:
             obj = related_queryset.get()
@@ -344,16 +344,6 @@ class RelatedObjectMixin:
                 setattr(form.instance, related_orm_path, self.related_object)
 
         return form
-
-    def perform_create(self, serializer):
-        kwargs = {}
-
-        related_orm_path = self.get_related_orm_path()
-
-        if "__" not in related_orm_path:
-            kwargs[related_orm_path] = self.related_object
-
-        serializer.save(**kwargs)
 
 
 class SuccessUrlNextMixin:
