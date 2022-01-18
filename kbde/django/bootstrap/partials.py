@@ -60,3 +60,20 @@ class JsTabs(kbde_views.TemplateView):
 
     def get_show_tabs(self):
         return self.show_tabs
+
+
+class Accordion(kbde_views.TemplateView):
+    template_name = 'kbde/django/bootstrap/partials/Accordion.html'
+    items = None
+    flush = False
+
+    def get_items(self):
+        assert self.items is not None, (
+            f"{self.__class__} must define .item, as a list of pairs: "
+            f"('Item Title', 'template/path/to/item.html')"
+        )
+        return self.items
+
+    def get_flush(self):
+        return self.flush
+
