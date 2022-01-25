@@ -91,7 +91,10 @@ class UrlPathMixin:
 
 
 class PageTemplateMixin(UrlPathMixin):
-    page_template_name = getattr(settings, "PAGE_TEMPLATE_NAME", None) or "kbde/django/page.html"
+    page_template_name = (
+        getattr(settings, "PAGE_TEMPLATE_NAME", None)
+        or "kbde/django/page.html"
+    )
     template_name = None
     is_page_view = False
 
@@ -151,13 +154,31 @@ class PostToGetMixin:
         return self.get(*args, **kwargs)
 
 
-class FormMixin:
+class FormMixin(PageTemplateMixin):
     template_name = "kbde/django/views/Form.html"
     prompt_text = None
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
     method = "POST"
     action = ""
+
+    def post(self, *args, **kwargs):
+        if self.request.POST.get("form_id") == self.get_form_id():
+            response = super().post(*args, **kwargs)
+            print(response.__dict__)
+            print(response.status_code)
+            return response
+        else:
+            return self.get(*args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        if self.request.POST.get("form_id") != self.get_form_id():
+            kwargs.pop("data", None)
+            kwargs.pop("files", None)
+
+        return kwargs
     
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -168,6 +189,7 @@ class FormMixin:
             "submit_button_text": self.get_submit_button_text(),
             "method": self.get_method(),
             "action": self.get_action(),
+            "form_id": self.get_form_id(),
         })
 
         return context_data
@@ -189,6 +211,9 @@ class FormMixin:
 
     def get_action(self):
         return self.action
+
+    def get_form_id(self):
+        return self.__class__.__name__
 
 
 class DeleteMixin(FormMixin):
@@ -344,6 +369,11 @@ class RelatedObjectMixin:
                 setattr(form.instance, related_orm_path, self.related_object)
 
         return form
+
+    def get_form_id(self):
+        form_id = super().get_form_id()
+        related_object = self.get_related_object()
+        return f"{form_id}-{related_object.pk}"
 
 
 class SuccessUrlNextMixin:
@@ -510,6 +540,11 @@ class UpdateView(FormMixin,
 
     def get_queryset(self):
         return self.get_user_update_queryset()
+
+    def get_form_id(self):
+        form_id = super().get_form_id()
+        obj = self.get_object()
+        return f"{form_id}-{obj.pk}"
 
 
 class DeleteView(DeleteMixin,
