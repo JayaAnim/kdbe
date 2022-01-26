@@ -7,6 +7,7 @@ from django.conf import settings
 
 from kbde.django import permissions
 from kbde.django import forms
+from kbde.django import response as kbde_response
 
 from kbde.import_tools import utils as import_utils
 
@@ -154,7 +155,11 @@ class PostToGetMixin:
         return self.get(*args, **kwargs)
 
 
-class FormMixin(PageTemplateMixin):
+class TemplateResponseMixin:
+    response_class = kbde_response.TemplateResponse
+
+
+class FormMixin(TemplateResponseMixin):
     template_name = "kbde/django/views/Form.html"
     prompt_text = None
     field_error_message = "Please resolve the issues below"
@@ -165,9 +170,18 @@ class FormMixin(PageTemplateMixin):
     def post(self, *args, **kwargs):
         if self.request.POST.get("form_id") == self.get_form_id():
             response = super().post(*args, **kwargs)
-            print(response.__dict__)
-            print(response.status_code)
+
+            if (
+                isinstance(response, http.HttpResponseRedirect)
+                and not self.is_page_view
+            ):
+                # This form is trying to redirect, but is being rendered as a
+                # partial. Raise an exception to propagate this redirect to
+                # the browser
+                raise self.Redirect(response.url)
+
             return response
+
         else:
             return self.get(*args, **kwargs)
 
@@ -175,6 +189,7 @@ class FormMixin(PageTemplateMixin):
         kwargs = super().get_form_kwargs()
 
         if self.request.POST.get("form_id") != self.get_form_id():
+            # Pop args to prevent the form from being bound
             kwargs.pop("data", None)
             kwargs.pop("files", None)
 
@@ -214,6 +229,9 @@ class FormMixin(PageTemplateMixin):
 
     def get_form_id(self):
         return self.__class__.__name__
+
+    class Redirect(Exception):
+        pass
 
 
 class DeleteMixin(FormMixin):
@@ -415,7 +433,10 @@ class View(BaseMixin, views.generic.View):
     pass
 
 
-class TemplateView(PostToGetMixin, BaseMixin, views.generic.TemplateView):
+class TemplateView(TemplateResponseMixin,
+                   PostToGetMixin,
+                   BaseMixin,
+                   views.generic.TemplateView):
     pass
 
 
@@ -423,7 +444,8 @@ class RedirectView(BaseMixin, views.generic.RedirectView):
     pass
 
 
-class DetailView(PostToGetMixin,
+class DetailView(TemplateResponseMixin,
+                 PostToGetMixin,
                  UserAllowedQuerysetMixin,
                  BaseMixin,
                  views.generic.DetailView):
@@ -440,7 +462,8 @@ class DetailView(PostToGetMixin,
         return self.get_user_read_queryset()
 
 
-class ListView(PostToGetMixin,
+class ListView(TemplateResponseMixin,
+               PostToGetMixin,
                UserAllowedQuerysetMixin,
                BaseMixin,
                views.generic.ListView):
