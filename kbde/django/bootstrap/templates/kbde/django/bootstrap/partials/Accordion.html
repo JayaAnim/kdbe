@@ -1,0 +1,33 @@
+
+<div class="accordion {% if view.flush %}accordion-flush{% endif %}" id="accordion_{{ view.id }}">
+
+    {% for title, item_template_name in view.get_items %}
+
+        <div class="accordion-item">
+
+            <div class="accordion-header" id="accordion_{{ view.id }}_heading_{{ forloop.counter }}">
+                <button class="accordion-button collapsed" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#accordion_{{ view.id }}_collapse_{{ forloop.counter }}"
+                        aria-expanded="false" 
+                        aria-controls="accordion_{{ view.id }}_collapse_{{ forloop.counter }}">
+
+                    {{ title }}
+                </button>
+            </div>
+
+            <div id="accordion_{{ view.id }}_collapse_{{ forloop.counter }}"
+                 class="collapse accordion-collapse"
+                 aria-labelledby="accordion_{{ view.id }}_heading_{{ forloop.counter }}">
+                
+                <div class="accordion-body">
+                    {% include item_template_name %}
+                </div>
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+</div>
