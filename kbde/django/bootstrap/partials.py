@@ -56,7 +56,7 @@ class JsTabs(kbde_views.TemplateView):
             f"{self.__class__} must define .tab_partials, as a list of pairs: "
             f"('Tab Title', 'template/path/to/partial.html')"
         )
-        return self.tab_partials
+        return self.tab_partials.copy()
 
     def get_show_tabs(self):
         return self.show_tabs
@@ -69,10 +69,10 @@ class Accordion(kbde_views.TemplateView):
 
     def get_items(self):
         assert self.items is not None, (
-            f"{self.__class__} must define .item, as a list of pairs: "
+            f"{self.__class__} must define .items, as a list of pairs: "
             f"('Item Title', 'template/path/to/item.html')"
         )
-        return self.items
+        return self.items.copy()
 
     def get_flush(self):
         return self.flush
