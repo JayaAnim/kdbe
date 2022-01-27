@@ -1,4 +1,3 @@
-
 <div class="form-container">
     {% block form_container %}
 
@@ -17,8 +16,7 @@
         <form id="form-{{ view.id }}"
               method="{{ method }}"
               action="{{ action }}"
-              enctype="multipart/form-data"
-        >
+              enctype="multipart/form-data">
             {% block form %}
 
                 {% if method.upper == "POST" %}
@@ -26,6 +24,10 @@
                         {% csrf_token %}
                     {% endblock %}
                 {% endif %}
+
+                {% block form_id %}
+                    <input type="hidden" name="form_id" value="{{ form_id }}"></input>
+                {% endblock %}
 
                 {% if form.errors %}
                     <div class="form-errors">

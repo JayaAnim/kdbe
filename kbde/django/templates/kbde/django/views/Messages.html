@@ -1,4 +1,4 @@
-{% if messages %}
+{% if messages and view.request.method == "GET" %}
     <div class="messages-container">
         {% for message in messages %}
             <div class="message {{ message.tags }}">{{ message }}</div>
