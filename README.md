@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v88`:
+  - Adds support for the `application/json` content-type in `kbde.django.json_views`.
 - `v87`:
   - Adds `kbde.django.bootstrap.partials.Accordion`.
   - Adds form identifiers and conditional form validation, allowing form partials to function properly. See the [related Trello card](https://trello.com/c/sv1pG8iX/20-form-partial-submit) for details.
