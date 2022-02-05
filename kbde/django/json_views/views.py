@@ -4,10 +4,7 @@ from django.views.decorators import csrf
 from kbde.django import views as kbde_views
 from kbde.django.json import encoder as kbde_encoder
 
-from collections import abc
-
-
-no_object = object()
+import json
 
 
 class JsonResponseMixin(kbde_views.UrlPathMixin,
@@ -47,6 +44,8 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
 
         if authenticated_request_users:
             request.user = authenticated_request_users[0]
+
+        self.set_request_data(request)
 
         return super().setup(request, *args, **kwargs)
 
@@ -132,6 +131,29 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
 
     def get_child_views(self):
         return self.child_views.copy()
+
+    def set_request_data(self, request):
+        content_type = request.headers["content-type"]
+
+        if content_type.lower() == "application/json":
+            request.POST = self.get_json_request_data(request)
+
+        return request
+
+    def get_json_request_data(self, request):
+        try:
+            data = json.loads(request.body.decode("latin1"))
+        except ValueError:
+            raise exceptions.SuspiciousOperation(
+                "The payload was not valid JSON"
+            )
+
+        if not isinstance(data, dict):
+            raise exceptions.SuspiciousOperation(
+                "The payload must be a JSON object"
+            )
+
+        return data
 
 
 class JsonView(JsonResponseMixin, views.generic.View):
