@@ -133,9 +133,9 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
         return self.child_views.copy()
 
     def set_request_data(self, request):
-        content_type = request.headers["content-type"]
+        content_type = request.headers.get("content-type")
 
-        if content_type.lower() == "application/json":
+        if content_type and content_type.lower() == "application/json":
             request.POST = self.get_json_request_data(request)
 
         return request
