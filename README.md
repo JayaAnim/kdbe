@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v91`:
+  - Fixes import error in `kbde.django.json_views`.
 - `v90`:
   - Fixes import error in `kbde.django.json_views`.
 - `v89`:
