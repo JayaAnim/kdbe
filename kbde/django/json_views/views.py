@@ -136,7 +136,11 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
     def set_request_data(self, request):
         content_type = request.headers.get("content-type")
 
-        if content_type and content_type.lower() == "application/json":
+        if (
+            content_type
+            and content_type.lower() == "application/json"
+            and request.body
+        ):
             request.POST = self.get_json_request_data(request)
 
         return request
