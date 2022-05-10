@@ -265,100 +265,7 @@ class ListView(RenderDetailMixin,
         }
 
 
-class FormDescriptionMixin:
-    all_field_attrs = [
-        "required",
-        "label",
-        "label_suffix",
-        "initial",
-        "help_text",
-        "disabled",
-    ]
-
-    field_attr_map = {
-        forms.CharField: [
-            "min_length",
-            "max_length",
-            "empty_value",
-        ],
-        forms.ChoiceField: [
-            "choices",
-        ],
-        forms.TypedChoiceField: [
-            "choices",
-            "empty_value",
-        ],
-        forms.DateField: [
-            "input_formats",
-        ],
-        forms.DateTimeField: [
-            "input_formats",
-        ],
-        forms.DecimalField: [
-            "min_value",
-            "max_value",
-            "max_digits",
-            "decimal_places",
-        ],
-        forms.IntegerField: [
-            "min_value",
-            "max_value",
-        ],
-    }
-
-    def get_form_description_data(self, form):
-        all_field_attrs = self.get_all_field_attrs()
-        field_attr_map = self.get_field_attr_map()
-        description_data = {}
-
-        for field_name in form.fields:
-            bound_field = form[field_name]
-            field_attrs = field_attr_map.get(bound_field.field.__class__, [])
-            field_description_data = self.get_field_description_data(
-                bound_field.field,
-                all_field_attrs + field_attrs,
-            )
-            field_description_data["input_type"] = getattr(
-                bound_field.field.widget,
-                "input_type",
-                None,
-            )
-
-            description_data[field_name] = field_description_data
-
-        return description_data
-
-    def get_field_description_data(self, field, attrs):
-        description_data = {}
-
-        for field_attr in attrs:
-            if not hasattr(field, field_attr):
-                continue
-
-            value = getattr(field, field_attr)
-
-            # Check to see if the value is callable
-            if callable(value):
-                value = value()
-
-            description_data[field_attr] = value
-
-        return description_data
-
-    def get_form_data(self, form):
-        return {
-            field_name: form[field_name].value()
-            for field_name in form.fields
-        }
-
-    def get_all_field_attrs(self):
-        return self.all_field_attrs
-
-    def get_field_attr_map(self):
-        return self.field_attr_map
-
-
-class FormMixin(FormDescriptionMixin, RenderDetailMixin):
+class FormMixin(RenderDetailMixin):
     form_error_status_code = 422
     form_success_status_code = 200
 
@@ -387,14 +294,10 @@ class FormMixin(FormDescriptionMixin, RenderDetailMixin):
         form = context["form"]
         response_context = {}
 
-        if form.errors:
-            response_context["errors"] = form.errors
-
         if hasattr(form, "cleaned_data") and not form.errors:
             response_context["data"] = self.render_detail_view(form.cleaned_data)
         else:
-            response_context["data"] = self.get_form_data(form)
-            response_context["form"] = self.get_form_description_data(form)
+            response_context["form"] = form
 
         return response_context
 

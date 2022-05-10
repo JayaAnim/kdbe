@@ -46,13 +46,11 @@ class FiltersetMixin(kbde_views.PostToGetMixin, filter_views.FilterMixin):
         return kwargs
 
 
-class JsonFiltersetMixin(json_views.FormDescriptionMixin, FiltersetMixin):
+class JsonFiltersetMixin(FiltersetMixin):
     
     def get_response_context(self, context):
         response_context = super().get_response_context(context)
 
-        response_context["filterset"] = self.get_form_description_data(
-            self.filterset.form
-        )
+        response_context["filterset"] = self.filterset.form
 
         return response_context
