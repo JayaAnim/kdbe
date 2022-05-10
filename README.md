@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v92`:
+  - Changes how forms serialize in `kbde.django.json_views`. This update does modify the interface for all edit json views (FormView, CreateView, and UpdateView).
 - `v91`:
   - Fixes import error in `kbde.django.json_views`.
 - `v90`:
