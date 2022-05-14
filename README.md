@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v93`:
+  - Moves `kbde.django.views.RelatedObjectMixin` to consider permissions checks before doing anything else.
 - `v92`:
   - Changes how forms serialize in `kbde.django.json_views`. This update does modify the interface for all edit json views (FormView, CreateView, and UpdateView).
 - `v91`:
