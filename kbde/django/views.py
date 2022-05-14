@@ -307,7 +307,7 @@ class OpenGraphMixin:
         return path
 
 
-class RelatedObjectMixin:
+class RelatedObjectMixinBase:
     related_model = None
     related_orm_path = None
     related_slug_field = "slug"
@@ -392,6 +392,10 @@ class RelatedObjectMixin:
         form_id = super().get_form_id()
         related_object = self.get_related_object()
         return f"{form_id}-{related_object.pk}"
+
+
+class RelatedObjectMixin(PermissionsMixin, RelatedObjectMixinBase):
+    pass
 
 
 class SuccessUrlNextMixin:
