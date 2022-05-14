@@ -29,6 +29,11 @@ class Manifest:
         "icons",
         "name",
     ]
+    field_defaults = {
+        "display": "fullscreen",
+        "prefer_related_applications": False,
+        "start_url": "/",
+    }
 
     def __init__(self, **kwargs):
         # Verify requred args
@@ -38,7 +43,12 @@ class Manifest:
                 f"Manifest requires {field}, but no value was given"
             )
 
-        self.data = copy.deepcopy(kwargs)
+        # Add defaults for args which are not passed
+        data = copy.deepcopy(self.field_defaults)
+        copied_kwargs = copy.deepcopy(kwargs)
+        data.update(copied_kwargs)
+
+        self.data = data
         
     @classmethod
     def from_settings(cls, settings_prefix="PWA_"):
@@ -47,7 +57,7 @@ class Manifest:
         for field in cls.fields:
             setting_name = f"{settings_prefix}{field.upper().rstrip('_')}"
 
-            value = getattr(settings, setting_name)
+            value = getattr(settings, setting_name, None)
 
             if field in cls.required_fields:
                 assert value is not None, (

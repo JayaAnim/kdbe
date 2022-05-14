@@ -1,0 +1,39 @@
+<div class="modal-container">
+    {% block modal_container %}
+        {% if modal_button_text %}
+            <div class="modal-button-container">
+                {% block modal_button_container %}
+                    <button type="button"
+                            class="button modal-button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-{{ view.id }}">
+                        {{ modal_button_text }}
+                    </button>
+                {% endblock %}
+            </div>
+        {% endif %}
+
+        {% block modal %}
+            <div class="modal fade" id="modal-{{ view.id }}" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        {% block modal_content %}
+                            {% include modal_template_name %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block script %}
+            {% if modal_show %}
+                <script>
+                    $(function(){
+                        $("#modal-{{ view.id }}").modal("show")
+                    })
+                </script>
+            {% endif %}
+        {% endblock %}
+
+    {% endblock %}
+</div>

@@ -1,46 +1,45 @@
-import json
-import decimal
-import datetime
+import json, decimal, datetime, uuid
 
-try:
-    import django
-except ImportError:
-    django = None
+
+class SerializerBase:
+    
+    def __init__(self, val):
+        self.val = val
+
+
+class ToStringSerializer(SerializerBase):
+
+    def serialize(self):
+        return str(self.val)
+
+
+class DateTimeSerializer(SerializerBase):
+
+    def serialize(self):
+        return self.val.isoformat()
 
 
 class Encoder(json.JSONEncoder):
-    serialize_method_name = "serialize"
-    decimal_types = (
-        decimal.Decimal,
-        )
-    datetime_types = (
-        datetime.datetime,
-        datetime.date,
-        datetime.time,
-        )
+    type_serializer_map = {
+        decimal.Decimal: ToStringSerializer,
+        datetime.datetime: DateTimeSerializer,
+        datetime.date: DateTimeSerializer,
+        datetime.time: DateTimeSerializer,
+        uuid.UUID: ToStringSerializer,
+    }
 
     def default(self, obj):
-        serialize = getattr(obj, self.serialize_method_name, None)
+        for t, serializer_class in self.type_serializer_map.items():
+            if isinstance(obj, t):
+                obj = serializer_class(obj)
+                break
+
+        serialize = self.get_serializer_method(obj)
 
         if callable(serialize):
             return serialize()
 
-        if isinstance(obj, self.decimal_types):
-            return self.handle_decimal(obj)
-
-        if isinstance(obj, self.datetime_types):
-            return self.handle_datetime(obj)
-
-        if django and isinstance(obj, django.db.models.query.QuerySet):
-            return self.handle_django_queryset(obj)
-        
         return super().default(obj)
 
-    def handle_decimal(self, obj):
-        return str(obj)
-
-    def handle_datetime(self, obj):
-        return obj.isoformat()
-
-    def handle_django_queryset(self, obj):
-        return list(obj)
+    def get_serializer_method(self, obj):
+        return getattr(obj, "serialize", None)

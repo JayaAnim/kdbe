@@ -1,26 +1,82 @@
-from django import http, views, forms
+from django import http, views, forms, shortcuts
+from django.conf import settings
+from django.core import exceptions
 from django.views.decorators import csrf
-from kbde.django.views import mixins as kbde_mixins
+from kbde.django import views as kbde_views
+from kbde.django.json import encoder as kbde_encoder
 
-from collections import abc
-
-
-no_object = object()
+import json
 
 
-class JsonResponseMixin(kbde_mixins.UrlPath, views.generic.base.ContextMixin):
+class JsonResponseMixin(kbde_views.UrlPathMixin,
+                        kbde_views.PermissionsMixin,
+                        views.generic.base.ContextMixin):
     fields = None
     response_class = http.JsonResponse
+    response_json_encoder = kbde_encoder.Encoder
     content_type = "application/json"
     child_views = {}
+    login_url = None
+    unauthenticated_status_code = 401
+    request_user_attrs = getattr(
+        settings,
+        "JSON_REQUEST_USER_ATTRS",
+        [
+            "token_user",
+            "session_header_user",
+        ],
+    )
 
     @classmethod
     def as_view(cls, **initkwargs):
         view = super().as_view(**initkwargs)
         return csrf.csrf_exempt(view)
 
+    def setup(self, request, *args, **kwargs):
+        request_users = [
+            getattr(request, attr, None) for attr in self.request_user_attrs
+        ]
+        request_users = [
+            user for user in request_users if user is not None
+        ]
+        authenticated_request_users = [
+            user for user in request_users if user.is_authenticated
+        ]
+
+        if authenticated_request_users:
+            request.user = authenticated_request_users[0]
+
+        self.set_request_data(request)
+
+        return super().setup(request, *args, **kwargs)
+
+    def dispatch(self, *args, **kwargs):
+        response = super().dispatch(*args, **kwargs)
+
+        # If the response is trying to redirect the user to the login page,
+        # return an "unauthenticated_status_code" instead
+        if (
+            isinstance(response, http.HttpResponseRedirect)
+            and response.url.startswith(self.get_login_url())
+        ):
+            return self.render_to_response(
+                None,
+                status=self.unauthenticated_status_code,
+            )
+
+        return response
+
+    def get_login_url(self):
+        login_url = self.login_url or settings.LOGIN_URL
+        assert login_url, (
+            f"{self.__class__} must define .login_url, or you must define "
+            f"LOGIN_URL in your settings"
+        )
+        return shortcuts.resolve_url(login_url)
+
     def render_to_response(self, context, **response_kwargs):
-        response_kwargs.setdefault('content_type', self.content_type)
+        response_kwargs.setdefault("content_type", self.content_type)
+        response_kwargs.setdefault("encoder", self.response_json_encoder)
 
         if context is not None:
             response_context = self.get_response_context(context)
@@ -42,6 +98,9 @@ class JsonResponseMixin(kbde_mixins.UrlPath, views.generic.base.ContextMixin):
         Returns the data which will go in the response's `data` field
         Gets object data, then renders all child views
         """
+        if context is None:
+            return None
+
         object_data = self.get_object_data(context)
         return self.process_child_views(object_data)
         
@@ -63,13 +122,43 @@ class JsonResponseMixin(kbde_mixins.UrlPath, views.generic.base.ContextMixin):
 
         for field_name, view_class in child_views.items():
             view = view_class()
+            view.request = self.request
+
             value = object_data[field_name]
+
             object_data[field_name] = view.get_response_data(value)
 
         return object_data
 
     def get_child_views(self):
-        return self.child_views
+        return self.child_views.copy()
+
+    def set_request_data(self, request):
+        content_type = request.headers.get("content-type")
+
+        if (
+            content_type
+            and content_type.lower() == "application/json"
+            and request.body
+        ):
+            request.POST = self.get_json_request_data(request)
+
+        return request
+
+    def get_json_request_data(self, request):
+        try:
+            data = json.loads(request.body.decode("latin1"))
+        except ValueError:
+            raise exceptions.SuspiciousOperation(
+                "The payload was not valid JSON"
+            )
+
+        if not isinstance(data, dict):
+            raise exceptions.SuspiciousOperation(
+                "The payload must be a JSON object"
+            )
+
+        return data
 
 
 class JsonView(JsonResponseMixin, views.generic.View):
@@ -93,8 +182,13 @@ class SingleObjectMixin:
         }
 
 
-class DetailView(SingleObjectMixin, JsonResponseMixin, views.generic.DetailView):
-    pass
+class DetailView(SingleObjectMixin,
+                 JsonResponseMixin,
+                 kbde_views.UserAllowedQuerysetMixin,
+                 views.generic.DetailView):
+
+    def get_queryset(self):
+        return self.get_user_read_queryset()
 
 
 class RenderDetailMixin:
@@ -106,7 +200,9 @@ class RenderDetailMixin:
 
     def get_detail_view(self):
         detail_view_class = self.get_detail_view_class()
-        return detail_view_class(**self.get_detail_view_kwargs())
+        detail_view = detail_view_class(**self.get_detail_view_kwargs())
+        detail_view.request = self.request
+        return detail_view
 
     def get_detail_view_class(self):
         assert self.detail_view_class is not None, (
@@ -119,7 +215,21 @@ class RenderDetailMixin:
         return {}
 
 
-class ListView(RenderDetailMixin, JsonResponseMixin, views.generic.ListView):
+class ListView(RenderDetailMixin,
+               JsonResponseMixin,
+               kbde_views.UserAllowedQuerysetMixin,
+               views.generic.ListView):
+
+    def get_queryset(self):
+        queryset = self.get_user_read_queryset()
+
+        ordering = self.get_ordering()
+        if ordering:
+            if isinstance(ordering, str):
+                ordering = (ordering,)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
     def get_response_context(self, context):
         response_context = {
@@ -156,47 +266,6 @@ class ListView(RenderDetailMixin, JsonResponseMixin, views.generic.ListView):
 
 
 class FormMixin(RenderDetailMixin):
-    all_field_attrs = [
-        "required",
-        "label",
-        "label_suffix",
-        "initial",
-        "help_text",
-        "localize",
-        "disabled",
-    ]
-
-    field_attr_map = {
-        forms.CharField: [
-            "min_length",
-            "max_length",
-            "empty_value",
-        ],
-        forms.ChoiceField: [
-            "choices",
-        ],
-        forms.TypedChoiceField: [
-            "choices"
-            "empty_value",
-        ],
-        forms.DateField: [
-            "input_formats",
-        ],
-        forms.DateTimeField: [
-            "input_formats",
-        ],
-        forms.DecimalField: [
-            "min_value",
-            "max_value",
-            "max_digits",
-            "decimal_places",
-        ],
-        forms.IntegerField: [
-            "min_value",
-            "max_value",
-        ],
-    }
-
     form_error_status_code = 422
     form_success_status_code = 200
 
@@ -213,8 +282,11 @@ class FormMixin(RenderDetailMixin):
         )
 
     def render_to_response(self, context, **response_kwargs):
-        if context["form"].errors:
-            response_kwargs["status"] = self.form_error_status_code
+        if context is not None:
+            form = context.get("form")
+
+            if form and form.errors:
+                response_kwargs["status"] = self.form_error_status_code
 
         return super().render_to_response(context, **response_kwargs)
 
@@ -222,58 +294,12 @@ class FormMixin(RenderDetailMixin):
         form = context["form"]
         response_context = {}
 
-        if form.errors:
-            response_context["errors"] = form.errors
-
         if hasattr(form, "cleaned_data") and not form.errors:
             response_context["data"] = self.render_detail_view(form.cleaned_data)
         else:
-            response_context["data"] = self.get_form_data(form)
-            response_context["form"] = self.get_form_description_data(form)
+            response_context["form"] = form
 
         return response_context
-
-    def get_form_description_data(self, form):
-        all_field_attrs = self.get_all_field_attrs()
-        field_attr_map = self.get_field_attr_map()
-        description_data = {}
-
-        for field_name in form.fields:
-            bound_field = form[field_name]
-            field_attrs = field_attr_map.get(bound_field.field.__class__, [])
-            description_data[field_name] = self.get_field_description_data(
-                bound_field.field,
-                all_field_attrs + field_attrs,
-            )
-
-        return description_data
-
-    def get_field_description_data(self, field, attrs):
-        description_data = {}
-        for field_attr in attrs:
-            if not hasattr(field, field_attr):
-                continue
-
-            value = getattr(field, field_attr)
-
-            if not isinstance(value, str) and isinstance(value, abc.Iterable):
-                value = list(value)
-
-            description_data[field_attr] = value
-
-        return description_data
-
-    def get_form_data(self, form):
-        return {
-            field_name: form[field_name].value()
-            for field_name in form.fields
-        }
-
-    def get_all_field_attrs(self):
-        return self.all_field_attrs
-
-    def get_field_attr_map(self):
-        return self.field_attr_map
 
     def get_success_url(self):
         return ""
@@ -293,11 +319,19 @@ class CreateView(ModelFormMixin, JsonResponseMixin, views.generic.CreateView):
     form_success_status_code = 201
 
 
-class UpdateView(ModelFormMixin, JsonResponseMixin, views.generic.UpdateView):
-    pass
+class UpdateView(ModelFormMixin,
+                 JsonResponseMixin,
+                 kbde_views.UserAllowedQuerysetMixin,
+                 views.generic.UpdateView):
+
+    def get_queryset(self):
+        return self.get_user_update_queryset()
 
 
-class DeleteView(SingleObjectMixin, JsonResponseMixin, views.generic.DeleteView):
+class DeleteView(SingleObjectMixin,
+                 JsonResponseMixin,
+                 kbde_views.UserAllowedQuerysetMixin,
+                 views.generic.DeleteView):
     delete_success_status_code = 200
 
     def delete(self, *args, **kwargs):
@@ -307,6 +341,9 @@ class DeleteView(SingleObjectMixin, JsonResponseMixin, views.generic.DeleteView)
             None,
             status=self.delete_success_status_code,
         )
+
+    def get_queryset(self):
+        return self.get_user_delete_queryset()
 
     def get_success_url(self):
         return ""

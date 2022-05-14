@@ -1,0 +1,74 @@
+<div class="form-container">
+    {% block form_container %}
+
+        {% block media %}
+            {{ form.media }}
+        {% endblock %}
+
+        {% if prompt_text %}
+            <div class="prompt-text">
+                {% block prompt_text %}
+                    {{ prompt_text }}
+                {% endblock %}
+            </div>
+        {% endif %}
+
+        <form id="form-{{ view.id }}"
+              method="{{ method }}"
+              action="{{ action }}"
+              enctype="multipart/form-data">
+            {% block form %}
+
+                {% if method.upper == "POST" %}
+                    {% block csrf_token %}
+                        {% csrf_token %}
+                    {% endblock %}
+                {% endif %}
+
+                {% block form_id %}
+                    <input type="hidden" name="form_id" value="{{ form_id }}"></input>
+                {% endblock %}
+
+                {% if form.errors %}
+                    <div class="form-errors">
+                        {% block form_errors %}
+                            {% comment %}
+                                If there are form non-field errors, display them here.
+                                If there are no non-fields errors, but there are still field errors,
+                                tell the user to correct the field errors below.
+                                Otherwise, show nothing
+                            {% endcomment%}
+                            
+                            {% if form.non_field_errors %}
+                                {% for error_message in form.non_field_errors %}
+                                    <div class="form-error-message non-field-error-message">
+                                        {{ error_message }}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="form-error-message field-error-message">
+                                    {{ field_error_message }}
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+                    </div>
+                {% endif %}
+
+                <div class="form-fields">
+                    {% block form_fields %}
+                        {% for field in form %}
+                            {% include 'kbde/django/form_field.html' %}
+                        {% endfor %}
+                    {% endblock %}
+                </div>
+
+                <div class="form-buttons">
+                    {% block form_buttons %}
+                        <button class="submit-button">{{ submit_button_text }}</button>
+                    {% endblock %}
+                </div>
+
+            {% endblock %}
+        </form>
+    {% endblock %}
+</div>

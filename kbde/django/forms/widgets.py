@@ -3,7 +3,7 @@ import json
 
 
 class Flatpickr(forms.widgets.DateTimeInput):
-    template_name = "kbde/forms/widgets/flatpickr.html"
+    template_name = "kbde/django/forms/widgets/flatpickr.html"
 
     class Media:
         css = {

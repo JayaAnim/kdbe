@@ -1,0 +1,207 @@
+// Forms
+
+.form-container{
+
+    .form-error-message{
+        @extend .alert, .alert-danger;
+    }
+
+    .form-fields{
+
+        .field-group{
+
+            .field-label{
+                @extend .form-label;
+            }
+
+            .field-container{
+
+                // Text, Email, Number
+                &.field-container-text,
+                &.field-container-email,
+                &.field-container-number,
+                &.field-container-tel,
+                &.field-container-url,
+                &.field-container-password{
+                    input{
+                        @extend .form-control;
+                    }
+                }
+
+                // Textarea
+                textarea{
+                    @extend .form-control;
+                }
+
+                // File
+                &.field-container-file{
+                    input{
+                        &[type='file'] {
+                            @extend .form-control;
+                        }
+
+                        &[type='checkbox'] {
+                            @extend .form-check-input;
+                            margin-left: 0 !important;
+                        }
+                    }
+
+                    label[for$='-clear_id'] {
+                        @extend .form-check-label;
+                        margin-left: 1.25rem !important;
+                    }
+                }
+
+                // Color
+                &.field-container-color{
+                    input{
+                        @extend .form-control, .form-control-color;
+                    }
+                }
+
+                // Select
+                select{
+                    @extend .form-select;
+                }
+
+                // Checkboxes and radios
+                &.field-container-checkbox, &.field-container-radio{
+                    @extend .form-check;
+
+                    label{
+                        @extend .form-check-label;
+                    }
+                    input{
+                        @extend .form-check-input;
+                    }
+                    ul{
+                        margin-bottom: 0;
+                        padding-left: 0;
+                        list-style: none;
+                    }
+                }
+
+                // Validation
+                &.has-error{
+
+                    // Text, Email, Number
+                    &.field-container-text,
+                    &.field-container-email,
+                    &.field-container-number,
+                    &.field-container-tel,
+                    &.field-container-url,
+                    &.field-container-password{
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+
+                    // Textarea
+                    textarea{
+                        @extend .is-invalid;
+                    }
+
+                    // File
+                    &.field-container-file{
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+
+                    // Color
+                    &.field-container-color{
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+
+                    // Select
+                    select{
+                        @extend .is-invalid;
+                    }
+
+                    // Checkboxes and radios
+                    &.field-container-checkbox, &.field-container-radio{
+                        label{
+                            color: $danger;
+                        }
+                        input{
+                            @extend .is-invalid;
+                        }
+                    }
+                }
+
+                &.disabled{
+                    &.field-container-checkbox, &.field-container-radio{
+                        label{
+                            opacity: .5;
+                        }
+                    }
+                }
+            }
+
+            .field-help-text{
+                @extend .form-text;
+            }
+
+            .field-errors{
+                .field-error-message{
+                    @extend .invalid-feedback;
+                    display: block;
+                }
+            }
+        }
+    }
+
+    .form-buttons{
+        .submit-button{
+            @extend .btn, .btn-primary;
+        }
+
+        .cancel-button{
+            @extend .btn, .btn-secondary;
+        }
+    }
+}
+
+
+// Alert
+.messages-container{
+    .message{
+        @extend .alert;
+        
+        &.info{
+            @extend .alert-info;
+        }
+        &.success{
+            @extend .alert-success;
+        }
+        &.warning{
+            @extend .alert-warning;
+        }
+        &.error{
+            @extend .alert-danger;
+        }
+    }
+}
+
+
+// Paginator
+
+.paginator{
+    @extend .pagination;
+
+    .page-item-active{
+        @extend .active;
+    }
+    .page-item-disabled{
+        @extend .disabled;
+    }
+}
+
+
+// Table
+
+.table-container{
+    @extend .table-responsive;
+}

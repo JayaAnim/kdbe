@@ -1,7 +1,36 @@
-{% load bootstrap4 %}
+
+<div class='messages-container'>
 
 {% if object.confirmed %}
-    {% bootstrap_alert "Thank you for confirming login" %}
+
+    <script>
+        function countdownOrSendHome() {
+            var returnCountdown = $('.return-countdown')
+            var countdownVal = parseInt(returnCountdown.html())
+
+            if (countdownVal == 0) {
+                window.location = "/"
+            } else {
+                returnCountdown.html(countdownVal - 1)
+            }
+
+            setTimeout(countdownOrSendHome, 1000)
+        }
+
+        $(function() {
+            setTimeout(countdownOrSendHome, 1000)
+        })
+    </script>
+
+    <div class='message success' role='alert'>
+        Thank you for confirming login. Returning home in <label class='return-countdown'>3</label>.
+    </div>
+
 {% else %}
-    {% bootstrap_alert "Login attempt blocked" %}
+    <div class='message error' role='alert'>
+        Login attempt blocked
+    </div>
 {% endif %}
+
+</div>
+

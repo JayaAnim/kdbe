@@ -31,8 +31,92 @@ sudo python3 -m pip install git+https://gitlab.com/kb_git/kbde
 See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 
-# Release notes, starting at v9
+# Release notes
 
+- `v93`:
+  - Moves `kbde.django.views.RelatedObjectMixin` to consider permissions checks before doing anything else.
+- `v92`:
+  - Changes how forms serialize in `kbde.django.json_views`. This update does modify the interface for all edit json views (FormView, CreateView, and UpdateView).
+- `v91`:
+  - Fixes import error in `kbde.django.json_views`.
+- `v90`:
+  - Fixes import error in `kbde.django.json_views`.
+- `v89`:
+  - Fixes bug with content-type in `kbde.django.json_views`.
+- `v88`:
+  - Adds support for the `application/json` content-type in `kbde.django.json_views`.
+- `v87`:
+  - Adds `kbde.django.bootstrap.partials.Accordion`.
+  - Adds form identifiers and conditional form validation, allowing form partials to function properly. See the [related Trello card](https://trello.com/c/sv1pG8iX/20-form-partial-submit) for details.
+- `v86`:
+  - Improvements to `kbde.django.pwa`.
+- `v85`:
+  - Improvements to the `kbde.django.link_login` app.
+  - System state module. Experimental only.
+  - Changes to the kbde commandline.
+  - Dockerfile improvements.
+- `v84`:
+  - Fixes ordering for `kbde.django.filters.views.FiltersetMixin`.
+  - Fixes Flatpickr form widget.
+  - Moves form fields into their own partials.
+  - Improvements to `kbde.django.bootstrap` sass.
+  - Django form fields are now partials.
+  - Changes how `kbde.django.permissions` `settings.DEFAULT_PERMISSION_CLASSES` is set.
+  - Fixes to `kbde.django.login_link` to use new `FormView`.
+  - Fixes to `kbde.django.forms.widget.Flatpickr`.
+  - `kbde.django.filters.views.FiltersetMixin` uses the same queryset as parent's `get_queryset()`.
+- `v83`:
+  - Fixes ordering for `kbde.django.json_views.views.ListView`.
+- `v82`:
+  - Patches to `kbde.django.views`.
+- `v81`:
+  - Changes the `kbde.django.session_header_auth` system to use the `authorization` header rather than a header with the key `settings.SESSION_COOKIE_NAME`.
+  - Improvements to the Django bootstrap components, `Modal` and `JsTabs`.
+  - Fixes the `git delete_merged_branches` `kbde_cli` command.
+  - WIP improvements to `kbde.django.pwa`.
+- `v80`:
+  - Adds support for authentication via putting the session key into a header. This is available in `kbde.django.session_header_auth`.
+  - `kbde.django.json_views` now use the `kbde.django.views.UserAllowedQuerysetMixin` to enforce permissions.
+  - Removes `SearchQuerysetMixin` and `SoftDeleteMixin` from `kbde.django.views`.
+  - `kbde.django.views.DeleteView` can now accept `object` as a kwarg.
+- `v79`:
+  - Adds a staticfile `kbde/django/bootstrap/bootstrap.scss` which provides a stripped-down Bootstrap5 which excludes utility classes.
+  - Adds `kbde/django/bootstrap/kbde_bootstrap.scss`, which maps KBDE components (such as alerts, forms, etc) to Bootstrap5 classes.
+  - Bumps `kbde.django.bootstrap` to Bootstrap5.
+  - Adds partials module to `kbde.django.bootstrap`.
+  - Creates integration module with `django-filter`, in `kbde.django.filters`.
+  - Restructured `kbde.django.forms`.
+  - Improvements added to `kbde.django.json_views`.
+  - New partials for HTML basics, like alerts, forms, etc.
+  - Moves pagination to `kbde.django.views.ListView`.
+  - Moves templates into structure which mirrors the module structrure in KBDE.
+  - Restructured `kbde.django.views.TableView` to be extensible, rather than composed of templates.
+  - `kbde.django.json_views` are no longer bound to `kbde.django.token_auth`.
+  - `kbde.django.views.__init__` and `kbde.django.views.mixins` were merged into `kbde.django.views`, and mixin classes were renamed.
+  - `kbde.django.views.DeleteView` now based on `kbde.django.views.FormView`.
+- `v78`:
+  - Adds more template functionality for `django.views`.
+  - Adds to `kbde_cli` commands.
+- `v77`:
+  - Provides fixes to SuccessUrl mixins in `django.views.mixins`.
+- `v76`:
+  - Provides fixes to SuccessUrl mixins in `django.views.mixins`.
+- `v75`:
+  - Patches `django.sass.middleware` to not act on responses which are not HTML. This was affecting sites which served static content via `whitenoise`.
+  - Removes `prettify()` call when rendering page HTML with `django.sass.middleware`.
+- `v74`:
+  - Adds `default_auto_field` to all Django app configs.
+  - Adds `django.token_auth` so Django views can authenticate users based on tokens and authorization headers. Includes Token model.
+  - Improvements to `django.json_views`.
+- `v73`:
+  - Changes `django.views.FormView` to have a configurable `action` parameter.
+  - Changes the order in which `django.views.TableView` accesses objects to get values. It now favors "getter" methods over explicit values on the object itself.
+- `v72`:
+  - Changes `django.sass` middleware to only target `<style>` tags which have the `sass` attribute.
+  - Allows `django.views.mixins.RelatedObject` to accept a `related_object` kwarg for use with partials.
+- `v71`:
+  - Overhauls `django.sass` to be a Python module instead of a Django app. This module includes middleware only. This middleware enables use of embedded Sass.
+  - Provides very basic system, `django.pwa`, for making a site into a PWA.
 - `v70`:
   - Adds an installable `django.sass` app which provides a view which provides a view which can compile Sass.
   - Downgrades `django.bootstrap` to v4 of Bootstrap. We will upgrade back to v5 once we can modify existing KBDE Boostrap components, which are dependent on v4.

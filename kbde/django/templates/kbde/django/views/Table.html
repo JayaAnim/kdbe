@@ -1,0 +1,46 @@
+{% extends "./ListView.html" %}
+
+
+{% block object_list %}
+    <div class="table-container">
+        {% block table_container %}
+        
+            {% if not rows %}
+                <div class="table-empty-container">
+                    {% block table_empty_container %}
+                        <div class="empty-message">{{ empty_message }}</div>
+                    {% endblock %}
+                </div>
+            {% else %}
+                <table class="table">
+                    {% block table %}
+                        <thead>
+                            {% block thead %}
+                                <tr>
+                                    {% for label in labels %}
+                                        <th>{{ label }}</th>
+                                    {% endfor %}
+                                </tr>
+                            {% endblock %}
+                        </thead>
+
+                        <tbody>
+                            {% block tbody %}
+                                {% for row in rows %}
+                                    <tr>
+                                        {% block tr %}
+                                            {% for cell in row.data %}
+                                                <td>{{ cell }}</td>
+                                            {% endfor %}
+                                        {% endblock %}
+                                    </tr>
+                                {% endfor %}
+                            {% endblock %}
+                        </tbody>
+                    {% endblock %}
+                </table>
+            {% endif %}
+
+        {% endblock %}
+    </div>
+{% endblock %}

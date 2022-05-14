@@ -239,8 +239,3 @@ try:
 
 except ImportError:
     pass
-
-
-# KBDE Permissions
-
-DEFAULT_PERMISSION_CLASSES = None
