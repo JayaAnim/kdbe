@@ -44,18 +44,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='BooleanField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='CharField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('max_length', models.IntegerField(blank=True, default=None, null=True)),
                 ('min_length', models.IntegerField(blank=True, default=None, null=True)),
                 ('strip', models.BooleanField(default=True)),
@@ -65,45 +65,45 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='ChoiceField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='DateField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='DateTimeField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='DecimalField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('max_value', models.IntegerField(blank=True, default=None, null=True)),
                 ('min_value', models.IntegerField(blank=True, default=None, null=True)),
                 ('max_digits', models.IntegerField(blank=True, default=None, null=True)),
@@ -113,23 +113,23 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='DurationField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='EmailField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('max_length', models.IntegerField(blank=True, default=None, null=True)),
                 ('min_length', models.IntegerField(blank=True, default=None, null=True)),
             ],
@@ -137,12 +137,12 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='FileField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('max_length', models.IntegerField(blank=True, default=None, null=True)),
                 ('allow_empty_file', models.BooleanField(default=False)),
             ],
@@ -150,12 +150,12 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='FloatField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('max_value', models.IntegerField(blank=True, default=None, null=True)),
                 ('min_value', models.IntegerField(blank=True, default=None, null=True)),
             ],
@@ -163,12 +163,12 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='GenericIpAddressField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('protocol', models.CharField(choices=[('both', 'Both'), ('IPv4', 'IPv4'), ('IPv6', 'IPv6')], max_length=255)),
                 ('unpack_ipv4', models.BooleanField(default=False)),
             ],
@@ -176,23 +176,23 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='ImageField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='IntegerField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('max_value', models.IntegerField(blank=True, default=None, null=True)),
                 ('min_value', models.IntegerField(blank=True, default=None, null=True)),
             ],
@@ -200,23 +200,23 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='NullBooleanField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='RegexField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('regex', models.CharField(blank=True, max_length=255)),
                 ('max_length', models.IntegerField(blank=True, default=None, null=True)),
                 ('min_length', models.IntegerField(blank=True, default=None, null=True)),
@@ -226,35 +226,35 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='SlugField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('allow_unicode', models.BooleanField(default=False)),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='TimeField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='UrlField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
                 ('max_length', models.IntegerField(blank=True, default=None, null=True)),
                 ('min_length', models.IntegerField(blank=True, default=None, null=True)),
             ],
@@ -262,18 +262,18 @@ class Migration(migrations.Migration):
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='UuidField',
             fields=[
-                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.Field')),
+                ('field_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.Field')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.field',),
+            bases=('kbde_django_db_forms.field',),
         ),
         migrations.CreateModel(
             name='FilledForm',
@@ -282,7 +282,7 @@ class Migration(migrations.Migration):
                 ('slug', models.UUIDField(default=uuid.uuid4)),
                 ('time_created', models.DateTimeField(auto_now_add=True)),
                 ('time_updated', models.DateTimeField(auto_now=True)),
-                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='db_forms.Form')),
+                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='kbde_django_db_forms.Form')),
             ],
         ),
         migrations.CreateModel(
@@ -290,30 +290,30 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('value', models.TextField(blank=True)),
-                ('field', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='db_forms.Field')),
-                ('filled_form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='db_forms.FilledForm')),
+                ('field', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='kbde_django_db_forms.Field')),
+                ('filled_form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='kbde_django_db_forms.FilledForm')),
             ],
         ),
         migrations.AddField(
             model_name='field',
             name='form',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='db_forms.Form'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='kbde_django_db_forms.Form'),
         ),
         migrations.AddField(
             model_name='field',
             name='polymorphic_ctype',
-            field=models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_db_forms.field_set+', to='contenttypes.ContentType'),
+            field=models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_kbde_django_db_forms.field_set+', to='contenttypes.ContentType'),
         ),
         migrations.CreateModel(
             name='MultipleChoiceField',
             fields=[
-                ('choicefield_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='db_forms.ChoiceField')),
+                ('choicefield_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='kbde_django_db_forms.ChoiceField')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('db_forms.choicefield',),
+            bases=('kbde_django_db_forms.choicefield',),
         ),
         migrations.CreateModel(
             name='Choice',
@@ -321,7 +321,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('value', models.CharField(max_length=255)),
                 ('title', models.CharField(max_length=255)),
-                ('choice_field', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='db_forms.ChoiceField')),
+                ('choice_field', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='kbde_django_db_forms.ChoiceField')),
             ],
         ),
     ]
