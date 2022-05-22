@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v96`:
+  - All views which inherit `kbde.django.views.FormMixin` can be passed a `success_url` kwarg.
 - `v95`:
   - Drops support for CoreUI in `kbde.django`.
 - `v94`:
