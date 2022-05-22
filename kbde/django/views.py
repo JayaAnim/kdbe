@@ -230,6 +230,14 @@ class FormMixin(TemplateResponseMixin):
     def get_form_id(self):
         return self.__class__.__name__
 
+    def get_success_url(self):
+        success_url = self.kwargs.get("success_url")
+
+        if success_url is not None:
+            return success_url
+
+        return super().get_success_url()
+
     class Redirect(Exception):
         pass
 
