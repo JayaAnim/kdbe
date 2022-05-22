@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v94`:
+  - Moves related object logic to start at the `get()` and `post()` methods of views, so that they don't interfere with other operations in the `dispatch()` method, such as permission checks, in `kbde.django.views.RelatedObjectMixin`.
 - `v93`:
   - Moves `kbde.django.views.RelatedObjectMixin` to consider permissions checks before doing anything else.
 - `v92`:
