@@ -5,7 +5,7 @@
         {# Label #}
         {% if field.label %}
             {% if field.field.choices or input_type != "checkbox" %}
-                <label class="field-label {% if input_type %}field-label-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}">
+                <label class="field-label {% if input_type %}field-label-{{ input_type }}{% endif %} {% if field.errors %}has-error{% endif %} {% if disabled %}disabled{% endif %} {% if required %}required{% endif %}" for="{{ field.auto_id }}">
                     {{ field.label }}
                 </label>
             {% endif %}
@@ -16,7 +16,7 @@
             {{ field }}
 
             {% if input_type == "checkbox" and not field.field.choices and field.label %}
-                <label class="checkbox-label">
+                <label class="checkbox-label" for="{{ field.auto_id }}">
                     {{ field.label }}
                 </label>
             {% endif %}
