@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v97`:
+  - Updated `kbde.django.db_forms` app.
 - `v96`:
   - All views which inherit `kbde.django.views.FormMixin` can be passed a `success_url` kwarg.
   - Adds styling for hidden inputs in `kbde.django.bootstrap`.
