@@ -33,6 +33,10 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v98`:
+  - Removes settings support for Django Pipeline.
+  - Adds an S3 cleaner app for Django.
+  - S3 bucket name is now a mandatory setting, and is a separate configureable environment variable in Django settings.
 - `v97`:
   - Updated `kbde.django.db_forms` app.
 - `v96`:
