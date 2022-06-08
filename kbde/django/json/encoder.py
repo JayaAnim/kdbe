@@ -160,11 +160,14 @@ class FormFieldSerializer(encoder.SerializerBase):
             if hasattr(field, field_attr)
         })
 
-        for field, value in description_data.items():
+        for field_attr, value in description_data.items():
             if callable(value):
                 value = value()
 
-            description_data[field] = value
+            description_data[field_attr] = value
+
+        if isinstance(field, (forms.FileField, forms.ImageField)):
+            description_data["clear_field_name"] = f"{field.name}-clear"
 
         return description_data
 
