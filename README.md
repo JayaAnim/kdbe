@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v99`:
+  - Adds a descriptive `clear_field_name` to JSON serializations of Django `FileField`s which use the `ClearableFileField` widget. Sending a `true` value to these fields will clear the file field. This feature exists in previous versions, but the description was not present.
 - `v98`:
   - Removes settings support for Django Pipeline.
   - Adds an S3 cleaner app for Django.

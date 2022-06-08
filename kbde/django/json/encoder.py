@@ -166,7 +166,7 @@ class FormFieldSerializer(encoder.SerializerBase):
 
             description_data[field_attr] = value
 
-        if isinstance(field, (forms.FileField, forms.ImageField)):
+        if isinstance(field.widget, forms.ClearableFileInput):
             description_data["clear_field_name"] = f"{field.name}-clear"
 
         return description_data
