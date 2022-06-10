@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v100`:
+  - Fixes an issue with initial data in `kbde.django.db_forms.forms`.
 - `v99`:
   - Adds a descriptive `clear_field_name` to JSON serializations of Django `FileField`s which use the `ClearableFileField` widget. Sending a `true` value to these fields will clear the file field. This feature exists in previous versions, but the description was not present.
 - `v98`:
