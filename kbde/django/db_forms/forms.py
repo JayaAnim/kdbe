@@ -5,12 +5,12 @@ from . import models
 
 class FilledFormUpdate(forms.Form):
     
-    def __init__(self, instance, data=None, *args, **kwargs):
+    def __init__(self, instance, initial=None, *args, **kwargs):
         self.instance = instance
 
-        data = data or self.instance.get_data()
+        initial = initial or self.instance.get_data()
 
-        super().__init__(data=data, *args, **kwargs)
+        super().__init__(initial=initial, *args, **kwargs)
 
         self.add_fields()
 
