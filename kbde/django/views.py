@@ -325,8 +325,14 @@ class RelatedObjectMixin:
         return super().get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
+        super_post = getattr(super(), "post", None)
+
+        if super_post is None:
+            return self.http_method_not_allowed(*args, **kwargs)
+
         self.related_object = self.get_related_object()
-        return super().post(*args, **kwargs)
+
+        return super_post(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
