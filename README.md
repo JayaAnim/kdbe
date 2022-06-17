@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v101`:
+  - Fixes `kbde.django.views.RelatedObjectMixin` so that it handles views which do not implement a POST method.
 - `v100`:
   - Fixes an issue with initial data in `kbde.django.db_forms.forms`.
 - `v99`:
