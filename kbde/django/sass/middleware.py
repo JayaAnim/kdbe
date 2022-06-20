@@ -25,6 +25,10 @@ class EmbeddedSassMiddleware:
             return response
 
         document = bs4.BeautifulSoup(response.content, features="html.parser")
+
+        if document.html == None:
+            return response
+
         sass_document = self.get_sass(document)
 
         if sass_document:
