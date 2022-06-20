@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db_forms', '0004_auto_20190930_0435'),
+        ('kbde_django_db_forms', '0004_auto_20190930_0435'),
     ]
 
     operations = [

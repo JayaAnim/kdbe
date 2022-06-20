@@ -33,6 +33,26 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v101`:
+  - Fixes `kbde.django.views.RelatedObjectMixin` so that it handles views which do not implement a POST method.
+- `v100`:
+  - Fixes an issue with initial data in `kbde.django.db_forms.forms`.
+- `v99`:
+  - Adds a descriptive `clear_field_name` to JSON serializations of Django `FileField`s which use the `ClearableFileField` widget. Sending a `true` value to these fields will clear the file field. This feature exists in previous versions, but the description was not present.
+- `v98`:
+  - Removes settings support for Django Pipeline.
+  - Adds an S3 cleaner app for Django.
+  - S3 bucket name is now a mandatory setting, and is a separate configureable environment variable in Django settings.
+- `v97`:
+  - Updated `kbde.django.db_forms` app.
+- `v96`:
+  - All views which inherit `kbde.django.views.FormMixin` can be passed a `success_url` kwarg.
+  - Adds styling for hidden inputs in `kbde.django.bootstrap`.
+  - Small changes to KBDE form fields.
+- `v95`:
+  - Drops support for CoreUI in `kbde.django`.
+- `v94`:
+  - Moves related object logic to start at the `get()` and `post()` methods of views, so that they don't interfere with other operations in the `dispatch()` method, such as permission checks, in `kbde.django.views.RelatedObjectMixin`.
 - `v93`:
   - Moves `kbde.django.views.RelatedObjectMixin` to consider permissions checks before doing anything else.
 - `v92`:

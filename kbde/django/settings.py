@@ -19,7 +19,7 @@ APP_HOST = os.getenv("APP_HOST")
 
 MIDDLEWARE += [
     "kbde.django.middleware.TimezoneMiddleware",
-    ]
+]
 
 
 # Whitenoise config
@@ -29,11 +29,11 @@ try:
 
     INSTALLED_APPS += [
         "whitenoise.runserver_nostatic",
-        ]
+    ]
 
     MIDDLEWARE += [
         "whitenoise.middleware.WhiteNoiseMiddleware",
-        ]
+    ]
 
 except ImportError:
     pass
@@ -63,7 +63,7 @@ LOGOUT_REDIRECT_URL = "/"
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = APP_NAME
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
 AWS_QUERYSTRING_AUTH = False
 
@@ -72,7 +72,7 @@ try:
 
     INSTALLED_APPS += [
         "storages",
-        ]
+    ]
 
     DEFAULT_FILE_STORAGE = "kbde.django.storage_backends.MediaStorage"
 
@@ -198,44 +198,3 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
 # Geocode
 
 GEOCODE_API_KEY = os.getenv("GEOCODE_API_KEY")
-
-
-# Django Pipeline
-# https://github.com/jazzband/django-pipeline
-
-try:
-    import pipeline
-
-    INSTALLED_APPS += [
-        "pipeline",
-    ]
-
-    PIPELINE = {
-        'STYLESHEETS': {
-            'page': {
-                'source_filenames': (
-                    'common/style/page.sass',
-                    'common/style/page.scss',
-                ),
-                'output_filename': 'common/style/page.css',
-            }
-        },
-        'COMPILERS': (
-            'libsasscompiler.LibSassCompiler',
-        ),
-        "CSS_COMPRESSOR": None,
-    }
-
-    # Static files (CSS, JavaScript, Images)
-    # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-    STATICFILES_FINDERS = (
-        'django.contrib.staticfiles.finders.FileSystemFinder',
-        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-        'pipeline.finders.PipelineFinder',
-    )
-
-    STATICFILES_STORAGE = 'pipeline.storage.PipelineManifestStorage'
-
-except ImportError:
-    pass

@@ -230,6 +230,14 @@ class FormMixin(TemplateResponseMixin):
     def get_form_id(self):
         return self.__class__.__name__
 
+    def get_success_url(self):
+        success_url = self.kwargs.get("success_url")
+
+        if success_url is not None:
+            return success_url
+
+        return super().get_success_url()
+
     class Redirect(Exception):
         pass
 
@@ -307,14 +315,24 @@ class OpenGraphMixin:
         return path
 
 
-class RelatedObjectMixinBase:
+class RelatedObjectMixin:
     related_model = None
     related_orm_path = None
     related_slug_field = "slug"
 
-    def dispatch(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         self.related_object = self.get_related_object()
-        return super().dispatch(*args, **kwargs)
+        return super().get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        super_post = getattr(super(), "post", None)
+
+        if super_post is None:
+            return self.http_method_not_allowed(*args, **kwargs)
+
+        self.related_object = self.get_related_object()
+
+        return super_post(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -355,13 +373,18 @@ class RelatedObjectMixinBase:
             related_queryset = related_queryset.filter(pk=related_pk)
         else:
             # Filter by slug
-            related_queryset = related_queryset.filter(**{self.related_slug_field: related_slug})
+            related_queryset = related_queryset.filter(
+                **{self.related_slug_field: related_slug},
+            )
 
         try:
             obj = related_queryset.get()
         except related_queryset.model.DoesNotExist:
-            raise http.Http404(f"No related {related_queryset.model._meta.verbose_name}s found matching the query")
-
+            raise http.Http404(
+                f"No related {related_queryset.model._meta.verbose_name}s "
+                f"found matching the query"
+            )
+        
         return obj
 
     def get_related_queryset(self):
@@ -390,12 +413,7 @@ class RelatedObjectMixinBase:
 
     def get_form_id(self):
         form_id = super().get_form_id()
-        related_object = self.get_related_object()
-        return f"{form_id}-{related_object.pk}"
-
-
-class RelatedObjectMixin(PermissionsMixin, RelatedObjectMixinBase):
-    pass
+        return f"{form_id}-{self.related_object.pk}"
 
 
 class SuccessUrlNextMixin:
@@ -557,6 +575,10 @@ class UpdateView(FormMixin,
                  BaseMixin,
                  views.generic.UpdateView):
 
+    def post(self, *args, **kwargs):
+        self.object = self.get_object()
+        return super().post(*args, **kwargs)
+
     def get_object(self, *args, **kwargs):
         obj = self.kwargs.get("object")
 
@@ -570,8 +592,7 @@ class UpdateView(FormMixin,
 
     def get_form_id(self):
         form_id = super().get_form_id()
-        obj = self.get_object()
-        return f"{form_id}-{obj.pk}"
+        return f"{form_id}-{self.object.pk}"
 
 
 class DeleteView(DeleteMixin,

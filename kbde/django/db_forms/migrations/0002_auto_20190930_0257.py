@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db_forms', '0001_initial'),
+        ('kbde_django_db_forms', '0001_initial'),
     ]
 
     operations = [
@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(blank=True, max_length=255)),
-                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='db_forms.Form')),
+                ('form', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='kbde_django_db_forms.Form')),
             ],
         ),
         migrations.AddField(
             model_name='field',
             name='field_group',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='db_forms.FieldGroup'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='kbde_django_db_forms.FieldGroup'),
         ),
     ]
