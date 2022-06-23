@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v102`:
+  - Patches `kbde.django.sass.middleware` so that the middleware can serve Django partials which contain `<style sass>` tags.
 - `v101`:
   - Fixes `kbde.django.views.RelatedObjectMixin` so that it handles views which do not implement a POST method.
 - `v100`:
