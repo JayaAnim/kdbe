@@ -5,9 +5,9 @@ import bs4, sass
 
 
 class EmbeddedSassMiddleware:
-    debug_embedded_sass = getattr(settings, "DEBUG_EMBEDDED_SASS", settings.DEBUG)
-    cache_embedded_sass = getattr(settings, "CACHE_EMBEDDED_SASS", not debug_embedded_sass)
-    embedded_sass_cache_timeout = getattr(
+    DEBUG_EMBEDDED_SASS = getattr(settings, "DEBUG_EMBEDDED_SASS", settings.DEBUG)
+    CACHE_EMBEDDED_SASS = getattr(settings, "CACHE_EMBEDDED_SASS", False)
+    EMBEDDED_SASS_CACHE_TIMEOUT = getattr(
         settings,
         "EMBEDDED_SASS_CACHE_TIMEOUT",
         60*60*24,  # 24 hours
@@ -17,7 +17,7 @@ class EmbeddedSassMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        assert isinstance(self.embedded_sass_cache_timeout, int)
+        assert isinstance(self.EMBEDDED_SASS_CACHE_TIMEOUT, int)
 
         response = self.get_response(request)
 
@@ -27,14 +27,22 @@ class EmbeddedSassMiddleware:
         document = bs4.BeautifulSoup(response.content, features="html.parser")
 
         if document.html == None:
-            return response
+            # There is no html element in this document. Assume it is a partial
+            # Remove all style tags
+            style_tags = document.find_all("style", {"sass": True})
+            
+            for style_tag in style_tags:
+                style_tag.extract()
 
-        sass_document = self.get_sass(document)
+        else:
+            # This is a full-page document
+            # Process all sass style tags
+            sass_document = self.get_sass(document)
 
-        if sass_document:
-            css_style_tag = document.new_tag("style")
-            css_style_tag.string = self.get_css(sass_document)
-            document.html.head.append(css_style_tag)
+            if sass_document:
+                css_style_tag = document.new_tag("style")
+                css_style_tag.string = self.get_css(sass_document)
+                document.html.head.append(css_style_tag)
 
         response.content = str(document)
         response['content-length'] = str(len(response.content))
@@ -42,10 +50,10 @@ class EmbeddedSassMiddleware:
         return response
 
     def get_css(self, sass_document):
-        if self.cache_embedded_sass:
+        if self.CACHE_EMBEDDED_SASS:
             import memoize
 
-            @memoize.memoize(self.embedded_sass_cache_timeout)
+            @memoize.memoize(self.EMBEDDED_SASS_CACHE_TIMEOUT)
             def compile_sass(string):
                 return sass.compile(string=string)
 
@@ -53,7 +61,7 @@ class EmbeddedSassMiddleware:
             def compile_sass(string):
                 return sass.compile(string=string)
 
-        if self.debug_embedded_sass:
+        if self.DEBUG_EMBEDDED_SASS:
             management.call_command("collectstatic", "--no-input")
 
         return compile_sass(sass_document)
