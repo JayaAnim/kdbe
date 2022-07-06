@@ -172,19 +172,17 @@
 // Alert
 .messages-container{
     .message{
-        @extend .alert;
-        
         &.info{
-            @extend .alert-info;
+            @extend .alert, .alert-info;
         }
         &.success{
-            @extend .alert-success;
+            @extend .alert, .alert-success;
         }
         &.warning{
-            @extend .alert-warning;
+            @extend .alert, .alert-warning;
         }
         &.error{
-            @extend .alert-danger;
+            @extend .alert, .alert-danger;
         }
     }
 }
