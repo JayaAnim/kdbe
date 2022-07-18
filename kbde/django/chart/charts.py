@@ -1,17 +1,41 @@
 from django.db.models import F
+from kbde.django import utils as kbde_utils
 
 
 class Chart:
+    x_key = None
+    title_text = None
     
     def __init__(self, queryset):
         self.queryset = queryset
 
     def serialize(self):
         return {
-            "data": {
-                "datasets": self.get_bound_datasets(),
-            },
+            "data": self.get_data(),
+            "options": self.get_options(),
         }
+
+    def get_data(self):
+        return {
+            "labels": self.get_labels(),
+            "datasets": self.get_bound_datasets(),
+        }
+
+    def get_labels(self):
+        return [self.get_object_label(obj) for obj in self.get_queryset()]
+
+    def get_object_label(self, obj):
+        x_key = self.get_x_key()
+        return kbde_utils.get_value_from_object(obj, x_key)
+
+    def get_x_key(self):
+        assert self.x_key is not None, (
+            f"{self.__class__} must define .x_key"
+        )
+        return self.x_key
+
+    def get_queryset(self):
+        return self.queryset
 
     def get_bound_datasets(self):
         datasets = self.get_datasets()
@@ -32,21 +56,41 @@ class Chart:
 
         return datasets
 
-    def get_queryset(self):
-        return self.queryset
+    def get_options(self):
+        return {
+            "scales": self.get_scales(),
+            "plugins": self.get_plugins(),
+        }
+
+    def get_scales(self):
+        return {}
+
+    def get_plugins(self):
+        return {
+            "title": self.get_title(),
+        }
+
+    def get_title(self):
+        title_text = self.get_title_text()
+
+        return {
+            "text": title_text,
+            "display": title_text is not None,
+        }
+
+    def get_title_text(self):
+        return self.title_text
 
 
 class Dataset:
     chart_type = None
 
     def __init__(self,
-                 x_key,
                  y_key,
                  label=None,
                  background_color=None,
                  border_color=None,
                  color=None):
-        self.x_key = x_key
         self.y_key = y_key
         self.label = label
         self.background_color = background_color
@@ -54,24 +98,20 @@ class Dataset:
         self.color = color
 
     def serialize(self):
-        data = {
-            "type": self.get_chart_type(),
-        }
-        
-        config = self.get_config()
-        config = {key: value for key, value in config.items() if value is not None}
-
-        data.update(config)
-
-        return data
-
-    def get_config(self):
         return {
+            key: value for key, value in self.get_serialize_data().items()
+            if value is not None
+        }
+
+    def get_serialize_data(self):
+        return {
+            "type": self.get_chart_type(),
+            "label": self.get_label(),
             "backgroundColor": self.get_background_color(),
             "borderColor": self.get_border_color(),
             "color": self.get_color(),
         }
-
+        
     def get_chart_type(self):
         assert self.chart_type is not None, (
             f"{self.__class__} must define .chart_type"
@@ -81,27 +121,44 @@ class Dataset:
     def get_label(self):
         return self.label
 
-    def get_data(self, queryset):
-        expressions = {
-            "x": F(self.get_x_key()),
-            "y": F(self.get_y_key()),
-        }
-        return queryset.annotate(**expressions).values(*expressions.keys())
-
-    def get_x_key(self):
-        return self.x_key
-
-    def get_y_key(self):
-        return self.y_key
-
     def get_background_color(self):
         return self.background_color
 
     def get_border_color(self):
         return self.border_color
-
+    
     def get_color(self):
         return self.color
+
+    def get_data(self, chart):
+        return [self.get_object_data(obj) for obj in chart.get_queryset()]
+
+    def get_object_data(self, obj):
+        y_key = self.get_y_key()
+        return kbde_utils.get_value_from_object(obj, y_key)
+
+    def get_y_key(self):
+        return self.y_key
+
+
+class FillMixin:
+
+    def __init__(self, fill=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fill = fill
+        
+    def get_serialize_data(self):
+        data = super().get_serialize_data()
+
+        data.update({
+            "fill": self.get_fill(),
+        })
+
+        return data
+
+    def get_fill(self):
+        return self.fill
 
 
 class BarDataset(Dataset):
@@ -110,40 +167,90 @@ class BarDataset(Dataset):
 
 class BubbleDataset(Dataset):
     chart_type = "bubble"
+    
+    def __init__(self, r_key, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.r_key = r_key
+    
+    def get_data(self, chart):
+        labels = chart.get_labels()
+        y_data = super().get_data(chart)
+        r_data = self.get_r_data(chart)
+
+        data = []
+        for index, label in enumerate(labels):
+            data.append({
+                "x": label,
+                "y": y_data[index],
+                "r": r_data[index],
+            })
+
+        return data
+
+    def get_r_data(self, chart):
+        return [self.get_r_object_data(obj) for obj in chart.get_queryset()]
+
+    def get_r_object_data(self, obj):
+        r_key = self.get_r_key()
+        return kbde_utils.get_value_from_object(obj, r_key)
+
+    def get_r_key(self):
+        return self.r_key
 
 
-class DonutDataset(Dataset):
-    chart_type = "donut"
+class DoughnutDataset(Dataset):
+    chart_type = "doughnut"
 
 
 class PieDataset(Dataset):
     chart_type = "pie"
 
 
-class LineDataset(Dataset):
+class LineDataset(FillMixin, Dataset):
     chart_type = "line"
 
-    def __init__(self, *args, tension=None, fill=None, **kwargs):
+    def __init__(self, tension=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.tension = tension
-        self.fill = fill
+        
+    def get_serialize_data(self):
+        data = super().get_serialize_data()
 
-    def get_config(self):
-        config = super().get_config()
-
-        config.update({
+        data.update({
             "tension": self.get_tension(),
-            "fill": self.get_fill(),
         })
 
-        return config
+        return data
 
     def get_tension(self):
         return self.tension
 
-    def get_fill(self):
-        return self.fill
+
+class PolarAreaDataset(Dataset):
+    chart_type = "polarArea"
+
+
+class RadarDataset(FillMixin, Dataset):
+    chart_type = "radar"
+
+
+class ScatterDataset(Dataset):
+    chart_type = "scatter"
+    
+    def get_data(self, chart):
+        labels = chart.get_labels()
+        y_data = super().get_data(chart)
+
+        data = []
+        for index, label in enumerate(labels):
+            data.append({
+                "x": label,
+                "y": y_data[index],
+            })
+
+        return data
 
 
 class BoundDataset:
@@ -156,11 +263,17 @@ class BoundDataset:
     def serialize(self):
         chart = self.get_chart()
         dataset = self.get_dataset()
-        return {
-            "label": self.get_label(),
-            "data": dataset.get_data(chart.get_queryset()),
-            **dataset.serialize()
-        }
+
+        bound_dataset = dataset.serialize()
+
+        bound_dataset.update({
+            "data": dataset.get_data(chart),
+        })
+
+        if bound_dataset.get("label") is None:
+            bound_dataset["label"] = self.get_label()
+
+        return bound_dataset
 
     def get_chart(self):
         return self.chart
@@ -169,11 +282,6 @@ class BoundDataset:
         return self.dataset
 
     def get_label(self):
-        label = self.dataset.get_label()
-
-        if label is not None:
-            return label
-
         field_name = self.get_field_name()
         field_name = field_name[0].upper() + field_name[1:]
         field_name = field_name.replace("_", " ")

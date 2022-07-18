@@ -15,5 +15,8 @@ $(function(){
     var chart_data = {{ chart_json|safe }}
     var chart = new Chart("chart_{{ view.id }}", chart_data)
 
+    window.kbde_charts = window.kbde_charts || {}
+    window.kbde_charts["chart_{{ view.id }}"] = chart
+
 })
 </script>

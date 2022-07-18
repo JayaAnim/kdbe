@@ -259,3 +259,24 @@ def send_to_trello(board_email,
                subject,
                text_message=description,
                attachment_list=attachment_list)
+
+
+def get_value_from_object(obj, key):
+    """
+    Tries to get a value from an object's getter method "get_{key}()".
+
+    If there is no getter function of that name, then try to get the value from
+    the object's attribute of the name "key".
+
+    If there is no attribute named "key", then try to address the object like a
+    dictionary.
+    """
+    getter_function = getattr(obj, f"get_{key}", None)
+
+    if getter_function is not None:
+        return getter_function()
+
+    if hasattr(obj, key):
+        return getattr(obj, key)
+
+    return obj[key]
