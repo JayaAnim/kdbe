@@ -164,7 +164,10 @@ class Client:
             try:
                 response_json = response.json()
                 response_json["status_code"] = response.status_code
-                raise self.ApiClientException(json.dumps(response_json))
+                raise self.ApiClientException(
+                    f"API error at {self.path}: {response_json}",
+                    response_data=response_json,
+                )
             except ValueError:
                 raise e
 
@@ -193,4 +196,8 @@ class Client:
         return self.params.copy()
 
     class ApiClientException(Exception):
-        pass
+        
+        def __init__(self, *args, response_data=None, **kwargs):
+            super().__init__(*args, **kwargs)
+
+            self.response_data = response_data
