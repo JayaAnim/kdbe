@@ -1,0 +1,22 @@
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"
+    integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+>
+</script>
+
+<canvas id="chart_{{ view.id }}"></canvas>
+
+<script>
+"use strict"
+$(function(){
+
+    var chart_data = {{ chart_json|safe }}
+    var chart = new Chart("chart_{{ view.id }}", chart_data)
+
+    window.kbde_charts = window.kbde_charts || {}
+    window.kbde_charts["chart_{{ view.id }}"] = chart
+
+})
+</script>
