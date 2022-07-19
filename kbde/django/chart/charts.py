@@ -1,4 +1,3 @@
-from django.db.models import F
 from kbde.django import utils as kbde_utils
 
 
