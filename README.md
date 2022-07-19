@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v103`:
+  - Adds `kbde.django.chart` app to build charts from querysets (or lists of objects).
 - `v102`:
   - Patches `kbde.django.sass.middleware` so that the middleware can serve Django partials which contain `<style sass>` tags.
   - Changes `kbde.django.sass.middleware` so that it does not cache by default.
