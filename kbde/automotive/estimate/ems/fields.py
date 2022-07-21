@@ -17,7 +17,6 @@ class Field:
         field = cls()
         field_name = field.get_cieca_field_name()
         value = record[field_name]
-        field.value = value
 
         return field
     
