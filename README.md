@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v104`:
+  - Adds `kbde.automotive`. A Python lib for interacting with data formats which are designed for the automotive industry.
 - `v103`:
   - Adds `kbde.django.chart` app to build charts from querysets (or lists of objects).
 - `v102`:
