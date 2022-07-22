@@ -14,7 +14,12 @@ class TotalTypeCode(fields.Field):
 
 class TotalTypeAmount(fields.Field):
     cieca_field_name = "TTL_AMT"
-    kbde_field_name = kbde_fields.TYPE_TOTAL
+    kbde_field_name = kbde_fields.TOTAL_TYPE_AMOUNT
+
+
+class TotalTypeHours(fields.Field):
+    cieca_field_name = "TTL_HRS"
+    kbde_field_name = kbde_fields.TOTAL_TYPE_HOURS
 
 
 class StlDbfReader(dbf.DbfReader):
@@ -22,6 +27,7 @@ class StlDbfReader(dbf.DbfReader):
         TotalType,
         TotalTypeCode,
         TotalTypeAmount,
+        TotalTypeHours,
     ]
     file_extension = "stl"
 
