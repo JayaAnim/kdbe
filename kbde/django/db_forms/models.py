@@ -79,12 +79,19 @@ class Field(poly_models.PolymorphicModel):
         blank=True,
     )
     priority = models.IntegerField()
-    name = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
+    name = models.CharField(
+        max_length=MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+        null=True,
+    )
 
     # Core field arguments
     required = models.BooleanField(default=True)
     label = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
-    label_suffix = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
+    label_suffix = models.CharField(
+        max_length=MAX_LENGTH_CHAR_FIELD,
+        blank=True,
+    )
     initial = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
     help_text = models.CharField(max_length=MAX_LENGTH_CHAR_FIELD, blank=True)
     localize = models.BooleanField(default=False)
@@ -113,25 +120,26 @@ class Field(poly_models.PolymorphicModel):
         return self.label or self.name or "Field {}".format(self.pk)
 
     def clean(self):
-        # Name characters
-        if set(self.name) - set(self.ALLOWED_NAME_CHARS):
-            raise exceptions.ValidationError(
-                "Name must only contain lowercase letters, numbers, and "
-                "underscores"
-            )
+        if self.name:
+            # Name characters
+            if set(self.name) - set(self.ALLOWED_NAME_CHARS):
+                raise exceptions.ValidationError(
+                    "Name must only contain lowercase letters, numbers, and "
+                    "underscores"
+                )
 
-        if (
-            self.__class__.objects
-            .exclude(pk=self.pk)
-            .filter(form=self.form, name=self.name)
-            .exists()
-        ):
-            raise exceptions.ValidationError({
-                "name": (
-                    f"A field with the name {self.name} already exists on "
-                    f"form {self.form}"
-                ),
-            })
+            if (
+                self.__class__.objects
+                .exclude(pk=self.pk)
+                .filter(form=self.form, name=self.name)
+                .exists()
+            ):
+                raise exceptions.ValidationError({
+                    "name": (
+                        f"A field with the name {self.name} already exists on "
+                        f"form {self.form}"
+                    ),
+                })
 
     def save(self, *args, **kwargs):
         field_group = getattr(self, "field_group", None)
