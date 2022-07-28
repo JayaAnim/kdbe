@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v106`:
+  - Additions to `kbde.automotive` EMS reader.
 - `v105`:
   - Fixes `kbde.django.db_forms` so that fields can be added without inputting a `name` value.
 - `v104`:
