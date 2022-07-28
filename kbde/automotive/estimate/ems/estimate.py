@@ -1,20 +1,24 @@
 from .file_types import (
     administrative_data_1,
+    administrative_data_2,
     vehicle_data,
     profile_labor,
     totals,
     detail,
+    envelope,
 )
 
 
 class Estimate:
     dbf_readers = [
         administrative_data_1.DbfReader,
+        administrative_data_2.DbfReader,
         vehicle_data.DbfReader,
         profile_labor.PflReader,
         totals.StlDbfReader,
         totals.TtlDbfReader,
         detail.LinDbfReader,
+        envelope.DbfReader,
     ]
     
     def __init__(self, path):

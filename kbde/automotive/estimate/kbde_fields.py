@@ -1,8 +1,12 @@
 LIST = [
+    "repair_order_id",
+
     "claim_number",
     "insurance_company_name",
     "owner_first_name",
     "owner_last_name",
+    "estimator_first_name",
+    "estimator_last_name",
 
     "gross_deductible",
     "gross_customer_responsibility",
