@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v107`:
+  - Fixes to the `kbde.scraper` module.
 - `v106`:
   - Additions to `kbde.automotive` EMS reader.
 - `v105`:

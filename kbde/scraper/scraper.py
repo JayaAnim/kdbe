@@ -1,7 +1,5 @@
 import time, bs4, urllib
 
-from . import mixins
-
 
 class Base:
     page_ready_check_interval = 1
@@ -35,7 +33,7 @@ class Base:
             # Save the url to the page_stack for this scraper
             self.page_stack.append(page_url)
 
-            for obj in self.get_data_from_page(page_html):
+            for obj in self.get_data_from_page(self.device, page_html):
                 yield obj
 
             # Get the next page url
@@ -98,7 +96,15 @@ class Base:
             return self.page_stack[-1]
 
 
-class Static(mixins.RequestsDevice, Base):
+class RequestsDeviceMixin:
+
+    def get_device(self):
+        import requests
+
+        return requests.Session()
+
+
+class Static(RequestsDeviceMixin, Base):
     """
     Scraper which processes static HTML web pages
     """
@@ -129,7 +135,7 @@ class Static(mixins.RequestsDevice, Base):
         return bs4.BeautifulSoup(response.text, features="html.parser")
 
 
-class JsonApi(mixins.RequestsDevice, Base):
+class JsonApi(RequestsDeviceMixin, Base):
     """
     Scraper to process json from an API endpoint
     """
