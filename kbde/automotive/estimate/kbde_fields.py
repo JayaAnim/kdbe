@@ -1,5 +1,6 @@
 LIST = [
     "repair_order_id",
+    "estimate_file_id",
 
     "claim_number",
     "insurance_company_name",
