@@ -42,7 +42,7 @@ class DbfReader:
     def get_dbf(self):
         import dbfread
 
-        return dbfread.DBF(self.path)
+        return dbfread.DBF(self.path, ignore_missing_memofile=True)
 
     def get_kbde_data(self):
         for record in self.get_data():
