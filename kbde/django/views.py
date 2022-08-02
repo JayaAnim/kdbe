@@ -628,6 +628,7 @@ class MarkdownView(TemplateView):
     """
     template_name = "kbde/django/views/MarkdownView.html"
     markdown_template_name = None
+    markdown_extensions = []
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -635,15 +636,13 @@ class MarkdownView(TemplateView):
         return context_data
 
     def get_markdown(self, context_data):
-        import markdown
-
         markdown_template_name = self.get_markdown_template_name()
         markdown_content = template.loader.render_to_string(
             markdown_template_name,
             context_data,
         )
 
-        html = markdown.markdown(markdown_content)
+        html = self.convert_markdown(markdown_content)
 
         return utils.safestring.mark_safe(html)
 
@@ -652,6 +651,17 @@ class MarkdownView(TemplateView):
             self.markdown_template_name or 
             self.get_class_template_name(file_extension="md")
         )
+
+    def convert_markdown(self, markdown_content):
+        import markdown
+
+        return markdown.markdown(
+            markdown_content,
+            extensions=self.get_markdown_extensions(),
+        )
+
+    def get_markdown_extensions(self):
+        return self.markdown_extensions.copy()
 
 
 class TableView(ListView):
