@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v108`:
+  - Additions to `kbde.automotive` EMS reader.
+  - Adds support for extensions in `kbde.django.views.MarkdownView`.
 - `v107`:
   - Fixes to the `kbde.scraper` module.
 - `v106`:
