@@ -43,8 +43,28 @@ class PartPriceIncludedIndicator(fields.Field):
 
 
 class PartDescriptionJudgement(fields.Field):
-    cieca_field_name = "PART_DESCJ"
+    cieca_field_names = [
+        "PART_DESCJ",
+        "PART_DES_J",
+    ]
     kbde_field_name = kbde_fields.PART_DESCRIPTION_JUDGMENT
+
+    @classmethod
+    def from_dbf_record(cls, record):
+        for field_name in cls.cieca_field_names:
+
+            try:
+                field = cls()
+                value = record[field_name]
+                field.value = value
+                return field
+
+            except KeyError:
+                continue
+
+        raise AssertionError(
+            'Could not find a value for the given cieca_field_names'
+        )
 
 
 class LaborType(fields.Field):
