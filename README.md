@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v110`:
+  - Adds a container for the template in `kbde.django.chart`.
 - `v109`:
   - Additions to `kbde.automotive` EMS reader.
 - `v108`:
