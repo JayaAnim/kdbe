@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v111`:
+  - Adds an s3 client which can copy between buckets within different host providers, i.e. AWS to DigitalOcean.
 - `v110`:
   - Adds a container for the template in `kbde.django.chart`.
 - `v109`:
