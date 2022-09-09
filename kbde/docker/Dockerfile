@@ -20,8 +20,8 @@ RUN apt-get install -y software-properties-common \
     && apt-get install -y `cat python.txt` lib`cat python.txt`-dev
 
 # Custom system dependencies
-ADD scripts/install.bash /app/scripts/
-RUN ./scripts/install.bash
+ADD install.bash /app/
+RUN bash install.bash
 
 # Python dependencies
 ADD requirements.txt /app/
@@ -31,4 +31,4 @@ RUN `cat python.txt` -m pip install -r requirements.txt
 ADD . /app/
 
 # Default command
-CMD ./scripts/release.bash && honcho start -f Procfile-deployed
+CMD bash release.bash && honcho start -f Procfile-deployed
