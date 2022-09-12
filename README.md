@@ -35,6 +35,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v113`:
   - Changes how meta tags are handled in `kbde.django.views`.
+  - Adds a default `noindex` tag to all pages via the `kbde.django.views.NoindexMixin`. This can be turned on/off for each view.
   - Updates the `OpenGraphMixin` to match new meta tag handling.
 - `v112`:
   - Updates to the default dockerfile.
