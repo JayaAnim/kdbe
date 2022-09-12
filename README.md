@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v113`:
+  - Changes how meta tags are handled in `kbde.django.views`.
+  - Updates the `OpenGraphMixin` to match new meta tag handling.
 - `v112`:
   - Updates to the default dockerfile.
   - Adds tools for managing Python projects.
