@@ -91,7 +91,63 @@ class UrlPathMixin:
         )
 
 
-class PageTemplateMixin(UrlPathMixin):
+class MetaMixin:
+    meta_tags = [
+        {
+            "charset": "utf-8",
+        },
+        {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1, shrink-to-fit=no"
+        },
+    ]
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        if self.is_page_view:
+            context_data["meta_tags"] = self.get_meta_tags()
+
+        return context_data
+
+    def get_meta_tags(self):
+        return self.meta_tags.copy()
+
+
+class NoindexMixin(MetaMixin):
+    noindex = True
+    noindex_names = [
+        "robots",
+    ]
+
+    def get_meta_tags(self):
+        meta_tags = super().get_meta_tags()
+
+        if self.get_noindex():
+            
+            noindex_names = self.get_noindex_names()
+
+            assert noindex_names, (
+                f"{self.__class__} must has the .noindex attribute set to "
+                f"True, but it did not define any .noindex_names"
+            )
+
+            for noindex_name in noindex_names:
+                meta_tags.append({
+                    "name": noindex_name,
+                    "content": "noindex",
+                })
+
+        return meta_tags
+
+    def get_noindex(self):
+        return self.noindex
+
+    def get_noindex_names(self):
+        return self.noindex_names.copy()
+
+
+class PageTemplateMixin(UrlPathMixin, NoindexMixin):
     page_template_name = (
         getattr(settings, "PAGE_TEMPLATE_NAME", None)
         or "kbde/django/page.html"
@@ -295,24 +351,37 @@ class UserAllowedQuerysetMixin:
         return self.model
 
 
-class OpenGraphMixin:
+class OpenGraphMixin(MetaMixin):
     """
     A view mixin which enables OG
     """
     open_graph = {}
 
-    def get_open_graph(self):
-        open_graph = self.open_graph.copy()
+    def get_meta_tags(self):
+        meta_tags = super().get_meta_tags()
+
+        open_graph = self.get_open_graph()
+
+        # Allow images to be staticfile references
+        image = open_graph.get("og:image")
+
+        if image and finders.find(image):
+            open_graph["og:image"] = static.static(image)
 
         for prop, content in open_graph.items():
-            open_graph[prop] = self.get_static_url(content)
+            meta_tags.append({
+                "property": prop,
+                "content": content,
+            })
 
-        return open_graph
+        return meta_tags
 
-    def get_static_url(self, path):
-        if finders.find(path):
-            path = static.static(path)
-        return path
+    def get_open_graph(self):
+        assert self.open_graph, (
+            f"{self.__class__} must define .open_graph"
+        )
+
+        return self.open_graph.copy()
 
 
 class RelatedObjectMixin:

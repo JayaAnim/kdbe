@@ -7,10 +7,7 @@
         {% block head %}
 
             {% block meta %}
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-                {% include 'kbde/django/open_graph.html' %}
+                {% include 'kbde/django/meta.html' %}
             {% endblock %}
 
             <title>{% block page_title %}{% endblock %}</title>

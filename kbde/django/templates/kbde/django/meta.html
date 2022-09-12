@@ -1,0 +1,3 @@
+{% for meta_tag in meta_tags %}
+    <meta {% for attribute, value in meta_tag.items %}{{ attribute }}="{{ value }}"{% endfor %} />
+{% endfor %}
