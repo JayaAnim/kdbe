@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v114`:
+  - Changes `kbde.django.sass.middleware` so that it caches by default.
 - `v113`:
   - Changes how meta tags are handled in `kbde.django.views`.
   - Adds a default `noindex` tag to all pages via the `kbde.django.views.NoindexMixin`. This can be turned on/off for each view.
