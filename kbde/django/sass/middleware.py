@@ -5,8 +5,16 @@ import bs4, sass
 
 
 class EmbeddedSassMiddleware:
-    DEBUG_EMBEDDED_SASS = getattr(settings, "DEBUG_EMBEDDED_SASS", settings.DEBUG)
-    CACHE_EMBEDDED_SASS = getattr(settings, "CACHE_EMBEDDED_SASS", False)
+    DEBUG_EMBEDDED_SASS = getattr(
+        settings,
+        "DEBUG_EMBEDDED_SASS",
+        settings.DEBUG,
+    )
+    CACHE_EMBEDDED_SASS = getattr(
+        settings,
+        "CACHE_EMBEDDED_SASS",
+        not settings.DEBUG,
+    )
     EMBEDDED_SASS_CACHE_TIMEOUT = getattr(
         settings,
         "EMBEDDED_SASS_CACHE_TIMEOUT",
@@ -50,16 +58,15 @@ class EmbeddedSassMiddleware:
         return response
 
     def get_css(self, sass_document):
+
+        def compile_sass(string):
+            return sass.compile(string=string)
+
         if self.CACHE_EMBEDDED_SASS:
             import memoize
 
-            @memoize.memoize(self.EMBEDDED_SASS_CACHE_TIMEOUT)
-            def compile_sass(string):
-                return sass.compile(string=string)
-
-        else:
-            def compile_sass(string):
-                return sass.compile(string=string)
+            memoize_function = memoize.memoize(self.EMBEDDED_SASS_CACHE_TIMEOUT)
+            compile_sass = memoize_function(compile_sass)
 
         if self.DEBUG_EMBEDDED_SASS:
             management.call_command("collectstatic", "--no-input")
