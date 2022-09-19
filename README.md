@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v115`:
+  - Updates to `kbde.django.views.TableView`.
 - `v114`:
   - Changes `kbde.django.sass.middleware` so that it caches by default.
 - `v113`:

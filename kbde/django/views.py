@@ -751,6 +751,7 @@ class TableView(ListView):
         label_list = self.get_label_list()
 
         row_list = []
+
         for obj in object_list:
             row = {
                 "object": obj,
@@ -758,8 +759,16 @@ class TableView(ListView):
 
             if self.include_row_data:
                 row_data = self.get_row_data_from_object(obj)
-                assert len(row_data) == len(label_list)
+
+                assert len(row_data) == len(label_list), (
+                    f"{self.__class__}: get_row_data_from_object() must "
+                    f"return a list of values that has the same number of "
+                    f"entries as the label list ({len(label_list)})"
+                )
+
                 row["data"] = row_data
+
+            row["tag_attrs"] = self.get_row_tag_attrs(obj)
 
             row_list.append(row)
 
@@ -783,18 +792,31 @@ class TableView(ListView):
     def get_value_from_object(self, obj, field):
         # Try to get with a getter method
         get_method_name = f"get_{field}"
-        get_method = getattr(obj, get_method_name, not_found)
+
+        # Try to use the getter method on this class
+        get_method = getattr(self, get_method_name, not_found)
+
         if get_method != not_found:
-            return get_method()
+            return get_method(obj)
+
+        # Try to use the getter method on the object
+        obj_get_method = getattr(obj, get_method_name, not_found)
+
+        if obj_get_method != not_found:
+            return obj_get_method()
 
         # Get explicit value from the object
         explicit_value = getattr(obj, field, not_found)
+
         if explicit_value != not_found:
             return explicit_value
 
         assert False, (
             f"Could not get value for field `{field}` on object `{obj}`"
         )
+
+    def get_row_tag_attrs(self, obj):
+        return {}
 
     def get_table_empty_message(self):
         assert self.table_empty_message, (
