@@ -33,6 +33,27 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v116`:
+  - Adds a partials catalog view to `kbde.django`. This will find and display samples of partials within an Django project.
+  - Adds new Django permission classes.
+  - Setting a view's `page_template_name` to `None` will render the view without the page template, rather than throwing an error. Setting this will allow views to be served from URLs as pure partials.
+- `v115`:
+  - Updates to `kbde.django.views.TableView`.
+- `v114`:
+  - Changes `kbde.django.sass.middleware` so that it caches by default.
+- `v113`:
+  - Changes how meta tags are handled in `kbde.django.views`.
+  - Adds a default `noindex` tag to all pages via the `kbde.django.views.NoindexMixin`. This can be turned on/off for each view.
+  - Updates the `OpenGraphMixin` to match new meta tag handling.
+- `v112`:
+  - Updates to the default dockerfile.
+  - Adds tools for managing Python projects.
+- `v111`:
+  - Adds an s3 client which can copy between buckets within different host providers, i.e. AWS to DigitalOcean.
+- `v110`:
+  - Adds a container for the template in `kbde.django.chart`.
+- `v109`:
+  - Additions to `kbde.automotive` EMS reader.
 - `v108`:
   - Additions to `kbde.automotive` EMS reader.
   - Adds support for extensions in `kbde.django.views.MarkdownView`.

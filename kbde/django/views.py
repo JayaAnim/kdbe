@@ -1,4 +1,5 @@
 from django import views, template, utils, http, urls
+from django.apps import apps
 from django.core import exceptions
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import finders
@@ -11,7 +12,7 @@ from kbde.django import response as kbde_response
 
 from kbde.import_tools import utils as import_utils
 
-import math, uuid
+import math, uuid, inspect, importlib
 
 
 not_found = object()
@@ -91,7 +92,63 @@ class UrlPathMixin:
         )
 
 
-class PageTemplateMixin(UrlPathMixin):
+class MetaMixin:
+    meta_tags = [
+        {
+            "charset": "utf-8",
+        },
+        {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1, shrink-to-fit=no"
+        },
+    ]
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        if self.is_page_view:
+            context_data["meta_tags"] = self.get_meta_tags()
+
+        return context_data
+
+    def get_meta_tags(self):
+        return self.meta_tags.copy()
+
+
+class NoindexMixin(MetaMixin):
+    noindex = True
+    noindex_names = [
+        "robots",
+    ]
+
+    def get_meta_tags(self):
+        meta_tags = super().get_meta_tags()
+
+        if self.get_noindex():
+            
+            noindex_names = self.get_noindex_names()
+
+            assert noindex_names, (
+                f"{self.__class__} must has the .noindex attribute set to "
+                f"True, but it did not define any .noindex_names"
+            )
+
+            for noindex_name in noindex_names:
+                meta_tags.append({
+                    "name": noindex_name,
+                    "content": "noindex",
+                })
+
+        return meta_tags
+
+    def get_noindex(self):
+        return self.noindex
+
+    def get_noindex_names(self):
+        return self.noindex_names.copy()
+
+
+class PageTemplateMixin(UrlPathMixin, NoindexMixin):
     page_template_name = (
         getattr(settings, "PAGE_TEMPLATE_NAME", None)
         or "kbde/django/page.html"
@@ -108,7 +165,7 @@ class PageTemplateMixin(UrlPathMixin):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
-        if self.is_page_view:
+        if self.is_page_view and self.get_page_template_name() is not None:
             context_data["content_template_name"] = self.get_content_template_name()
 
         return context_data
@@ -116,15 +173,16 @@ class PageTemplateMixin(UrlPathMixin):
     def get_template_names(self):
         if self.is_page_view:
             template_name = self.get_page_template_name()
+
+            if template_name is None:
+                template_name = self.get_content_template_name()
+
         else:
             template_name = self.get_content_template_name()
 
         return [template_name]
 
     def get_page_template_name(self):
-        assert self.page_template_name, (
-            f"{self.__class__} must define .page_template_name"
-        )
         return self.page_template_name
 
     def get_content_template_name(self, file_extension="html"):
@@ -145,7 +203,16 @@ class PageTemplateMixin(UrlPathMixin):
         return template_name
 
 
-class BaseMixin(PermissionsMixin, ViewIdMixin, PageTemplateMixin):
+class PartialMixin:
+    
+    def dispatch(self, *args, **kwargs):
+        if kwargs.get("render_partial_catalog"):
+            self.kwargs = self.get_catalog_kwargs()
+
+        return super().dispatch(*args, **kwargs)
+
+
+class BaseMixin(PartialMixin, PermissionsMixin, ViewIdMixin, PageTemplateMixin):
     pass
 
 
@@ -295,24 +362,37 @@ class UserAllowedQuerysetMixin:
         return self.model
 
 
-class OpenGraphMixin:
+class OpenGraphMixin(MetaMixin):
     """
     A view mixin which enables OG
     """
     open_graph = {}
 
-    def get_open_graph(self):
-        open_graph = self.open_graph.copy()
+    def get_meta_tags(self):
+        meta_tags = super().get_meta_tags()
+
+        open_graph = self.get_open_graph()
+
+        # Allow images to be staticfile references
+        image = open_graph.get("og:image")
+
+        if image and finders.find(image):
+            open_graph["og:image"] = static.static(image)
 
         for prop, content in open_graph.items():
-            open_graph[prop] = self.get_static_url(content)
+            meta_tags.append({
+                "property": prop,
+                "content": content,
+            })
 
-        return open_graph
+        return meta_tags
 
-    def get_static_url(self, path):
-        if finders.find(path):
-            path = static.static(path)
-        return path
+    def get_open_graph(self):
+        assert self.open_graph, (
+            f"{self.__class__} must define .open_graph"
+        )
+
+        return self.open_graph.copy()
 
 
 class RelatedObjectMixin:
@@ -682,6 +762,7 @@ class TableView(ListView):
         label_list = self.get_label_list()
 
         row_list = []
+
         for obj in object_list:
             row = {
                 "object": obj,
@@ -689,8 +770,16 @@ class TableView(ListView):
 
             if self.include_row_data:
                 row_data = self.get_row_data_from_object(obj)
-                assert len(row_data) == len(label_list)
+
+                assert len(row_data) == len(label_list), (
+                    f"{self.__class__}: get_row_data_from_object() must "
+                    f"return a list of values that has the same number of "
+                    f"entries as the label list ({len(label_list)})"
+                )
+
                 row["data"] = row_data
+
+            row["tag_attrs"] = self.get_row_tag_attrs(obj)
 
             row_list.append(row)
 
@@ -714,18 +803,31 @@ class TableView(ListView):
     def get_value_from_object(self, obj, field):
         # Try to get with a getter method
         get_method_name = f"get_{field}"
-        get_method = getattr(obj, get_method_name, not_found)
+
+        # Try to use the getter method on this class
+        get_method = getattr(self, get_method_name, not_found)
+
         if get_method != not_found:
-            return get_method()
+            return get_method(obj)
+
+        # Try to use the getter method on the object
+        obj_get_method = getattr(obj, get_method_name, not_found)
+
+        if obj_get_method != not_found:
+            return obj_get_method()
 
         # Get explicit value from the object
         explicit_value = getattr(obj, field, not_found)
+
         if explicit_value != not_found:
             return explicit_value
 
         assert False, (
             f"Could not get value for field `{field}` on object `{obj}`"
         )
+
+    def get_row_tag_attrs(self, obj):
+        return {}
 
     def get_table_empty_message(self):
         assert self.table_empty_message, (
@@ -759,3 +861,37 @@ class SearchFormView(FormView):
 class Messages(TemplateView):
     template_name = "kbde/django/views/Messages.html"
     permission_classes = []
+
+
+class PartialCatalog(ListView):
+    template_name = "kbde/django/views/PartialCatalog.html"
+    permission_classes = [
+        permissions.DebugModeRequired,
+    ]
+
+    def get_queryset(self):
+        return self.get_partial_class_paths()
+
+    def get_partial_class_paths(self):
+        partial_class_paths = []
+
+        for app_config in apps.get_app_configs():
+
+            try:
+                partials = importlib.import_module(f"{app_config.name}.partials")
+            except ModuleNotFoundError:
+                continue
+
+            for cls_name, cls in inspect.getmembers(partials, inspect.isclass):
+
+                if cls.__module__ != partials.__name__:
+                    continue
+
+                get_catalog_kwargs = getattr(cls, "get_catalog_kwargs", None)
+
+                if get_catalog_kwargs is None:
+                    continue
+
+                partial_class_paths.append(f"{cls.__module__}.{cls.__name__}")
+
+        return partial_class_paths

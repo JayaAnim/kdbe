@@ -1,0 +1,23 @@
+{% extends "kbde/django/views/ListView.html" %}
+{% load render_partial %}
+
+
+{% block list_container %}
+    <div class="parital-catalog">
+
+        <h1 class="heading">Partial Catalog</h1>
+
+        {{ block.super }}
+
+    </div>
+{% endblock %}
+
+
+{% block list_item %}
+    <hr>
+
+    <div class="partial-container">
+        <h2 class="module-name">{{ object }}</h2>
+        {% render_partial object render_partial_catalog=True %}
+    </div>
+{% endblock %}

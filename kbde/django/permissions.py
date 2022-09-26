@@ -1,6 +1,8 @@
 from django import http
-from django.contrib.auth import mixins as auth_mixins
+from django.conf import settings
+from django.core import exceptions
 from django.contrib import messages
+from django.contrib.auth import mixins as auth_mixins
 
 
 class Permission:
@@ -34,6 +36,33 @@ class IsAuthenticated(Permission, auth_mixins.LoginRequiredMixin):
         # Path the request and let the LoginRequiredMixin handle the rest
         self.request = view.request
         return self.handle_no_permission()
+
+
+class IsSuperuser(Permission):
+
+    def check(self, view):
+        if view.request.user.is_superuser:
+            return None
+
+        raise exceptions.PermissionDenied("Must be a superuser")
+
+
+class IsStaff(Permission):
+
+    def check(self, view):
+        if view.request.user.is_staff:
+            return None
+
+        raise exceptions.PermissionDenied("Must be staff")
+
+
+class DebugModeRequired(Permission):
+    
+    def check(self, view):
+        if settings.DEBUG:
+            return None
+
+        raise exceptions.PermissionDenied("Must be run in debug mode")
 
 
 class RedirectWithNext(Permission):

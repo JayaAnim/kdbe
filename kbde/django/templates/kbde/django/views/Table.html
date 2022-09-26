@@ -17,9 +17,11 @@
                         <thead>
                             {% block thead %}
                                 <tr>
-                                    {% for label in labels %}
-                                        <th>{{ label }}</th>
-                                    {% endfor %}
+                                    {% block head_tr %}
+                                        {% for label in labels %}
+                                            <th>{{ label }}</th>
+                                        {% endfor %}
+                                    {% endblock %}
                                 </tr>
                             {% endblock %}
                         </thead>
@@ -27,7 +29,11 @@
                         <tbody>
                             {% block tbody %}
                                 {% for row in rows %}
-                                    <tr>
+                                    <tr
+                                        {% for attr, value in row.tag_attrs.items %}
+                                            {{ attr }}="{{ value }}"
+                                        {% endfor %}
+                                    >
                                         {% block tr %}
                                             {% for cell in row.data %}
                                                 <td>{{ cell }}</td>
