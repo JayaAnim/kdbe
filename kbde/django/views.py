@@ -165,7 +165,7 @@ class PageTemplateMixin(UrlPathMixin, NoindexMixin):
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
-        if self.is_page_view:
+        if self.is_page_view and self.get_page_template_name() is not None:
             context_data["content_template_name"] = self.get_content_template_name()
 
         return context_data
@@ -173,15 +173,16 @@ class PageTemplateMixin(UrlPathMixin, NoindexMixin):
     def get_template_names(self):
         if self.is_page_view:
             template_name = self.get_page_template_name()
+
+            if template_name is None:
+                template_name = self.get_content_template_name()
+
         else:
             template_name = self.get_content_template_name()
 
         return [template_name]
 
     def get_page_template_name(self):
-        assert self.page_template_name, (
-            f"{self.__class__} must define .page_template_name"
-        )
         return self.page_template_name
 
     def get_content_template_name(self, file_extension="html"):
@@ -203,11 +204,10 @@ class PageTemplateMixin(UrlPathMixin, NoindexMixin):
 
 
 class PartialMixin:
-    catalog_context = None
     
     def dispatch(self, *args, **kwargs):
         if kwargs.get("render_partial_catalog"):
-            self.kwargs = self.catalog_kwargs.copy()
+            self.kwargs = self.get_catalog_kwargs()
 
         return super().dispatch(*args, **kwargs)
 
@@ -887,9 +887,9 @@ class PartialCatalog(ListView):
                 if cls.__module__ != partials.__name__:
                     continue
 
-                catalog_kwargs = getattr(cls, "catalog_kwargs", None)
+                get_catalog_kwargs = getattr(cls, "get_catalog_kwargs", None)
 
-                if catalog_kwargs is None:
+                if get_catalog_kwargs is None:
                     continue
 
                 partial_class_paths.append(f"{cls.__module__}.{cls.__name__}")

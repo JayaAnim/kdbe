@@ -36,6 +36,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 - `v116`:
   - Adds a partials catalog view to `kbde.django`. This will find and display samples of partials within an Django project.
   - Adds new Django permission classes.
+  - Setting a view's `page_template_name` to `None` will render the view without the page template, rather than throwing an error. Setting this will allow views to be served from URLs as pure partials.
 - `v115`:
   - Updates to `kbde.django.views.TableView`.
 - `v114`:
