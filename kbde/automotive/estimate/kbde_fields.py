@@ -4,8 +4,17 @@ LIST = [
 
     "claim_number",
     "insurance_company_name",
+
     "owner_first_name",
     "owner_last_name",
+    "owner_phone_number",
+    "owner_address_1",
+    "owner_address_2",
+    "owner_city",
+    "owner_state",
+    "owner_zip_code",
+
+    "estimating_system",
     "estimator_first_name",
     "estimator_last_name",
 
