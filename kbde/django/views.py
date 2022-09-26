@@ -12,7 +12,7 @@ from kbde.django import response as kbde_response
 
 from kbde.import_tools import utils as import_utils
 
-import math, uuid, inspect
+import math, uuid, inspect, importlib
 
 
 not_found = object()
@@ -877,10 +877,10 @@ class PartialCatalog(ListView):
 
         for app_config in apps.get_app_configs():
 
-            if not hasattr(app_config.module, "partials"):
+            try:
+                partials = importlib.import_module(f"{app_config.name}.partials")
+            except ModuleNotFoundError:
                 continue
-
-            partials = app_config.module.partials
 
             for cls_name, cls in inspect.getmembers(partials, inspect.isclass):
 
