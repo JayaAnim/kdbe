@@ -1,4 +1,5 @@
 from django import views, template, utils, http, urls
+from django.apps import apps
 from django.core import exceptions
 from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles import finders
@@ -11,7 +12,7 @@ from kbde.django import response as kbde_response
 
 from kbde.import_tools import utils as import_utils
 
-import math, uuid
+import math, uuid, inspect
 
 
 not_found = object()
@@ -201,7 +202,17 @@ class PageTemplateMixin(UrlPathMixin, NoindexMixin):
         return template_name
 
 
-class BaseMixin(PermissionsMixin, ViewIdMixin, PageTemplateMixin):
+class PartialMixin:
+    catalog_context = None
+    
+    def dispatch(self, *args, **kwargs):
+        if kwargs.get("render_partial_catalog"):
+            self.kwargs = self.catalog_kwargs.copy()
+
+        return super().dispatch(*args, **kwargs)
+
+
+class BaseMixin(PartialMixin, PermissionsMixin, ViewIdMixin, PageTemplateMixin):
     pass
 
 
@@ -850,3 +861,37 @@ class SearchFormView(FormView):
 class Messages(TemplateView):
     template_name = "kbde/django/views/Messages.html"
     permission_classes = []
+
+
+class PartialCatalog(ListView):
+    template_name = "kbde/django/views/PartialCatalog.html"
+    permission_classes = [
+        permissions.DebugModeRequired,
+    ]
+
+    def get_queryset(self):
+        return self.get_partial_class_paths()
+
+    def get_partial_class_paths(self):
+        partial_class_paths = []
+
+        for app_config in apps.get_app_configs():
+
+            if not hasattr(app_config.module, "partials"):
+                continue
+
+            partials = app_config.module.partials
+
+            for cls_name, cls in inspect.getmembers(partials, inspect.isclass):
+
+                if cls.__module__ != partials.__name__:
+                    continue
+
+                catalog_kwargs = getattr(cls, "catalog_kwargs", None)
+
+                if catalog_kwargs is None:
+                    continue
+
+                partial_class_paths.append(f"{cls.__module__}.{cls.__name__}")
+
+        return partial_class_paths

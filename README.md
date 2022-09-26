@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v116`:
+  - Adds a partials catalog view to `kbde.django`. This will find and display samples of partials within an Django project.
+  - Adds new Django permission classes.
 - `v115`:
   - Updates to `kbde.django.views.TableView`.
 - `v114`:
