@@ -12,10 +12,16 @@ class EstimateFileId(fields.Field):
     kbde_field_name = kbde_fields.ESTIMATE_FILE_ID
 
 
+class EstimatingSystem(fields.Field):
+    cieca_field_name = 'EST_SYSTEM'
+    kbde_field_name = kbde_fields.ESTIMATING_SYSTEM
+
+
 class DbfReader(dbf.DbfReader):
     field_list = [
         RepairOrderId,
         EstimateFileId,
+        EstimatingSystem,
     ]
     file_extension = "env"
 
