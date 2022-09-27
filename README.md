@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v117`:
+  - Updates to `kbde.automotive`.
 - `v116`:
   - Adds a partials catalog view to `kbde.django`. This will find and display samples of partials within an Django project.
   - Adds new Django permission classes.
