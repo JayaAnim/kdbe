@@ -873,6 +873,11 @@ class PartialCatalog(ListView):
         return self.get_partial_class_paths()
 
     def get_partial_class_paths(self):
+        single_class_path = self.request.GET.get("class_path")
+
+        if single_class_path:
+            return [single_class_path]
+
         partial_class_paths = []
 
         for app_config in apps.get_app_configs():
