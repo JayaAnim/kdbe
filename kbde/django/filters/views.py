@@ -12,7 +12,11 @@ class FiltersetMixin(kbde_views.PostToGetMixin, filter_views.FilterMixin):
         self.filterset = None
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(filterset=self.get_filterset())
+        context_data = super().get_context_data(**kwargs)
+
+        context_data["filterset"] = self.get_filterset()
+
+        return context_data
     
     def get_queryset(self):
         filterset = self.get_filterset()
