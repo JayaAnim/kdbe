@@ -33,6 +33,10 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v118`:
+  - Updates to `kbde.django.filters`.
+  - Updates to `kbde.django` form template.
+  - Improvements to `kbde.django.views.PartialCatalog`.
 - `v117`:
   - Updates to `kbde.automotive`.
 - `v116`:
