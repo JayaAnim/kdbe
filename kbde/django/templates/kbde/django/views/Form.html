@@ -20,14 +20,16 @@
             {% block form %}
 
                 {% if method.upper == "POST" %}
+
                     {% block csrf_token %}
                         {% csrf_token %}
                     {% endblock %}
-                {% endif %}
 
-                {% block form_id %}
-                    <input type="hidden" name="form_id" value="{{ form_id }}"></input>
-                {% endblock %}
+                    {% block form_id %}
+                        <input type="hidden" name="form_id" value="{{ form_id }}"></input>
+                    {% endblock %}
+
+                {% endif %}
 
                 {% if form.errors %}
                     <div class="form-errors">
@@ -64,7 +66,9 @@
 
                 <div class="form-buttons">
                     {% block form_buttons %}
-                        <button class="submit-button">{{ submit_button_text }}</button>
+                        {% if submit_button_text %}
+                            <button class="submit-button">{{ submit_button_text }}</button>
+                        {% endif %}
                     {% endblock %}
                 </div>
 
