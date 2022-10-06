@@ -900,3 +900,48 @@ class PartialCatalog(ListView):
                 partial_class_paths.append(f"{cls.__module__}.{cls.__name__}")
 
         return partial_class_paths
+
+
+class RequiredKwargsMixin:
+    """
+    Defines a set of required kwarg keys that must be passed to the view,
+    either from a url or from render_partial.
+
+    Raises an error if a kwarg is missing.
+
+    Merges all required kwargs into context_data.
+    """
+    required_kwarg_keys = None
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        # We update context_data over required_kwargs so that any conflicts
+        # between the two will take the existing context_data
+        required_kwargs = self.get_required_kwargs()
+        required_kwargs.update(context_data)
+
+        return required_kwargs
+
+    def get_required_kwargs(self):
+        required_kwarg_keys = self.get_required_kwarg_keys()
+
+        required_kwargs = {}
+
+        for key in required_kwarg_keys:
+            value = self.kwargs.get(key, not_found)
+
+            assert value != not_found, (
+                f"{self.__class__} missing required kwarg `{key}`"
+            )
+
+            required_kwargs[key] = value
+
+        return required_kwargs
+
+    def get_required_kwarg_keys(self):
+        assert self.required_kwarg_keys is not None, (
+            f"{self.__class__} must define .required_kwarg_keys or override "
+            f".get_required_kwarg_keys()"
+        )
+        return self.required_kwarg_keys.copy()
