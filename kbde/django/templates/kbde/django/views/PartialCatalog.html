@@ -5,7 +5,7 @@
 {% block list_container %}
     <div class="parital-catalog">
 
-        <a href="{{ request.path }}"><h1 class="heading">Partial Catalog</h1></a>
+        <h1 class="heading"><a href="{{ request.path }}">Partial Catalog</a></h1>
 
         {{ block.super }}
 
@@ -16,8 +16,20 @@
 {% block list_item %}
     <hr>
 
-    <div class="partial-container">
-        <a href="?class_path={{ object }}"><h2 class="module-name">{{ object }}</h2></a>
-        {% render_partial object render_partial_catalog=True %}
+    <div class="app-container">
+        
+        <h2 class="app-name"><a href="?app_name={{ object.name }}">{{ object.name }}</a></h2>
+
+        {% for partial_class_path in object.partial_class_paths %}
+
+            <hr>
+
+            <div class="partial-container">
+                <h3 class="module-name"><a href="?class_path={{ partial_class_path }}">{{ partial_class_path }}</a></h3>
+                {% render_partial partial_class_path render_partial_catalog=True %}
+            </div>
+
+        {% endfor %}
+
     </div>
 {% endblock %}

@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v120`:
+  - Improvements to `kbde.django.views.PartialCatalog`.
+  - Updates for `kbde.django.views.RequiredKwargsMixin`.
 - `v119`:
   - Adds `kbde.django.views.RequiredKwargsMixin`.
 - `v118`:

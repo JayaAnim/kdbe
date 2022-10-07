@@ -205,11 +205,12 @@ class PageTemplateMixin(UrlPathMixin, NoindexMixin):
 
 class PartialMixin:
     
-    def dispatch(self, *args, **kwargs):
-        if kwargs.get("render_partial_catalog"):
-            self.kwargs = self.get_catalog_kwargs()
+    def setup(self, request, *args, **kwargs):
 
-        return super().dispatch(*args, **kwargs)
+        if kwargs.get("render_partial_catalog"):
+            kwargs = self.get_catalog_kwargs()
+
+        return super().setup(request, *args, **kwargs)
 
 
 class BaseMixin(PartialMixin, PermissionsMixin, ViewIdMixin, PageTemplateMixin):
@@ -870,24 +871,31 @@ class PartialCatalog(ListView):
     ]
 
     def get_queryset(self):
-        return self.get_partial_class_paths()
+        return self.get_app_list()
 
-    def get_partial_class_paths(self):
+    def get_app_list(self):
         single_class_path = self.request.GET.get("class_path")
+        single_app_name = self.request.GET.get("app_name")
 
-        if single_class_path:
-            return [single_class_path]
-
-        partial_class_paths = []
+        app_list = []
 
         for app_config in apps.get_app_configs():
+            
+            if single_app_name and app_config.name != single_app_name:
+                continue
 
             try:
                 partials = importlib.import_module(f"{app_config.name}.partials")
             except ModuleNotFoundError:
                 continue
 
+            partial_class_paths = []
+
             for cls_name, cls in inspect.getmembers(partials, inspect.isclass):
+                partial_class_path = f"{cls.__module__}.{cls.__name__}"
+
+                if single_class_path and partial_class_path != single_class_path:
+                    continue
 
                 if cls.__module__ != partials.__name__:
                     continue
@@ -897,9 +905,19 @@ class PartialCatalog(ListView):
                 if get_catalog_kwargs is None:
                     continue
 
-                partial_class_paths.append(f"{cls.__module__}.{cls.__name__}")
+                partial_class_paths.append(partial_class_path)
 
-        return partial_class_paths
+            if not partial_class_paths:
+                continue
+
+            partial_class_paths.sort()
+
+            app_list.append({
+                "name": app_config.name,
+                "partial_class_paths": partial_class_paths,
+            })
+
+        return sorted(app_list, key=lambda app: app["name"])
 
 
 class RequiredKwargsMixin:
@@ -913,15 +931,21 @@ class RequiredKwargsMixin:
     """
     required_kwarg_keys = None
 
+    def dispatch(self, *args, **kwargs):
+        self.required_kwargs = self.get_required_kwargs()
+
+        return super().dispatch(*args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
         # We update context_data over required_kwargs so that any conflicts
         # between the two will take the existing context_data
-        required_kwargs = self.get_required_kwargs()
-        required_kwargs.update(context_data)
+        new_context_data = {}
+        new_context_data.update(self.required_kwargs)
+        new_context_data.update(context_data)
 
-        return required_kwargs
+        return new_context_data
 
     def get_required_kwargs(self):
         required_kwarg_keys = self.get_required_kwarg_keys()
