@@ -36,6 +36,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 - `v120`:
   - Improvements to `kbde.django.views.PartialCatalog`.
   - Updates for `kbde.django.views.RequiredKwargsMixin`.
+  - Adds a `view.get_back_url()` function to standard `kbde.django.views`.
 - `v119`:
   - Adds `kbde.django.views.RequiredKwargsMixin`.
 - `v118`:

@@ -12,6 +12,8 @@ from kbde.django import response as kbde_response
 
 from kbde.import_tools import utils as import_utils
 
+from urllib import parse
+
 import math, uuid, inspect, importlib
 
 
@@ -213,7 +215,17 @@ class PartialMixin:
         return super().setup(request, *args, **kwargs)
 
 
-class BaseMixin(PartialMixin, PermissionsMixin, ViewIdMixin, PageTemplateMixin):
+class BackUrlMixin:
+    
+    def get_back_url(self):
+        return parse.quote(self.request.get_full_path())
+
+
+class BaseMixin(PartialMixin,
+                PermissionsMixin,
+                ViewIdMixin,
+                BackUrlMixin,
+                PageTemplateMixin):
     pass
 
 
