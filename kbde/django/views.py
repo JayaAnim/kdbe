@@ -984,7 +984,7 @@ class RequiredKwargsMixin:
 
 
 class AjaxView(TemplateView):
-    page_template_name = "kbde/django/views/ajax_page.html"
+    page_template_name = None
     template_name = "kbde/django/views/AjaxView.html"
     ajax_template_name = None
     action_url = None
