@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v121`:
+  - Adds `kbde.django.views.AjaxView`, which provides a high-level AJAX interface for loading view content.
 - `v120`:
   - Improvements to `kbde.django.views.PartialCatalog`.
   - Updates for `kbde.django.views.RequiredKwargsMixin`.
