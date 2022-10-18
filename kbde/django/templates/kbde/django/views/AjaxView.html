@@ -1,0 +1,54 @@
+<div id="ajax-view-{{ view.id }}" class="kbde-ajax-view">
+    {% include ajax_template_name %}
+</div>
+
+
+<script>
+"use strict"
+$(function(){
+
+
+var AjaxView = function(element){
+
+    this.$element = $(element)
+
+    this.load = function(data, callback){
+        this.$element.load("{{ action_url }}", data, callback)
+    }
+
+    this.get_id = function(data){
+        return this.$element.attr("id")
+    }
+}
+
+
+var AjaxViews = function(){
+    
+    this.views = {}
+
+    this.add_view = function(ajax_view){
+        this.views[ajax_view.get_id()] = ajax_view
+    }
+
+    this.get_view_from_element = function(element){
+        var $element = $(element)
+
+        if (!$element.hasClass("kbde-ajax-view")){
+            $element = $($element.parents(".kbde-ajax-view")[0])
+        }
+
+        return this.views[$element.attr("id")]
+    }
+}
+
+
+var ajax_view = new AjaxView("#ajax-view-{{ view.id }}")
+
+
+var ajax_views = window.ajax_views || new AjaxViews()
+ajax_views.add_view(ajax_view)
+
+window.ajax_views = ajax_views
+
+})
+</script>

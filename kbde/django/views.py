@@ -981,3 +981,33 @@ class RequiredKwargsMixin:
             f".get_required_kwarg_keys()"
         )
         return self.required_kwarg_keys.copy()
+
+
+class AjaxView(TemplateView):
+    page_template_name = "kbde/django/views/ajax_page.html"
+    template_name = "kbde/django/views/AjaxView.html"
+    ajax_template_name = None
+    action_url = None
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update({
+            "action_url": self.get_action_url(),
+            "ajax_template_name": self.get_ajax_template_name(),
+        })
+
+        return context_data
+
+    def get_ajax_template_name(self):
+        return (
+            self.ajax_template_name
+            or self.get_class_template_name(file_extension="html")
+        )
+    
+    def get_action_url(self):
+        assert self.action_url is not None, (
+            f"{self.__class__} must define .action_url or override "
+            f".get_action_url()"
+        )
+        return self.action_url
