@@ -943,10 +943,15 @@ class RequiredKwargsMixin:
     """
     required_kwarg_keys = None
 
-    def dispatch(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         self.required_kwargs = self.get_required_kwargs()
 
-        return super().dispatch(*args, **kwargs)
+        return super().get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        self.required_kwargs = self.get_required_kwargs()
+
+        return super().post(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
