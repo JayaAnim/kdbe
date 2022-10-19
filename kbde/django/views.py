@@ -989,7 +989,7 @@ class RequiredKwargsMixin:
 
 
 class AjaxView(TemplateView):
-    page_template_name = None
+    page_template_name = "kbde/django/views/ajax_page.html"
     template_name = "kbde/django/views/AjaxView.html"
     ajax_template_name = None
     action_url = None
