@@ -1016,3 +1016,16 @@ class AjaxView(TemplateView):
             f".get_action_url()"
         )
         return self.action_url
+
+
+class RobotsTxt(TemplateView):
+    page_template_name = None
+    content_type = "text/plain"
+    permission_classes = []
+
+    def get_content_template_name(self, file_extension="txt", *args, **kwargs):
+        return super().get_content_template_name(
+            file_extension=file_extension,
+            *args,
+            **kwargs,
+        )
