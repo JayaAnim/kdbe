@@ -1,6 +1,7 @@
 from django import http, views, forms, shortcuts
 from django.conf import settings
 from django.core import exceptions
+from django.contrib.auth import models as auth_models
 from django.views.decorators import csrf
 from kbde.django import views as kbde_views
 from kbde.django.json import encoder as kbde_encoder
@@ -33,6 +34,9 @@ class JsonResponseMixin(kbde_views.UrlPathMixin,
         return csrf.csrf_exempt(view)
 
     def setup(self, request, *args, **kwargs):
+        # Ignore the default request.user
+        request.user = auth_models.AnonymousUser()
+
         request_users = [
             getattr(request, attr, None) for attr in self.request_user_attrs
         ]
