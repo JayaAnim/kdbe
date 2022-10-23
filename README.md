@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v122`:
+  - Sets the default user to `AnonymousUser` in `kbde.django.json_views` to override what is set by `AuthenticationMiddleware`.
+  - Adds `kbde.django.views.RobotsTxt` view.
 - `v121`:
   - Adds `kbde.django.views.AjaxView`, which provides a high-level AJAX interface for loading view content.
   - Moves `kbde.django.views.RequiredKwargsMixin` from using the `.dispatch()` method.
