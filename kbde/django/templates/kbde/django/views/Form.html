@@ -5,14 +5,6 @@
             {{ form.media }}
         {% endblock %}
 
-        {% if prompt_text %}
-            <div class="prompt-text">
-                {% block prompt_text %}
-                    {{ prompt_text }}
-                {% endblock %}
-            </div>
-        {% endif %}
-
         <form id="form-{{ view.id }}"
               method="{{ method }}"
               action="{{ action }}"

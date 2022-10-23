@@ -6,7 +6,6 @@ from . import forms, models
 
 class LoginLinkCreate(kbde_views.CreateView):
     form_class = forms.LoginLinkCreate
-    prompt_text = "Login"
     login_link_url_name = "login_link:LoginLinkAuthenticate"
     permission_classes = []
 
@@ -21,7 +20,6 @@ class LoginLinkAuthenticate(kbde_views.UpdateView):
     template_name = "kbde_login_link/LoginLinkAuthenticate.html"
     model = models.LoginLink
     form_class = forms.LoginLinkAuthenticate
-    prompt_text = ""
     confirm_text = "Please access the login link to proceed."
     check_auth_milliseconds = 3000
     permission_classes = []
@@ -50,7 +48,6 @@ class LoginLinkConfirm(kbde_views.UpdateView):
     fields = [
         "confirmed",
     ]
-    prompt_text = "Please confirm login attempt"
     login_link_confirm_url_name = "login_link:LoginLinkConfirmResult"
     permission_classes = []
 
