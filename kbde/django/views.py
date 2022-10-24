@@ -217,7 +217,7 @@ class PartialMixin:
 
 class BackUrlMixin:
     
-    def get_quoted_back_url(self):
+    def get_back_url_safe(self):
         return parse.quote_plus(self.get_back_url())
 
     def get_back_url(self):
@@ -244,6 +244,7 @@ class TemplateResponseMixin:
 
 class FormMixin(TemplateResponseMixin):
     template_name = "kbde/django/views/Form.html"
+    prompt_text = None
     field_error_message = "Please resolve the issues below"
     submit_button_text = "GO"
     method = "POST"
@@ -281,6 +282,7 @@ class FormMixin(TemplateResponseMixin):
         context_data = super().get_context_data(**kwargs)
         
         context_data.update({
+            "prompt_text": self.get_prompt_text(),
             "field_error_message": self.get_field_error_message(),
             "submit_button_text": self.get_submit_button_text(),
             "method": self.get_method(),
@@ -289,6 +291,12 @@ class FormMixin(TemplateResponseMixin):
         })
 
         return context_data
+
+    def get_prompt_text(self):
+        assert self.prompt_text is not None, (
+            f"{self.__class__} must define .prompt_text or override .get_prompt_text()"
+        )
+        return self.prompt_text
 
     def get_field_error_message(self):
         return self.field_error_message
@@ -318,7 +326,11 @@ class FormMixin(TemplateResponseMixin):
 
 
 class DeleteMixin(FormMixin):
+    prompt_text = "Delete {obj}?"
     submit_button_text = "Delete"
+
+    def get_prompt_text(self):
+        return self.prompt_text.format(obj=self.object)
 
 
 class UserAllowedQuerysetMixin:

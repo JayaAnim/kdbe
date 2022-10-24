@@ -35,8 +35,10 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v122`:
   - Sets the default user to `AnonymousUser` in `kbde.django.json_views` to override what is set by `AuthenticationMiddleware`.
-  - Adds `kbde.django.views.RobotsTxt` view.
   - Changes interface for `kbde.django.views.BackUrlMixin` to separate the generation of the `back_url` from the process of making it URL-safe.
+  - Changes default `prompt_text` for `kbde.django.views.DeleteView`.
+  - Removes `kbde.django.views.SearchFormView`.
+  - Adds `kbde.django.views.RobotsTxt` view.
 - `v121`:
   - Adds `kbde.django.views.AjaxView`, which provides a high-level AJAX interface for loading view content.
   - Moves `kbde.django.views.RequiredKwargsMixin` from using the `.dispatch()` method.
