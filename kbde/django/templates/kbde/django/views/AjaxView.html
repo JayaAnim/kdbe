@@ -4,16 +4,46 @@
 
 
 <script>
-"use strict"
-$(function(){
+"use strict";
 
 
 var AjaxView = function(element){
+    var that = this
 
     this.$element = $(element)
 
-    this.load = function(data, callback){
+    this.load = function(data, complete){
+        // https://api.jquery.com/load/
+
+        var callback = function(data, text_status, jq_xhr){
+            that.setup()
+
+            if (complete){
+                complete(data, text_status, jq_xhr)
+            }
+        }
+
         this.$element.load("{{ action_url }}", data, callback)
+    }
+
+    this.post = function(data, callback){
+        // https://api.jquery.com/jQuery.post/
+
+        $.post("{{ action_url }}", data, callback)
+    }
+
+    this.setup = function(){
+        this.$forms = this.$element.find("form")
+
+        this.$forms.submit(this.form_submit)
+    }
+
+    this.form_submit = function(e){
+        e.preventDefault()
+
+        var $form = $(this)
+
+        that.post($form.serialize())
     }
 
     this.get_id = function(data){
@@ -52,5 +82,4 @@ ajax_views.add_view(ajax_view)
 window.ajax_views = ajax_views
 
 
-})
 </script>
