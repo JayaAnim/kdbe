@@ -935,7 +935,7 @@ class RequiredKwargsMixin:
     Merges all required kwargs into context_data.
     """
     required_kwarg_keys = None
-    use_get_params = True
+    required_kwargs_use_get_params = False
 
     def get(self, *args, **kwargs):
         self.required_kwargs = self.get_required_kwargs()
@@ -960,14 +960,14 @@ class RequiredKwargsMixin:
 
     def get_required_kwargs(self):
         required_kwarg_keys = self.get_required_kwarg_keys()
-        use_get_params = self.get_use_get_params()
+        required_kwargs_use_get_params = self.get_required_kwargs_use_get_params()
 
         required_kwargs = {}
 
         for key in required_kwarg_keys:
             value = self.kwargs.get(key, not_found)
 
-            if value == not_found and use_get_params:
+            if value == not_found and required_kwargs_use_get_params:
                 value = self.request.GET.get(key, not_found)
 
                 if value == not_found:
@@ -990,8 +990,8 @@ class RequiredKwargsMixin:
         )
         return self.required_kwarg_keys.copy()
 
-    def get_use_get_params(self):
-        return self.use_get_params
+    def get_required_kwargs_use_get_params(self):
+        return self.required_kwargs_use_get_params
 
 
 class AjaxView(TemplateView):
