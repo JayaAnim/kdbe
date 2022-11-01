@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v123`:
+  - Updates to `kbde.django.views.AjaxView` so that POST requests can be handled through AJAX. This is enabled by default, but can be disabled.
+  - Updates to `kbde.django.views.RequiredKwargsMixin`.
 - `v122`:
   - Sets the default user to `AnonymousUser` in `kbde.django.json_views` to override what is set by `AuthenticationMiddleware`.
   - Changes interface for `kbde.django.views.BackUrlMixin` to separate the generation of the `back_url` from the process of making it URL-safe.

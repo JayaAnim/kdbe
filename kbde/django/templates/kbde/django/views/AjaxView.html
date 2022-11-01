@@ -8,9 +8,10 @@
 (function(){
 
 
-var AjaxView = function(element){
+var AjaxView = function(element, handle_post){
     var that = this
 
+    this.handle_post = handle_post
     this.$element = $(element)
 
     this.load = function(data, complete){
@@ -34,8 +35,10 @@ var AjaxView = function(element){
     }
 
     this.setup = function(){
-        this.$forms = this.$element.find("form")
-        this.$forms.submit(this.form_submit)
+        if (this.handle_post){
+            this.$forms = this.$element.find("form")
+            this.$forms.submit(this.form_submit)
+        }
     }
 
     this.form_submit = function(e){
@@ -80,7 +83,7 @@ var AjaxViews = function(){
 }
 
 
-var ajax_view = new AjaxView("#ajax-view-{{ view.id }}")
+var ajax_view = new AjaxView("#ajax-view-{{ view.id }}", {% if handle_post %}true{% else %}false{% endif %})
 
 
 var ajax_views = window.ajax_views || new AjaxViews()

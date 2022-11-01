@@ -999,6 +999,7 @@ class AjaxView(TemplateView):
     template_name = "kbde/django/views/AjaxView.html"
     ajax_template_name = None
     action_url = None
+    handle_post = True
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -1006,6 +1007,7 @@ class AjaxView(TemplateView):
         context_data.update({
             "action_url": self.get_action_url(),
             "ajax_template_name": self.get_ajax_template_name(),
+            "handle_post": self.get_handle_post(),
         })
 
         return context_data
@@ -1022,6 +1024,9 @@ class AjaxView(TemplateView):
             f".get_action_url()"
         )
         return self.action_url
+
+    def get_handle_post(self):
+        return self.handle_post
 
 
 class RobotsTxt(TemplateView):
