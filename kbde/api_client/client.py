@@ -74,7 +74,7 @@ class Client:
 
         kwargs = {
             "headers": headers,
-            }
+        }
 
         if function in [self.session.get, self.session.delete]:
             # Add the remaining params to the request call

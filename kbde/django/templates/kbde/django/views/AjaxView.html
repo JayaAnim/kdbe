@@ -17,11 +17,11 @@ var AjaxView = function(element){
         // https://api.jquery.com/load/
 
         var callback = function(data, text_status, jq_xhr){
-            that.setup()
-
             if (complete){
                 complete(data, text_status, jq_xhr)
             }
+
+            that.setup()
         }
 
         this.$element.load("{{ action_url }}", data, callback)
@@ -35,7 +35,6 @@ var AjaxView = function(element){
 
     this.setup = function(){
         this.$forms = this.$element.find("form")
-
         this.$forms.submit(this.form_submit)
     }
 
@@ -44,12 +43,20 @@ var AjaxView = function(element){
 
         var $form = $(this)
 
-        that.post($form.serialize())
+        var callback = function(data, text_status, jq_xhr){
+            // Place the result back into $element
+            that.$element.html(data)
+            that.setup()
+        }
+
+        that.post($form.serialize(), callback)
     }
 
     this.get_id = function(data){
         return this.$element.attr("id")
     }
+
+    this.setup()
 }
 
 
