@@ -22,7 +22,7 @@ class Client:
         CONTENT_TYPE_TEXT: "data",
         CONTENT_TYPE_JSON: "json",
         CONTENT_TYPE_MULTIPART: "files",
-        }
+    }
 
     request_content_type = CONTENT_TYPE_JSON
 
