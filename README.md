@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v124`:
+  - Adds a generic `kbde.http_client` module, which establishes a strict, declarative interface with an HTTP endpoint. This is meant to replace `kbde.api_client`.
 - `v123`:
   - Updates to `kbde.django.views.AjaxView` so that POST requests can be handled through AJAX. This is enabled by default, but can be disabled.
   - Updates to `kbde.django.views.RequiredKwargsMixin`.
