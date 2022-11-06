@@ -10,7 +10,8 @@ class HttpClient:
     host = None
     path = None
 
-    header_keys = []
+    headers = {}
+
     param_keys = []
     data_keys = []
     json_keys = []
@@ -69,13 +70,11 @@ class HttpClient:
 
     def send(self, method, kwargs):
         kwargs = self.get_kwargs(kwargs)
-        
-        url = self.get_url()
 
-        formatted_url = self.get_formatted_url(url, kwargs)
+        formatted_url = self.get_formatted_url(kwargs)
         request_kwargs = self.get_request_kwargs(kwargs)
 
-        response = self.get_response(method, url, request_kwargs)
+        response = self.get_response(method, formatted_url, request_kwargs)
 
         self.latest_response = response
         
@@ -106,7 +105,8 @@ class HttpClient:
     def get_path(self):
         return self.path
 
-    def get_formatted_url(self, url, kwargs):
+    def get_formatted_url(self, kwargs):
+        url = self.get_url()
         return self.get_formatted_string(url, kwargs)
 
     def get_request_kwargs(self, kwargs):
@@ -131,8 +131,7 @@ class HttpClient:
         return headers
 
     def get_headers(self, kwargs):
-        keys = self.get_header_keys()
-        return self.get_values_from_kwargs(keys, kwargs)
+        return self.headers.copy()
         
     def get_header_keys(self):
         return self.header_keys.copy()
