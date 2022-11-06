@@ -259,7 +259,12 @@ class HttpClient:
             self.data = data
 
             if message is None:
-                message = f"status code: {self.response.status_code}\n\n{self.data}"
+                message = (
+                    f"{self.response.request.method} "
+                    f"{self.response.request.url} "
+                    f"{self.response.status_code}\n"
+                    f"{self.data}"
+                )
 
             super().__init__(message, *args, **kwargs)
 
