@@ -996,7 +996,7 @@ class RequiredGetKwargsMixin(RequiredKwargsMixin):
 
         if value == not_found:
             raise exceptions.SuspiciousOperation(
-                f"Missing GET param `{key}`"
+                f"Missing argument `{key}`"
             )
 
         return value
