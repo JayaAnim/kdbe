@@ -1,20 +1,23 @@
 from kbde.kbde_cli import command
-from kbde import constants
 
-import os, shutil
+from kbde.docker import dockerfile
+
+from os import path
 
 
 class Command(command.Command):
     
-    def handle(self):
-        dockerfile_path = os.path.join(
-            constants.BASE_DIR,
-            "docker",
-            "Dockerfile",
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--python-version",
+            type=str,
+            default="3.8",
         )
-        destination_path = os.path.join(
+    
+    def handle(self, python_version, **options):
+        destination_path = path.join(
             ".",
             "Dockerfile",
         )
-        
-        shutil.copyfile(dockerfile_path, destination_path)
+        df = dockerfile.Dockerfile(python_version=python_version)
+        df.render_to_file(destination_path)

@@ -17,7 +17,10 @@ ADD python.txt /app/
 # Install Python version
 RUN apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get install -y `cat python.txt` lib`cat python.txt`-dev
+    && apt-get update \
+    && apt-get install -y python{python_version} libpython{python_version}-dev python{python_version}-distutils \
+    && echo 'python{python_version} "$@"' > python \
+    && chmod +x python
 
 # Custom system dependencies
 ADD install.bash /app/
@@ -25,7 +28,7 @@ RUN bash install.bash
 
 # Python dependencies
 ADD requirements.txt /app/
-RUN `cat python.txt` -m pip install -r requirements.txt
+RUN python{python_version} -m pip install -r requirements.txt
 
 # Add everything else
 ADD . /app/
