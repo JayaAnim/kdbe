@@ -935,7 +935,6 @@ class RequiredKwargsMixin:
     Merges all required kwargs into context_data.
     """
     required_kwarg_keys = None
-    required_kwargs_use_get_params = False
 
     def get(self, *args, **kwargs):
         self.required_kwargs = self.get_required_kwargs()
@@ -960,20 +959,11 @@ class RequiredKwargsMixin:
 
     def get_required_kwargs(self):
         required_kwarg_keys = self.get_required_kwarg_keys()
-        required_kwargs_use_get_params = self.get_required_kwargs_use_get_params()
 
         required_kwargs = {}
 
         for key in required_kwarg_keys:
-            value = self.kwargs.get(key, not_found)
-
-            if value == not_found and required_kwargs_use_get_params:
-                value = self.request.GET.get(key, not_found)
-
-                if value == not_found:
-                    raise exceptions.SuspiciousOperation(
-                        f"Missing GET param `{key}`"
-                    )
+            value = self.get_required_kwarg_value(key)
 
             assert value != not_found, (
                 f"{self.__class__} missing required kwarg `{key}`"
@@ -983,6 +973,9 @@ class RequiredKwargsMixin:
 
         return required_kwargs
 
+    def get_required_kwarg_value(self, key):
+        return self.kwargs.get(key, not_found)
+
     def get_required_kwarg_keys(self):
         assert self.required_kwarg_keys is not None, (
             f"{self.__class__} must define .required_kwarg_keys or override "
@@ -990,33 +983,55 @@ class RequiredKwargsMixin:
         )
         return self.required_kwarg_keys.copy()
 
-    def get_required_kwargs_use_get_params(self):
-        return self.required_kwargs_use_get_params
+
+class RequiredGetKwargsMixin(RequiredKwargsMixin):
+
+    def get_required_kwarg_value(self, key):
+        value = super().get_required_kwarg_value(key)
+
+        if value != not_found:
+            return value
+
+        value = self.request.GET.get(key, not_found)
+
+        if value == not_found:
+            raise exceptions.SuspiciousOperation(
+                f"Missing GET param `{key}`"
+            )
+
+        return value
 
 
-class AjaxView(TemplateView):
+class AjaxMixin:
     page_template_name = "kbde/django/views/ajax_page.html"
-    template_name = "kbde/django/views/AjaxView.html"
-    ajax_template_name = None
+    ajax_template_name = "kbde/django/views/ajax.html"
     action_url = None
-    handle_post = True
+    handle_post = False
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
         context_data.update({
+            "ajax_content_template_name": self.get_ajax_content_template_name(),
             "action_url": self.get_action_url(),
-            "ajax_template_name": self.get_ajax_template_name(),
             "handle_post": self.get_handle_post(),
         })
 
         return context_data
 
+    def get_ajax_content_template_name(self):
+        return self.get_content_template_name()
+
+    def get_template_names(self):
+        if self.is_page_view:
+            template_name = self.get_page_template_name()
+        else:
+            template_name = self.get_ajax_template_name()
+
+        return [template_name]
+
     def get_ajax_template_name(self):
-        return (
-            self.ajax_template_name
-            or self.get_class_template_name(file_extension="html")
-        )
+        return self.ajax_template_name
     
     def get_action_url(self):
         assert self.action_url is not None, (

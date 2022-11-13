@@ -1,5 +1,5 @@
 <div id="ajax-view-{{ view.id }}" class="kbde-ajax-view">
-    {% include ajax_template_name %}
+    {% include ajax_content_template_name %}
 </div>
 
 
@@ -8,58 +8,30 @@
 (function(){
 
 
-var AjaxView = function(element, handle_post){
+var AjaxView = function(element){
     var that = this
 
-    this.handle_post = handle_post
     this.$element = $(element)
 
     this.load = function(data, complete){
         // https://api.jquery.com/load/
 
         var callback = function(data, text_status, jq_xhr){
+            if (window.kbde && window.kbde.novalidate_forms){
+                kbde.novalidate_forms()
+            }
+
             if (complete){
                 complete(data, text_status, jq_xhr)
             }
-
-            that.setup()
         }
 
         this.$element.load("{{ action_url }}", data, callback)
     }
 
-    this.post = function(data, callback){
-        // https://api.jquery.com/jQuery.post/
-
-        $.post("{{ action_url }}", data, callback)
-    }
-
-    this.setup = function(){
-        if (this.handle_post){
-            this.$forms = this.$element.find("form")
-            this.$forms.submit(this.form_submit)
-        }
-    }
-
-    this.form_submit = function(e){
-        e.preventDefault()
-
-        var $form = $(this)
-
-        var callback = function(data, text_status, jq_xhr){
-            // Place the result back into $element
-            that.$element.html(data)
-            that.setup()
-        }
-
-        that.post($form.serialize(), callback)
-    }
-
     this.get_id = function(data){
         return this.$element.attr("id")
     }
-
-    this.setup()
 }
 
 
@@ -83,14 +55,12 @@ var AjaxViews = function(){
 }
 
 
-var ajax_view = new AjaxView("#ajax-view-{{ view.id }}", {% if handle_post %}true{% else %}false{% endif %})
-
-
 var ajax_views = window.ajax_views || new AjaxViews()
-ajax_views.add_view(ajax_view)
-
-
 window.ajax_views = ajax_views
+
+
+var ajax_view = new AjaxView("#ajax-view-{{ view.id }}")
+ajax_views.add_view(ajax_view)
 
 
 })()

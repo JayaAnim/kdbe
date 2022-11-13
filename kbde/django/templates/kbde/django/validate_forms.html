@@ -1,12 +1,21 @@
+{% if not settings.HTML_VALIDATE_FORMS %}
 <script>
-"use_strict"
+"use_strict";
+(function(){
 
-{%if not settings.HTML_VALIDATE_FORMS%}
 
-$(function(){
+window.kbde = window.kbde || {}
+var kbde = window.kbde
+
+
+kbde.novalidate_forms = function(){
     $("form").attr("novalidate", "")
-    })
+}
 
-{%endif%}
 
+kbde.novalidate_forms()
+
+
+})()
 </script>
+{%endif%}
