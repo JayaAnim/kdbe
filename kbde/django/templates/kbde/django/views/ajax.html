@@ -8,30 +8,97 @@
 (function(){
 
 
-var AjaxView = function(element){
+var AjaxView = function(element, handle_post){
     var that = this
 
+    this.action_url = "{{ action_url }}"
+    this.handle_post = handle_post
     this.$element = $(element)
+
+    this.form_submit_complete = null
+
+    this.form_submit = function(e){
+        e.preventDefault()
+
+        var $form = $(this)
+
+        var callback = function(data, text_status, jq_xhr){
+            
+            if (that.form_submit_complete){
+                that.form_submit_complete(data, text_status, jq_xhr)
+            }
+
+            if (!that.check_response_path(jq_xhr)){
+                window.location.reload()
+                return null
+            }
+
+            // Place the result back into $element
+            that.$element.html(data)
+            that.setup()
+        }
+
+        that.post($form.serialize(), callback)
+    }
 
     this.load = function(data, complete){
         // https://api.jquery.com/load/
 
         var callback = function(data, text_status, jq_xhr){
-            if (window.kbde && window.kbde.novalidate_forms){
-                kbde.novalidate_forms()
-            }
 
             if (complete){
                 complete(data, text_status, jq_xhr)
             }
+
+            if (!that.check_response_path(jq_xhr)){
+                window.location.reload()
+                return null
+            }
+
+            that.$element.html(data)
+            that.setup()
         }
 
-        this.$element.load("{{ action_url }}", data, callback)
+        $.get(this.action_url, data, callback)
+    }
+
+    this.post = function(data, callback){
+        // https://api.jquery.com/jQuery.post/
+        $.post(this.action_url, data, callback)
+    }
+
+    this.check_response_path = function(jq_xhr){
+        var request_url = jq_xhr.getResponseHeader("x-request-url")
+        var request_path = request_url.split("?")[0]
+
+        if (!request_path){
+            return false
+        }
+
+        if (request_path !== this.action_url){
+            return false
+        }
+
+        return true
+    }
+
+    this.setup = function(){
+
+        if (window.kbde && window.kbde.novalidate_forms){
+            kbde.novalidate_forms()
+        }
+
+        if (this.handle_post){
+            this.$forms = this.$element.find("form")
+            this.$forms.submit(this.form_submit)
+        }
     }
 
     this.get_id = function(data){
         return this.$element.attr("id")
     }
+
+    this.setup()
 }
 
 
@@ -59,7 +126,7 @@ var ajax_views = window.ajax_views || new AjaxViews()
 window.ajax_views = ajax_views
 
 
-var ajax_view = new AjaxView("#ajax-view-{{ view.id }}")
+var ajax_view = new AjaxView("#ajax-view-{{ view.id }}", {% if handle_post %}true{% else %}false{% endif %})
 ajax_views.add_view(ajax_view)
 
 
