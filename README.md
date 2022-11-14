@@ -35,7 +35,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v125`:
   - Changes JS which prevents browser form validation to a callable JS function.
-  - Moves to `kbde.django.views.AjaxView` to `kbde.django.views.AjaxMixin`, so a separate view does not need to be used.
+  - Moves to `kbde.django.views.AjaxView` to `kbde.django.views.AjaxMixin`, so a separate view does not need to be used. Several behavioral changes have been made to the way that `AjaxMixin` handles redirects.
   - Separates `kbde.django.views.RequiredKwargsMixin` into a separate `kbde.django.views.RequiredGetKwargsMixin`, for handling a mixture of params from `self.kwargs` and `self.request.GET`.
   - Updates to `kbde.docker` for improved Python support within application environments. Applications can now user `./python` to call the Python version specific to that project.
   - Removes `kbde.project` module, since this support is no longer needed after improving Python support.
