@@ -1,5 +1,4 @@
 from kbde.kbde_cli import command
-from kbde.s3 import client
 
 
 class Command(command.Command):
@@ -36,6 +35,7 @@ class Command(command.Command):
                acl,
                thread_count,
                dry_run):
+        from kbde.s3 import client
 
         s3_client = client.Client(
             bucket_name=source_bucket_name,

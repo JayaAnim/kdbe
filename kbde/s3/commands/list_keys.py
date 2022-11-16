@@ -1,5 +1,4 @@
 from kbde.kbde_cli import command
-from kbde.s3 import client
 
 
 class Command(command.Command):
@@ -18,6 +17,7 @@ class Command(command.Command):
                aws_access_key_id,
                aws_secret_access_key,
                endpoint_url):
+        from kbde.s3 import client
 
         s3_client = client.Client(
             bucket_name=bucket_name,
