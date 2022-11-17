@@ -229,7 +229,7 @@ class RequestUrlHeaderMixin:
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
 
-        response["x-request-url"] = self.request.get_full_path()
+        response["x-request-path"] = self.request.path
 
         return response
 

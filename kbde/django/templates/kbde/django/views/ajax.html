@@ -68,8 +68,7 @@ var AjaxView = function(element, handle_post){
     }
 
     this.check_response_path = function(jq_xhr){
-        var request_url = jq_xhr.getResponseHeader("x-request-url")
-        var request_path = request_url.split("?")[0]
+        var request_path =jq_xhr.getResponseHeader("x-request-path")
 
         if (!request_path){
             return false
