@@ -707,6 +707,10 @@ class DeleteView(DeleteMixin,
                  BaseMixin,
                  views.generic.DeleteView):
 
+    def post(self, *args, **kwargs):
+        self.object = self.get_object()
+        return super().post(*args, **kwargs)
+
     def get_object(self, *args, **kwargs):
         obj = self.kwargs.get("object")
 
@@ -717,6 +721,10 @@ class DeleteView(DeleteMixin,
 
     def get_queryset(self):
         return self.get_user_delete_queryset()
+
+    def get_form_id(self):
+        form_id = super().get_form_id()
+        return f"{form_id}-{self.object.pk}"
 
 
 # Auth
