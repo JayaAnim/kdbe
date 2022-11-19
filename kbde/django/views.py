@@ -224,18 +224,7 @@ class BackUrlMixin:
         return self.request.get_full_path()
 
 
-class RequestUrlHeaderMixin:
-    
-    def dispatch(self, *args, **kwargs):
-        response = super().dispatch(*args, **kwargs)
-
-        response["x-request-path"] = self.request.path
-
-        return response
-
-
 class BaseMixin(PartialMixin,
-                RequestUrlHeaderMixin,
                 PermissionsMixin,
                 ViewIdMixin,
                 BackUrlMixin,
@@ -1026,13 +1015,25 @@ class AjaxMixin:
     ajax_template_name = "kbde/django/views/ajax.html"
     action_url = None
     handle_post = True
+    
+    def dispatch(self, *args, **kwargs):
+        self.cached_action_url = None
+
+        response = super().dispatch(*args, **kwargs)
+
+        if self.cached_action_url is not None:
+            response["x-action-url"] = self.cached_action_url
+
+        return response
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
+        self.cached_action_url = self.get_action_url()
+
         context_data.update({
             "ajax_content_template_name": self.get_ajax_content_template_name(),
-            "action_url": self.get_action_url(),
+            "action_url": self.cached_action_url,
             "handle_post": self.get_handle_post(),
         })
 

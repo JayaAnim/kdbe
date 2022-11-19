@@ -28,14 +28,7 @@ var AjaxView = function(element, handle_post){
                 that.form_submit_complete(data, text_status, jq_xhr)
             }
 
-            if (!that.check_response_path(jq_xhr)){
-                window.location.reload()
-                return null
-            }
-
-            // Place the result back into $element
-            that.$element.html(data)
-            that.setup()
+            that.handle_response(data, text_status, jq_xhr)
         }
 
         that.post($form.serialize(), callback)
@@ -50,13 +43,7 @@ var AjaxView = function(element, handle_post){
                 complete(data, text_status, jq_xhr)
             }
 
-            if (!that.check_response_path(jq_xhr)){
-                window.location.reload()
-                return null
-            }
-
-            that.$element.html(data)
-            that.setup()
+            that.handle_response(data, text_status, jq_xhr)
         }
 
         $.get(this.action_url, data, callback)
@@ -67,18 +54,21 @@ var AjaxView = function(element, handle_post){
         $.post(this.action_url, data, callback)
     }
 
-    this.check_response_path = function(jq_xhr){
-        var request_path =jq_xhr.getResponseHeader("x-request-path")
+    this.handle_response = function(data, text_status, jq_xhr){
+        var action_url = jq_xhr.getResponseHeader("x-action-url")
 
-        if (!request_path){
-            return false
+        if (!action_url){
+            window.location.reload()
+            return null
         }
 
-        if (request_path !== this.action_url){
-            return false
+        if (action_url !== this.action_url){
+            window.location.reload()
+            return null
         }
 
-        return true
+        that.$element.html(data)
+        that.setup()
     }
 
     this.setup = function(){
