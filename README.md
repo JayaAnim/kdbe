@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v126`:
+  - Updates `kbde.django.sass.middleware` to use string replacement instead of `bs4`. This prevents the entire document from being parsed.
 - `v125`:
   - Adds `form_id` to `kbde.django.views.DeleteView`.
   - Patches commands for s3 module so that their imports don't crash commandline if `boto3` is not installed.
