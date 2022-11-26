@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core import management
-from django.utils import encoding, html
+from django.utils import encoding
 
 import sass
 
