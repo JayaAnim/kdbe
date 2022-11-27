@@ -15,11 +15,12 @@ WORKDIR /app
 ADD python.txt /app/
 
 # Install Python version
-RUN apt-get install -y software-properties-common \
+RUN apt-get update \
+    && apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:deadsnakes/ppa \
     && apt-get update \
     && apt-get install -y `cat python.txt` lib`cat python.txt`-dev `cat python.txt`-distutils \
-    && echo '`cat python.txt` "$@"' > python \
+    && echo '#!/bin/bash\n\n`cat python.txt` "$@"' > python \
     && chmod +x python
 
 # Custom system dependencies
