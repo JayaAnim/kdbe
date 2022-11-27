@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v127`:
+  - Updates to Dockerfile in `kbde.docker`.
 - `v126`:
   - Updates `kbde.django.sass.middleware` to use string replacement instead of `bs4`. This prevents the entire document from being parsed.
 - `v125`:
