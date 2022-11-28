@@ -1,2 +1,20 @@
-{% include "kbde/django/views/MarkdownView.html" %}
-<script src="{% url 'pwa:Install' %}"></script>
+{% load render_partial %}
+
+
+<div class="installer">
+    {% block installer %}
+
+        <div class="install-button-container">
+            {% block install_button_container %}
+                {% render_partial "kbde.django.pwa.partials.InstallButton" %}
+            {% endblock %}
+        </div>
+
+        <div class="install-instructions-container">
+            {% block install_instructions_container %}
+                {% render_partial "kbde.django.pwa.partials.InstallInstructions" %}
+            {% endblock %}
+        </div>
+
+    {% endblock %}
+</div>

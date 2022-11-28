@@ -35,9 +35,3 @@ class ServiceWorker(ManifestMixin, kbde_views.TemplateView):
     page_template_name = "kbde/django/pwa/views/ServiceWorker.js"
     permission_classes = []
     content_type = "text/javascript"
-
-
-class Install(ManifestMixin, kbde_views.TemplateView):
-    page_template_name = "kbde/django/pwa/views/Install.js"
-    permission_classes = []
-    content_type = "text/javascript"

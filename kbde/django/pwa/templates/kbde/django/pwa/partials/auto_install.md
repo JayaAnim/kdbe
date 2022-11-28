@@ -1,3 +1,1 @@
-You can install the app by clicking the link below
-
-<button class="pwa-install-button">Install</button>
+We see that you are using {{ browser_name }}. You can install the app automatically by clicking the button below.

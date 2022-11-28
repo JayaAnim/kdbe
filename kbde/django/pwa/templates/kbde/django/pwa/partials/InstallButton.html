@@ -1,6 +1,20 @@
+{% if is_auto_install_browser %}
+
+    {% block button %}
+        <button class="pwa-install-button">{{ install_button_text }}</button>
+    {% endblock %}
+
+{% else %}
+
+    {% block no_auto_install %}
+        <div class="no-auto-install-message">{{ no_auto_install_message }}</div>
+    {% endblock %}
+
+{% endif %}
+
+
+<script>
 "use strict"
-
-
 $(function(){
 
 
@@ -25,3 +39,4 @@ $(".pwa-install-button").click(function(){
 
 
 })
+</script>

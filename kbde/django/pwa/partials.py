@@ -17,22 +17,75 @@ class Meta(views.ManifestMixin, kbde_views.TemplateView):
     permission_classes = []
 
 
-class Installer(kbde_views.MarkdownView):
-    template_name = "kbde/django/pwa/partials/Installer.html"
-    permission_classes = []
+class UserAgentBrowserMixin:
 
     # auto_install_browsers should list the browser names that will be
-    # supported by Install.js. These do not require special steps by the user,
+    # supported by the InstallButton. These do not require special steps by the user,
     # and they will be guided through the install process automatically
     auto_install_browsers = [
         "Chrome",
         "Chrome Mobile",
     ]
+    
+    def dispatch(self, *args, **kwargs):
+        self.user_agent = self.get_user_agent()
+        return super().dispatch(*args, **kwargs)
+        
+    def get_user_agent(self):
+        return user_agents.parse(self.request.META.get('HTTP_USER_AGENT', ''))
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update({
+            "user_agent": self.user_agent,
+            "browser_name": self.get_browser_name(),
+            "is_auto_install_browser": self.get_is_auto_install_browser(),
+        })
+
+        return context_data
+
+    def get_is_auto_install_browser(self):
+        return self.get_browser_name() in self.get_auto_install_browsers()
+
+    def get_browser_name(self):
+        return self.user_agent.browser.family
+
+    def get_auto_install_browsers(self):
+        return self.auto_install_browsers.copy()
+
+
+class InstallButton(UserAgentBrowserMixin, kbde_views.TemplateView):
+    template_name = "kbde/django/pwa/partials/InstallButton.html"
+    install_button_text = "Install App"
+    no_auto_install_message = "This app cannot be installed automatically"
+    permission_classes = []
+
+    def get_context_data(self, **kwargs):
+        context_data = super().get_context_data(**kwargs)
+
+        context_data.update({
+            "install_button_text": self.get_install_button_text(),
+            "no_auto_install_message": self.get_no_auto_install_message(),
+        })
+
+        return context_data
+
+    def get_install_button_text(self):
+        return self.install_button_text
+
+    def get_no_auto_install_message(self):
+        return self.no_auto_install_message
+
+
+class InstallInstructions(UserAgentBrowserMixin, kbde_views.MarkdownView):
+    markdown_template_name = "kbde/django/pwa/partials/InstallInstructions.md"
+
     auto_install_template_name = "kbde/django/pwa/partials/auto_install.md"
 
     # instruction_template_names should be a mapping between browser names that
     # require special installation steps by the user, which cannot be guided
-    # via Install.js
+    # via InstallButton
     instruction_template_names = {
     }
 
@@ -47,42 +100,27 @@ class Installer(kbde_views.MarkdownView):
         "kbde/django/pwa/partials/unsupported_browser.md"
     )
 
-    def dispatch(self, *args, **kwargs):
-        self.user_agent = self.get_user_agent()
-        return super().dispatch(*args, **kwargs)
-        
-    def get_user_agent(self):
-        return user_agents.parse(self.request.META.get('HTTP_USER_AGENT', ''))
+    permission_classes = []
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(
-            user_agent=self.user_agent,
-            unsupported_browser_url=self.get_unsupported_browser_url(),
-            **kwargs,
-        )
+    def get_markdown(self, context_data):
+        context_data.update({
+            "instruction_template_name": self.get_instruction_template_name(),
+            "unsupported_browser_url": self.get_unsupported_browser_url(),
+        })
 
-    def get_unsupported_browser_url(self):
-        return self.unsupported_browser_url
+        return super().get_markdown(context_data)
 
-    def get_markdown_template_name(self):
-        # Check to see if the browser is auto-installable
-        if self.user_agent.browser.family in self.get_auto_install_browsers():
+    def get_instruction_template_name(self):
+        if self.get_is_auto_install_browser():
             return self.get_auto_install_template_name()
 
-        # Check to see if the browser has supported manual instructions
-        instruction_template_name = (
-            self.get_instruction_template_names().get(
-                self.user_agent.browser.family
-            )
-        )
+        instruction_template_names = self.get_instruction_template_names()
+        instruction_template_name = instruction_template_names.get(self.get_browser_name())
+
         if instruction_template_name is not None:
             return instruction_template_name
 
-        # The browser is not supported by this installer
         return self.get_unsupported_template_name()
-
-    def get_auto_install_browsers(self):
-        return self.auto_install_browsers.copy()
 
     def get_auto_install_template_name(self):
         return self.auto_install_template_name
@@ -92,3 +130,11 @@ class Installer(kbde_views.MarkdownView):
 
     def get_unsupported_template_name(self):
         return self.unsupported_template_name
+
+    def get_unsupported_browser_url(self):
+        return self.unsupported_browser_url
+
+
+class Installer(UserAgentBrowserMixin, kbde_views.TemplateView):
+    template_name = "kbde/django/pwa/partials/Installer.html"
+    permission_classes = []

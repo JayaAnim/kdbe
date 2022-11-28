@@ -9,7 +9,10 @@ self.addEventListener("install", function(e){
 self.addEventListener("fetch", function(e){
     e.respondWith((async function(){
 
-        var response = await fetch(e.request)
+        try{
+            var response = await fetch(e.request)
+        }
+        catch (error){}
 
         return response
     })())
