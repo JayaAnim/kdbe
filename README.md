@@ -33,7 +33,15 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v128`:
+  - Adds new blocks in the template for `kbde.django.bootstrap.JsTabs`.
+- `v127`:
+  - Updates to Dockerfile in `kbde.docker`.
+- `v126`:
+  - Updates `kbde.django.sass.middleware` to use string replacement instead of `bs4`. This prevents the entire document from being parsed.
 - `v125`:
+  - Adds `form_id` to `kbde.django.views.DeleteView`.
+  - Patches commands for s3 module so that their imports don't crash commandline if `boto3` is not installed.
   - Changes JS which prevents browser form validation to a callable JS function.
   - Moves to `kbde.django.views.AjaxView` to `kbde.django.views.AjaxMixin`, so a separate view does not need to be used. Several behavioral changes have been made to the way that `AjaxMixin` handles redirects.
   - Separates `kbde.django.views.RequiredKwargsMixin` into a separate `kbde.django.views.RequiredGetKwargsMixin`, for handling a mixture of params from `self.kwargs` and `self.request.GET`.
