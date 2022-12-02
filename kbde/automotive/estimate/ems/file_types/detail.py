@@ -105,6 +105,7 @@ class LaborIncludedIndicator(fields.Field):
 class LinDbfReader(dbf.DbfReader):
     field_list = [
         LineNumber,
+        UniqueSequenceNumber,
         LineDescription,
         OemPartNumber,
         AltPartNumber,
