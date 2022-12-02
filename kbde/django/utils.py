@@ -85,7 +85,9 @@ def send_email(to_email_list,
         if bcc_email_list:
             message.bcc = message.to
 
-    messge.send()
+    message.send()
+
+    return message
 
 
 def send_verification_message(to, channel):
