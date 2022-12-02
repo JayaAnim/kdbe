@@ -20,7 +20,7 @@ def get_url_host_from_request(request):
     return http_origin or f"{scheme}://{http_host}"
 
 
-def get_email(to_email_list,
+def send_email(to_email_list,
               subject,
               text_message=None,
               html_message=None,
@@ -85,21 +85,8 @@ def get_email(to_email_list,
         if bcc_email_list:
             message.bcc = message.to
 
-    return message
+    messge.send()
 
-
-def send_email(to_email_list,
-               subject,
-               text_message=None,
-               html_message=None,
-               from_email=None,
-               cc_email_list=[],
-               bcc_email_list=[],
-               **kwargs):
-
-    message.send()
-
-    return message
 
 def send_verification_message(to, channel):
     """
