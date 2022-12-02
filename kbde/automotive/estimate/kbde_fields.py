@@ -44,6 +44,7 @@ LIST = [
     "labor_operation",
     
     "line_number",
+    "unique_sequence_number",
     "line_description",
 
     "oem_part_number",

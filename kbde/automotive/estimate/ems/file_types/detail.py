@@ -7,6 +7,11 @@ class LineNumber(fields.Field):
     kbde_field_name = kbde_fields.LINE_NUMBER
 
 
+class UniqueSequenceNumber(fields.Field):
+    cieca_field_name = "UNQ_SEQ"
+    kbde_field_name = kbde_fields.UNIQUE_SEQUENCE_NUMBER
+
+
 class LineDescription(fields.Field):
     cieca_field_name = "LINE_DESC"
     kbde_field_name = kbde_fields.LINE_DESCRIPTION
