@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v129`:
+  - Adds field to `kbde.automotive.estimate` for unique sequence number.
 - `v128`:
   - Adds new blocks in the template for `kbde.django.bootstrap.JsTabs`.
 - `v127`:
