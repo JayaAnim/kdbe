@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v130`:
+  - Fixes `kbde.django.sass.middleware` so that responses without a `content` attribute are ignored.
 - `v129`:
   - Adds field to `kbde.automotive.estimate` for unique sequence number.
   - Updates to `kbde.django.views.AjaxView` so that POST requests can be handled through AJAX. This is disabled by default, but can be enabled.

@@ -32,7 +32,10 @@ class EmbeddedSassMiddleware:
 
         response = self.get_response(request)
 
-        if "text/html" not in response.get("content-type", "").lower():
+        if (
+            "text/html" not in response.get("content-type", "").lower()
+            or not hasattr(response, "content")
+        ):
             return response
 
         content = encoding.smart_str(response.content)
