@@ -35,6 +35,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v129`:
   - Adds field to `kbde.automotive.estimate` for unique sequence number.
+  - Updates to `kbde.django.views.AjaxView` so that POST requests can be handled through AJAX. This is disabled by default, but can be enabled.
 - `v128`:
   - Adds new blocks in the template for `kbde.django.bootstrap.JsTabs`.
 - `v127`:

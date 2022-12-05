@@ -1014,7 +1014,7 @@ class AjaxMixin:
     page_template_name = "kbde/django/views/ajax_page.html"
     ajax_template_name = "kbde/django/views/ajax.html"
     action_url = None
-    handle_post = True
+    handle_post = False
     
     def dispatch(self, *args, **kwargs):
         self.cached_action_url = None
