@@ -1,1 +1,1 @@
-We were not able to automatically install the app for you. Please see [this resource]({{ unsupported_user_agent_url }}) to learn more about installing the app.
+We were not able to automatically install the app for you. Please see [this resource](https://mobilesyrup.com/2020/05/24/how-install-progressive-web-app-pwa-android-ios-pc-mac/) to learn more about installing the app.

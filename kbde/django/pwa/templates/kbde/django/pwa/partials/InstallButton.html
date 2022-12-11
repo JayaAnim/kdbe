@@ -1,16 +1,18 @@
-{% if is_auto_install_browser %}
+<div class="install-button">
+    {% if is_auto_install_browser %}
 
-    {% block button %}
-        <button class="pwa-install-button">{{ install_button_text }}</button>
-    {% endblock %}
+        {% block button %}
+            <button class="pwa-install-button">{{ install_button_text }}</button>
+        {% endblock %}
 
-{% else %}
+    {% else %}
 
-    {% block no_auto_install %}
-        <div class="no-auto-install-message">{{ no_auto_install_message }}</div>
-    {% endblock %}
+        {% block no_auto_install %}
+            <div class="no-auto-install-message">{{ no_auto_install_message }}</div>
+        {% endblock %}
 
-{% endif %}
+    {% endif %}
+</div>
 
 
 <script>
@@ -18,24 +20,33 @@
 $(function(){
 
 
-window.addEventListener("appinstalled", function(){
-    window.location.href = "{{ manifest.start_url }}"
-})
+var InstallButton = function(){
+    var that = this
+    this.deferred_prompt = null
+    this.$element = $(".install-button")
+    this.$button = this.$element.find(".pwa-install-button")
 
-var deferred_prompt = null
+    this.$button.click(function(){
+        if (!that.deferred_prompt){
+            return null
+        }
+        that.deferred_prompt.prompt()
+        that.deferred_prompt = null
+    })
 
-window.addEventListener('beforeinstallprompt', function(e){
-    e.preventDefault()
-    deferred_prompt = e
-})
+    window.addEventListener("appinstalled", function(){
+        window.location.href = "{{ manifest.start_url }}"
+    })
 
-$(".pwa-install-button").click(function(){
-    if (!deferred_prompt){
-        return null
-    }
-    deferred_prompt.prompt()
-    deferred_prompt = null
-})
+    window.addEventListener('beforeinstallprompt', function(e){
+        e.preventDefault()
+        that.deferred_prompt = e
+    })
+
+}
+
+
+new InstallButton()
 
 
 })

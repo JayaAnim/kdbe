@@ -10,14 +10,20 @@ class ManifestMixin:
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
 
+        manifest = self.get_manifest()
+
         context_data.update({
-            "manifest": self.get_manifest().to_dict()
+            "manifest": manifest.to_dict()
         })
 
         return context_data
 
     def get_manifest(self):
-        return self.get_manifest_class().from_settings()
+        manifest_class = self.get_manifest_class()
+
+        manifest = manifest_class.from_settings()
+
+        return manifest
 
     def get_manifest_class(self):
         return self.manifest_class

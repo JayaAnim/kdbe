@@ -18,8 +18,7 @@ class Meta(views.ManifestMixin, kbde_views.TemplateView):
 
 
 class UserAgentBrowserMixin:
-
-    # auto_install_browsers should list the browser names that will be
+    # auto_install_browsers lists the browser names that will be
     # supported by the InstallButton. These do not require special steps by the user,
     # and they will be guided through the install process automatically
     auto_install_browsers = [
@@ -80,22 +79,14 @@ class InstallButton(UserAgentBrowserMixin, kbde_views.TemplateView):
 
 class InstallInstructions(UserAgentBrowserMixin, kbde_views.MarkdownView):
     markdown_template_name = "kbde/django/pwa/partials/InstallInstructions.md"
-
     auto_install_template_name = "kbde/django/pwa/partials/auto_install.md"
 
     # instruction_template_names should be a mapping between browser names that
     # require special installation steps by the user, which cannot be guided
     # via InstallButton
     instruction_template_names = {
+        "Mobile Safari": "kbde/django/pwa/partials/install_mobile_safari.md",
     }
-
-    # This url will be displayed when the given browser is not
-    # auto-installable, and is not one of the instruction browsers. Users 
-    # will be referred to an external resource about PWAs
-    unsupported_browser_url = (
-        "https://mobilesyrup.com/2020/05/24/"
-        "how-install-progressive-web-app-pwa-android-ios-pc-mac/"
-    )
     unsupported_template_name = (
         "kbde/django/pwa/partials/unsupported_browser.md"
     )
@@ -105,8 +96,11 @@ class InstallInstructions(UserAgentBrowserMixin, kbde_views.MarkdownView):
     def get_markdown(self, context_data):
         context_data.update({
             "instruction_template_name": self.get_instruction_template_name(),
-            "unsupported_browser_url": self.get_unsupported_browser_url(),
+            "user_agent": self.user_agent,
+            "browser_name": self.get_browser_name(),
         })
+
+        print(self.get_browser_name())
 
         return super().get_markdown(context_data)
 
@@ -114,8 +108,10 @@ class InstallInstructions(UserAgentBrowserMixin, kbde_views.MarkdownView):
         if self.get_is_auto_install_browser():
             return self.get_auto_install_template_name()
 
+        browser_name = self.get_browser_name()
         instruction_template_names = self.get_instruction_template_names()
-        instruction_template_name = instruction_template_names.get(self.get_browser_name())
+
+        instruction_template_name = instruction_template_names.get(browser_name)
 
         if instruction_template_name is not None:
             return instruction_template_name
