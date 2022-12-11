@@ -54,10 +54,11 @@ class UserAgentBrowserMixin:
         return self.auto_install_browsers.copy()
 
 
-class InstallButton(UserAgentBrowserMixin, kbde_views.TemplateView):
+class InstallButton(UserAgentBrowserMixin, views.ManifestMixin, kbde_views.TemplateView):
     template_name = "kbde/django/pwa/partials/InstallButton.html"
     install_button_text = "Install App"
     no_auto_install_message = "This app cannot be installed automatically"
+    already_installed_message = "The app is already installed on this device"
     permission_classes = []
 
     def get_context_data(self, **kwargs):
@@ -66,6 +67,7 @@ class InstallButton(UserAgentBrowserMixin, kbde_views.TemplateView):
         context_data.update({
             "install_button_text": self.get_install_button_text(),
             "no_auto_install_message": self.get_no_auto_install_message(),
+            "already_installed_message": self.get_already_installed_message(),
         })
 
         return context_data
@@ -75,6 +77,9 @@ class InstallButton(UserAgentBrowserMixin, kbde_views.TemplateView):
 
     def get_no_auto_install_message(self):
         return self.no_auto_install_message
+
+    def get_already_installed_message(self):
+        return self.already_installed_message
 
 
 class InstallInstructions(UserAgentBrowserMixin, kbde_views.MarkdownView):
@@ -99,8 +104,6 @@ class InstallInstructions(UserAgentBrowserMixin, kbde_views.MarkdownView):
             "user_agent": self.user_agent,
             "browser_name": self.get_browser_name(),
         })
-
-        print(self.get_browser_name())
 
         return super().get_markdown(context_data)
 

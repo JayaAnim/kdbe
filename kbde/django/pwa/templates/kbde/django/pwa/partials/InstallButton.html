@@ -1,5 +1,9 @@
 <div class="install-button">
     {% if is_auto_install_browser %}
+        
+        {% block already_installed %}
+            <div class="already-installed-message">{{ already_installed_message }}</div>
+        {% endblock %}
 
         {% block button %}
             <button class="pwa-install-button">{{ install_button_text }}</button>
@@ -25,23 +29,50 @@ var InstallButton = function(){
     this.deferred_prompt = null
     this.$element = $(".install-button")
     this.$button = this.$element.find(".pwa-install-button")
+    this.$already_installed_message = this.$element.find(".already-installed-message")
+
+    this.$button.hide()
+    this.$already_installed_message.hide()
+
+    this.show_already_installed_message = function(){
+
+        if (!that.deferred_prompt){
+            that.$already_installed_message.show()
+        }
+    }
+
+    this.handle_prompt_result = function(choice_result){
+
+        if (choice_result.outcome === "accepted"){
+            that.handle_app_installed()
+        }
+    }
+
+    this.handle_app_installed = function(){
+        window.location.href = "{{ manifest.start_url }}"
+    }
 
     this.$button.click(function(){
+
         if (!that.deferred_prompt){
             return null
         }
-        that.deferred_prompt.prompt()
-        that.deferred_prompt = null
-    })
 
-    window.addEventListener("appinstalled", function(){
-        window.location.href = "{{ manifest.start_url }}"
+        that.deferred_prompt.prompt()
+        that.deferred_prompt.userChoice.then(that.handle_prompt_result)
+
+        that.deferred_prompt = null
     })
 
     window.addEventListener('beforeinstallprompt', function(e){
         e.preventDefault()
         that.deferred_prompt = e
+
+        that.$already_installed_message.hide()
+        that.$button.show()
     })
+
+    setTimeout(this.show_already_installed_message, 1000)
 
 }
 
