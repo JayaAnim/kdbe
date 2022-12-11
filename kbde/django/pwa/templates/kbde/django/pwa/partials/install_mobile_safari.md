@@ -12,6 +12,6 @@
 ![Step 2]({% static "kbde/django/pwa/img/step_2.png" %})
 
 ### 3. Click "Add"
-![Step 1]({% static "kbde/django/pwa/img/step_1.png" %})
+![Step 3]({% static "kbde/django/pwa/img/step_3.png" %})
 
-#### The app will now appear on your phone’s app screen. The app is now ready to launch.
+#### The icon will now appear on your phone’s app screen. The app is now ready to launch.
