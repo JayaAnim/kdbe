@@ -1,28 +1,37 @@
-"use strict"
+"use strict";
+(function(){
 
 
-self.addEventListener("install", function(e){
-    self.skipWaiting()
-})
+var ServiceWorker = function(){
 
-
-self.addEventListener("fetch", function(e){
-    e.respondWith((async function(){
-
-        var response = await fetch(e.request)
-
-        return response
-    })())
-})
-
-
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("{% url 'pwa:ServiceWorker' %}")
-    .then(function(registration){
-        console.log('Registration successful, scope is:', registration.scope)
+    addEventListener("install", function(e){
+        skipWaiting()
     })
-    .catch(function(error){
-        console.log('Service worker registration failed, error:', error)
+
+
+    addEventListener("fetch", function(e){
+        e.respondWith((async function(){
+            return await fetch(e.request)
+        })())
     })
+
+
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("{% url 'pwa:ServiceWorker' %}")
+        .then(function(registration){
+            console.log('Registration successful, scope is:', registration.scope)
+        })
+        .catch(function(error){
+            console.log('Service worker registration failed, error:', error)
+        })
+
+    }
 
 }
+
+
+self.kbde = self.kbde || {}
+self.kbde.service_worker = new ServiceWorker()
+
+
+})()

@@ -30,7 +30,7 @@ class Manifest:
         "name",
     ]
     field_defaults = {
-        "display": "fullscreen",
+        "display": "standalone",
         "prefer_related_applications": False,
         "start_url": "/",
     }
