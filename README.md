@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v131`:
+  - Improvements to `kbde.django.pwa`.
+  - Changes `pdf.pdftk` to use file paths instead of file-like objects.
 - `v130`:
   - Fixes `kbde.django.sass.middleware` so that responses without a `content` attribute are ignored.
 - `v129`:
