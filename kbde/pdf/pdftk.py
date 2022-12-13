@@ -3,70 +3,84 @@ import subprocess, shlex, tempfile
 
 class Pdftk:
 
-    def __init__(self, pdf):
-        self.pdf = pdf
+    def __init__(self, pdf_path, temp_directory=None):
+        self.pdf_path = pdf_path
+        self.temp_directory = temp_directory
 
-    def concatenate(self, pdf_file):
-        output_file = self.get_new_tempfile()
+    def concatenate(self, pdf_path):
+        output_path = self.create_tempfile()
 
-        self.pdf = self.run_command([self.pdf, pdf_file],
-                                    operation="cat",
-                                    output_file=output_file)
+        self.pdf_path = self.run_command(
+            [self.pdf_path, pdf_path],
+            operation="cat",
+            output_path=output_path,
+        )
 
     def set_passwords(self, owner_password="", user_password=""):
-        output_file = self.get_new_tempfile()
+        output_path = self.create_tempfile()
 
-        self.pdf = self.run_command([self.pdf],
-                                    output_file=output_file,
-                                    owner_password=owner_password,
-                                    user_password=user_password)
+        self.pdf_path = self.run_command(
+            [self.pdf_path],
+            output_path=output_path,
+            owner_password=owner_password,
+            user_password=user_password,
+        )
 
-    def add_background(self, background_pdf_file):
-        output_file = self.get_new_tempfile()
+    def add_background(self, background_pdf_path):
+        output_path = self.create_tempfile()
 
-        self.pdf = self.run_command([self.pdf],
-                                    operation="background",
-                                    operation_arguments=[shlex.quote(background_pdf_file.name)],
-                                    output_file=output_file)
+        self.pdf_path = self.run_command(
+            [self.pdf_path],
+            operation="background",
+            operation_arguments=[shlex.quote(background_pdf_path)],
+            output_path=output_path,
+        )
     
     def generate_fdf(self):
         """
-        Generates an fdf file from self.pdf
+        Generates an fdf file from self.pdf_path
         """
         # Generate a new named tempfile for the fdf file
-        output_file = self.get_new_tempfile()
+        output_path = self.create_tempfile()
 
-        return self.run_command([self.pdf], operation="generate_fdf", output_file=output_file)
-
-    def fill_form(self, fdf_file):
         return self.run_command(
-            [self.pdf],
-            operation="fill_form",
-            operation_arguments=[fdf_file.name],
-            output_file=self.get_new_tempfile()
+            [self.pdf_path],
+            operation="generate_fdf",
+            output_path=output_path,
         )
 
-    def get_new_tempfile(self):
-        with tempfile.NamedTemporaryFile(delete=False) as new_tempfile:
+    def fill_form(self, fdf_path):
+        return self.run_command(
+            [self.pdf_path],
+            operation="fill_form",
+            operation_arguments=[fdf_path],
+            output_path=self.create_tempfile()
+        )
+
+    def create_tempfile(self):
+        with tempfile.NamedTemporaryFile(dir=self.temp_directory, delete=False) as temp:
             pass
 
-        return new_tempfile
+        return temp.name
 
-    def run_command(self, input_pdf_files,
+    def run_command(self, input_pdf_paths,
                           operation="",
                           operation_arguments=[],
-                          output_file=None,
+                          output_path=None,
                           owner_password="",
                           user_password=""):
         # Concatenate input file names
-        input_pdf_file_names = " ".join([shlex.quote(f.name) for f in input_pdf_files])
+        input_pdf_paths = [
+            shlex.quote(path) for path in input_pdf_paths
+        ]
+        input_pdf_file_names = " ".join(input_pdf_paths)
 
         # Concatenate operation_arguments
         operation_arguments = " ".join(operation_arguments)
 
         # Output command
-        if output_file is not None:
-            output = f"output {output_file.name}"
+        if output_path is not None:
+            output = f"output {output_path}"
         else:
             output = ""
 
@@ -90,4 +104,4 @@ class Pdftk:
         command = shlex.split(command)
         subprocess.check_output(command)
 
-        return output_file
+        return output_path
