@@ -3,9 +3,11 @@ from .file_types import (
     administrative_data_2,
     vehicle_data,
     profile_labor,
+    profile_materials,
     totals,
     detail,
     envelope,
+    tax_information,
 )
 
 
@@ -19,6 +21,7 @@ class Estimate:
         totals.TtlDbfReader,
         detail.LinDbfReader,
         envelope.DbfReader,
+
     ]
     
     def __init__(self, path):

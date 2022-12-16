@@ -12,7 +12,7 @@ class TaxRate1(fields.Field):
     kbde_field_name = kbde_fields.TAX_RATE_1
 
 
-class PflReader(dbf.DbfReader):
+class PftReader(dbf.DbfReader):
     field_list = [
         TaxType1,
         TaxRate1,
