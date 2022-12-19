@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v132`:
+  - Updates to `kbde.automotive`.
 - `v131`:
   - Improvements to `kbde.django.pwa`.
   - Changes `pdf.pdftk` to use file paths instead of file-like objects.
