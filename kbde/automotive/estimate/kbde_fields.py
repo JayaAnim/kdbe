@@ -60,6 +60,16 @@ LIST = [
 
     "tax_type_1",
     "tax_rate_1",
+    "tax_type_2",
+    "tax_rate_2",
+    "tax_rate_3",
+    "tax_type_3",
+    "tax_rate_4",
+    "tax_type_4",
+    "tax_rate_5",
+    "tax_type_5",
+    "tax_type_6",
+    "tax_rate_6",
 ]
 
 

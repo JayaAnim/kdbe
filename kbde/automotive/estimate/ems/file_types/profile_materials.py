@@ -12,7 +12,7 @@ class MaterialLaborRate(fields.Field):
     kbde_field_name = kbde_fields.MATERIAL_LABOR_RATE
 
 
-class PfmReader(dbf.DbfReader):
+class DbfReader(dbf.DbfReader):
     field_list = [
         MaterialTypeCode,
         MaterialLaborRate,
