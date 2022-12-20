@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v133`:
+  - Updates to `kbde.automotive`.
 - `v132`:
   - Updates to `kbde.automotive`.
 - `v131`:
