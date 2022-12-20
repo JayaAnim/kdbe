@@ -102,6 +102,16 @@ class LaborIncludedIndicator(fields.Field):
     kbde_field_name = kbde_fields.LABOR_INCLUDED_INDICATOR
 
 
+class SubletFlag(fields.Field):
+    cieca_field_name = "MISC_SUBLT"
+    kbde_field_name = "sublet_flag"
+
+
+class SubletAmount(fields.Field):
+    cieca_field_name = "MISC_AMT"
+    kbde_field_name = "sublet_amount"
+
+
 class LinDbfReader(dbf.DbfReader):
     field_list = [
         LineNumber,
@@ -120,6 +130,8 @@ class LinDbfReader(dbf.DbfReader):
         LaborHoursJudgement,
         LaborOperation,
         LaborIncludedIndicator,
+        SubletFlag,
+        SubletAmount,
     ]
     file_extension = "lin"
 
