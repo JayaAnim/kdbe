@@ -54,6 +54,8 @@ LIST = [
     "part_price_judgment",
     "part_price_included_indicator",
     "part_description_judgment",
+    "sublet_flag",
+    "sublet_amount",
 
     "material_type_code",
     "material_labor_rate",
