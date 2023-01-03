@@ -35,6 +35,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v134`:
   - Changes the default Django setting for `AWS_QUERYSTRING_AUTH` to be `True`.
+  - Meta tag fix for Django.
 - `v133`:
   - Updates to `kbde.automotive`.
 - `v132`:
