@@ -19,7 +19,7 @@
                         {# First page #}
                         {% if page_obj.number == 1 %}
                             <li class="page-item page-item-disabled">
-                                <a class="page-link first-page-link page-link-disabled" href="">
+                                <a class="page-link first-page-link page-link-disabled" href="?page=1{{ extra_params }}">
                         {% else %}
                             <li class="page-item">
                                 <a class="page-link first-page-link" href="?page=1{{ extra_params }}">
@@ -36,7 +36,7 @@
                                 <a class="page-link previous-page-link" href="?page={{ page_obj.previous_page_number }}{{ extra_params }}">
                         {% else %}
                             <li class="page-item page-item-disabled">
-                                <a class="page-link previous-page-link page-link-disabled" href="">
+                                <a class="page-link previous-page-link page-link-disabled" href="?page=1{{ extra_params }}">
                         {% endif %}
                                 {% block previous_page_link %}
                                     &lsaquo;
