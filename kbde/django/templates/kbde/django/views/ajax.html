@@ -68,14 +68,15 @@ var AjaxView = function(element, handle_post){
         }
 
         that.$element.html(data)
-        that.setup()
-    }
-
-    this.setup = function(){
 
         if (window.kbde && window.kbde.novalidate_forms){
             kbde.novalidate_forms()
         }
+
+        that.setup()
+    }
+
+    this.setup = function(){
 
         if (this.handle_post){
             this.$forms = this.$element.find("form")
