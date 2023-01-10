@@ -12,10 +12,16 @@ class LaborRate(fields.Field):
     kbde_field_name = kbde_fields.LABOR_RATE
 
 
+class LaborDescription(fields.Field):
+    cieca_field_name = "LBR_DESC"
+    kbde_field_name = kbde_fields.LABOR_DESCRIPTION
+
+
 class PflReader(dbf.DbfReader):
     field_list = [
         LaborTypeCode,
         LaborRate,
+        LaborDescription,
     ]
     file_extension = "pfl"
 
