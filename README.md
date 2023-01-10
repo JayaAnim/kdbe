@@ -33,6 +33,10 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v135`:
+  - Changes the default Django setting for `AWS_QUERYSTRING_AUTH` back to `False`.
+  - Adds links to `kbde.django.views.ListView` template to prevent empty `<a>` tags.
+  - Efficiency improvements to `kbde.django.views.AjaxView`.
 - `v134`:
   - Changes the default Django setting for `AWS_QUERYSTRING_AUTH` to be `True`.
   - Meta tag fix for Django.
