@@ -5,13 +5,32 @@
 
 <script>
 "use strict";
-(function(){
+$(function(){
 
 
-var AjaxView = function(element, handle_post){
+window.ajax_views = window.ajax_views || new function(){
+    this.views = {}
+
+    this.add_view = function(ajax_view){
+        this.views[ajax_view.get_id()] = ajax_view
+    }
+
+    this.get_view_from_element = function(element){
+        var $element = $(element)
+
+        if (!$element.hasClass("kbde-ajax-view")){
+            $element = $($element.parents(".kbde-ajax-view")[0])
+        }
+
+        return this.views[$element.attr("id")]
+    }
+}
+
+
+window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, action_url, handle_post){
     var that = this
 
-    this.action_url = "{{ action_url }}"
+    this.action_url = action_url
     this.handle_post = handle_post
     this.$element = $(element)
 
@@ -92,33 +111,9 @@ var AjaxView = function(element, handle_post){
 }
 
 
-var AjaxViews = function(){
-    
-    this.views = {}
-
-    this.add_view = function(ajax_view){
-        this.views[ajax_view.get_id()] = ajax_view
-    }
-
-    this.get_view_from_element = function(element){
-        var $element = $(element)
-
-        if (!$element.hasClass("kbde-ajax-view")){
-            $element = $($element.parents(".kbde-ajax-view")[0])
-        }
-
-        return this.views[$element.attr("id")]
-    }
-}
+var ajax_view = new window.ajax_views.AjaxView("#ajax-view-{{ view.id }}", "{{ action_url }}", {% if handle_post %}true{% else %}false{% endif %})
+window.ajax_views.add_view(ajax_view)
 
 
-var ajax_views = window.ajax_views || new AjaxViews()
-window.ajax_views = ajax_views
-
-
-var ajax_view = new AjaxView("#ajax-view-{{ view.id }}", {% if handle_post %}true{% else %}false{% endif %})
-ajax_views.add_view(ajax_view)
-
-
-})()
+})
 </script>
