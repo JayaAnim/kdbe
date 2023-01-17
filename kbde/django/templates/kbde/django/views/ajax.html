@@ -36,6 +36,9 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
 
     this.form_submit_complete = null
 
+    this.head_poll_enabled = null
+    this.load_poll_enabled = null
+
     this.form_submit = function(e){
         e.preventDefault()
 
@@ -62,6 +65,25 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
         })
     }
 
+    this.head_poll = function(poll_interval, data, complete){
+        // Continually poll the head method
+
+        var poll = function(){
+            that.head(data, complete)
+
+            if (that.head_poll_enabled){
+                setTimeout(poll, poll_interval)
+            }
+        }
+
+        that.head_poll_enabled = true
+        poll()
+    }
+
+    this.stop_head_poll = function(){
+        that.head_poll_enabled = false
+    }
+
     this.load = function(data, complete){
         // https://api.jquery.com/load/
 
@@ -75,6 +97,25 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
         }
 
         $.get(this.action_url, data, callback)
+    }
+
+    this.load_poll = function(poll_interval, data, complete){
+        // Continually poll the load method
+
+        var poll = function(){
+            that.load(data, complete)
+
+            if (that.load_poll_enabled){
+                setTimeout(poll, poll_interval)
+            }
+        }
+
+        that.load_poll_enabled = true
+        poll()
+    }
+
+    this.stop_load_poll = function(){
+        that.load_poll_enabled = false
     }
 
     this.post = function(data, callback){
