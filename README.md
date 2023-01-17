@@ -33,6 +33,13 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v136`:
+  - Updates to `kbde.automotive`.
+  - Updates jQuery from `3.4.1` to `3.6.3`.
+  - Optimizations to how Ajax views are defined.
+  - Ajax view HEAD request implementation.
+  - Implementations for polling of GET and HEAD methods in Ajax views.
+  - Default `head()` method implementations in `kbde.django.views`.
 - `v135`:
   - Changes the default Django setting for `AWS_QUERYSTRING_AUTH` back to `False`.
   - Adds links to `kbde.django.views.ListView` template to prevent empty `<a>` tags.
