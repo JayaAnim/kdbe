@@ -416,6 +416,16 @@ class RelatedObjectMixin:
     related_orm_path = None
     related_slug_field = "slug"
 
+    def head(self, *args, **kwargs):
+        super_head = getattr(super(), "head", None)
+
+        if super_head is None:
+            return self.get(*args, **kwargs)
+
+        self.related_object = self.get_related_object()
+
+        return super().head(*args, **kwargs)
+
     def get(self, *args, **kwargs):
         self.related_object = self.get_related_object()
         return super().get(*args, **kwargs)
@@ -944,12 +954,26 @@ class RequiredKwargsMixin:
     """
     required_kwarg_keys = None
 
-    def get(self, *args, **kwargs):
+    def head(self, *args, **kwargs):
+        super_head = getattr(super(), "head", None)
+
+        if super_head is None:
+            return self.get(*args, **kwargs)
+
         self.required_kwargs = self.get_required_kwargs()
 
+        return super().head(*args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        self.required_kwargs = self.get_required_kwargs()
         return super().get(*args, **kwargs)
 
     def post(self, *args, **kwargs):
+        super_post = getattr(super(), "post", None)
+
+        if super_post is None:
+            return self.http_method_not_allowed(*args, **kwargs)
+
         self.required_kwargs = self.get_required_kwargs()
 
         return super().post(*args, **kwargs)

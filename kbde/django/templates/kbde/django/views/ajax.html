@@ -53,6 +53,15 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
         that.post($form.serialize(), callback)
     }
 
+    this.head = function(data, complete){
+        $.ajax({
+            "method": "HEAD",
+            "url": this.action_url,
+            "data": data,
+            "complete": complete,
+        })
+    }
+
     this.load = function(data, complete){
         // https://api.jquery.com/load/
 
