@@ -37,6 +37,7 @@ LIST = [
     "labor_type",
     "labor_type_code",
     "labor_rate",
+    "labor_description",
     "labor_hours",
     "labor_hours_judgment",
     "labor_type_judgment",
