@@ -35,8 +35,8 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
 
     this.form_submit_complete = null
 
-    this.head_poll_enabled = null
-    this.load_poll_enabled = null
+    this.head_poll_id = null
+    this.load_poll_id = null
 
     this.form_submit = function(e){
         e.preventDefault()
@@ -66,16 +66,17 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
 
     this.head_poll = function(poll_interval, data, complete){
         // Continually poll the head method
+        var head_poll_id = Math.random()
+        that.head_poll_id = head_poll_id
 
         var poll = function(){
             that.head(data, complete)
 
-            if (that.head_poll_enabled){
+            if (that.head_poll_id == head_poll_id){
                 setTimeout(poll, poll_interval)
             }
         }
 
-        that.head_poll_enabled = true
         poll()
     }
 
@@ -100,16 +101,17 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
 
     this.load_poll = function(poll_interval, data, complete){
         // Continually poll the load method
+        var load_poll_id = Math.random()
+        that.load_poll_id = load_poll_id
 
         var poll = function(){
             that.load(data, complete)
 
-            if (that.load_poll_enabled){
+            if (that.load_poll_id == load_poll_id){
                 setTimeout(poll, poll_interval)
             }
         }
 
-        that.load_poll_enabled = true
         poll()
     }
 
