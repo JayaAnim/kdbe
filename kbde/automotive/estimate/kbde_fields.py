@@ -33,6 +33,12 @@ LIST = [
     "make_code",
     "make",
     "model",
+    "license_plate_number",
+    "license_plate_state",
+    "exterior_color",
+    "production_date",
+    "mileage_in",
+    "condition",
 
     "labor_type",
     "labor_type_code",
