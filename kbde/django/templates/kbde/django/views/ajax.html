@@ -5,17 +5,38 @@
 
 <script>
 "use strict";
-(function(){
 
 
-var AjaxView = function(element, handle_post){
+window.ajax_views = window.ajax_views || new function(){
+    this.views = {}
+
+    this.add_view = function(ajax_view){
+        this.views[ajax_view.get_id()] = ajax_view
+    }
+
+    this.get_view_from_element = function(element){
+        var $element = $(element)
+
+        if (!$element.hasClass("kbde-ajax-view")){
+            $element = $($element.parents(".kbde-ajax-view")[0])
+        }
+
+        return this.views[$element.attr("id")]
+    }
+}
+
+
+window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, action_url, handle_post){
     var that = this
 
-    this.action_url = "{{ action_url }}"
+    this.action_url = action_url
     this.handle_post = handle_post
     this.$element = $(element)
 
     this.form_submit_complete = null
+
+    this.head_poll_id = null
+    this.load_poll_id = null
 
     this.form_submit = function(e){
         e.preventDefault()
@@ -34,6 +55,35 @@ var AjaxView = function(element, handle_post){
         that.post($form.serialize(), callback)
     }
 
+    this.head = function(data, complete){
+        $.ajax({
+            "method": "HEAD",
+            "url": this.action_url,
+            "data": data,
+            "success": complete,
+        })
+    }
+
+    this.head_poll = function(poll_interval, data, complete){
+        // Continually poll the head method
+        var head_poll_id = Math.random()
+        that.head_poll_id = head_poll_id
+
+        var poll = function(){
+            that.head(data, complete)
+
+            if (that.head_poll_id == head_poll_id){
+                setTimeout(poll, poll_interval)
+            }
+        }
+
+        poll()
+    }
+
+    this.stop_head_poll = function(){
+        that.head_poll_enabled = false
+    }
+
     this.load = function(data, complete){
         // https://api.jquery.com/load/
 
@@ -47,6 +97,26 @@ var AjaxView = function(element, handle_post){
         }
 
         $.get(this.action_url, data, callback)
+    }
+
+    this.load_poll = function(poll_interval, data, complete){
+        // Continually poll the load method
+        var load_poll_id = Math.random()
+        that.load_poll_id = load_poll_id
+
+        var poll = function(){
+            that.load(data, complete)
+
+            if (that.load_poll_id == load_poll_id){
+                setTimeout(poll, poll_interval)
+            }
+        }
+
+        poll()
+    }
+
+    this.stop_load_poll = function(){
+        that.load_poll_enabled = false
     }
 
     this.post = function(data, callback){
@@ -68,14 +138,15 @@ var AjaxView = function(element, handle_post){
         }
 
         that.$element.html(data)
-        that.setup()
-    }
-
-    this.setup = function(){
 
         if (window.kbde && window.kbde.novalidate_forms){
             kbde.novalidate_forms()
         }
+
+        that.setup()
+    }
+
+    this.setup = function(){
 
         if (this.handle_post){
             this.$forms = this.$element.find("form")
@@ -91,33 +162,8 @@ var AjaxView = function(element, handle_post){
 }
 
 
-var AjaxViews = function(){
-    
-    this.views = {}
-
-    this.add_view = function(ajax_view){
-        this.views[ajax_view.get_id()] = ajax_view
-    }
-
-    this.get_view_from_element = function(element){
-        var $element = $(element)
-
-        if (!$element.hasClass("kbde-ajax-view")){
-            $element = $($element.parents(".kbde-ajax-view")[0])
-        }
-
-        return this.views[$element.attr("id")]
-    }
-}
+var ajax_view = new window.ajax_views.AjaxView("#ajax-view-{{ view.id }}", "{{ action_url }}", {% if handle_post %}true{% else %}false{% endif %})
+window.ajax_views.add_view(ajax_view)
 
 
-var ajax_views = window.ajax_views || new AjaxViews()
-window.ajax_views = ajax_views
-
-
-var ajax_view = new AjaxView("#ajax-view-{{ view.id }}", {% if handle_post %}true{% else %}false{% endif %})
-ajax_views.add_view(ajax_view)
-
-
-})()
 </script>
