@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v137`:
+  - Improvements to the `has_permissions` template tag.
 - `v136`:
   - Updates to `kbde.automotive`.
   - Updates jQuery from `3.4.1` to `3.6.3`.
