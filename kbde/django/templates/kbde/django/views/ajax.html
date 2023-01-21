@@ -7,26 +7,7 @@
 "use strict";
 
 
-window.ajax_views = window.ajax_views || new function(){
-    this.views = {}
-
-    this.add_view = function(ajax_view){
-        this.views[ajax_view.get_id()] = ajax_view
-    }
-
-    this.get_view_from_element = function(element){
-        var $element = $(element)
-
-        if (!$element.hasClass("kbde-ajax-view")){
-            $element = $($element.parents(".kbde-ajax-view")[0])
-        }
-
-        return this.views[$element.attr("id")]
-    }
-}
-
-
-window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, action_url, handle_post){
+var AjaxView = function(element, action_url, handle_post){
     var that = this
 
     this.action_url = action_url
@@ -41,18 +22,16 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
     this.form_submit = function(e){
         e.preventDefault()
 
-        var $form = $(this)
-
         var callback = function(data, text_status, jq_xhr){
-            
             if (that.form_submit_complete){
                 that.form_submit_complete(data, text_status, jq_xhr)
             }
-
-            that.handle_response(data, text_status, jq_xhr)
         }
 
-        that.post($form.serialize(), callback)
+        var $form = $(this)
+        var form_data = new FormData($form[0])
+
+        that.post(form_data, callback)
     }
 
     this.head = function(data, complete){
@@ -81,19 +60,24 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
     }
 
     this.stop_head_poll = function(){
-        that.head_poll_enabled = false
+        that.head_poll_id = null
     }
 
     this.load = function(data, complete){
         // https://api.jquery.com/load/
 
+        // Check to see if the element is still in the dom
+        if (!that.check_element_exists()){
+            // Do nothing if not found
+            return null
+        }
+
         var callback = function(data, text_status, jq_xhr){
+            that.handle_response(data, text_status, jq_xhr)
 
             if (complete){
                 complete(data, text_status, jq_xhr)
             }
-
-            that.handle_response(data, text_status, jq_xhr)
         }
 
         $.get(this.action_url, data, callback)
@@ -116,12 +100,34 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
     }
 
     this.stop_load_poll = function(){
-        that.load_poll_enabled = false
+        that.load_poll_id = null
     }
 
-    this.post = function(data, callback){
+    this.post = function(data, complete){
         // https://api.jquery.com/jQuery.post/
-        $.post(this.action_url, data, callback)
+
+        // Check to see if the element is still in the dom
+        if (!that.check_element_exists()){
+            // Do nothing if not found
+            return null
+        }
+
+        var callback = function(data, text_status, jq_xhr){
+            that.handle_response(data, text_status, jq_xhr)
+
+            if (complete){
+                complete(data, text_status, jq_xhr)
+            }
+        }
+
+        $.ajax({
+            "method": "POST",
+            "url": this.action_url,
+            "data": data,
+            "processData": false,
+            "contentType": false,
+            "success": callback
+        })
     }
 
     this.handle_response = function(data, text_status, jq_xhr){
@@ -154,6 +160,17 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
         }
     }
 
+    this.check_element_exists = function(){
+        var result = $.contains(document, that.$element[0])
+
+        // If the element no longer exists, remove it from ajax_views
+        if (!result){
+            delete window.ajax_views.views[that.get_id()]
+        }
+
+        return result
+    }
+
     this.get_id = function(data){
         return this.$element.attr("id")
     }
@@ -162,8 +179,42 @@ window.ajax_views.AjaxView = window.ajax_views.AjaxView || function(element, act
 }
 
 
-var ajax_view = new window.ajax_views.AjaxView("#ajax-view-{{ view.id }}", "{{ action_url }}", {% if handle_post %}true{% else %}false{% endif %})
-window.ajax_views.add_view(ajax_view)
+var AjaxViews = function(){
+    var that = this
+
+    this.views = {}
+
+    this.add_view = function(ajax_view){
+        this.views[ajax_view.get_id()] = ajax_view
+    }
+
+    this.get_view_from_element = function(element){
+        var $element = $(element)
+
+        if (!$element.hasClass("kbde-ajax-view")){
+            $element = $($element.parents(".kbde-ajax-view")[0])
+        }
+
+        return this.views[$element.attr("id")]
+    }
+}
+
+
+window.ajax_views = window.ajax_views || new AjaxViews()
+</script>
+
+
+<script>
+"use strict"
+
+
+window.ajax_views.add_view(
+    new window.AjaxView(
+        "#ajax-view-{{ view.id }}",
+        "{{ action_url }}",
+        {% if handle_post %}true{% else %}false{% endif %}
+    )
+)
 
 
 </script>
