@@ -33,6 +33,10 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v138`:
+  - Updates to `kbde.automotive`.
+  - Adds new `kbde.django.pipeline` module for handling embedded Sass and JS. This will replace `kbde.django.sass`.
+  - Improvements to `kbde.django.views.AjaxView` Javascript.
 - `v137`:
   - Improvements to the `has_permissions` template tag.
 - `v136`:
