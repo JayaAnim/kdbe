@@ -49,11 +49,19 @@ var AjaxView = function(element, action_url, handle_post){
         that.head_poll_id = head_poll_id
 
         var poll = function(){
-            that.head(data, complete)
+            
+            var head_complete = function(data, text_status, jq_xhr){
 
-            if (that.head_poll_id == head_poll_id){
-                setTimeout(poll, poll_interval)
+                if (complete){
+                    complete(data, text_status, jq_xhr)
+                }
+
+                if (that.head_poll_id == head_poll_id){
+                    setTimeout(poll, poll_interval)
+                }
             }
+                
+            that.head(data, head_complete)
         }
 
         poll()
@@ -89,11 +97,19 @@ var AjaxView = function(element, action_url, handle_post){
         that.load_poll_id = load_poll_id
 
         var poll = function(){
-            that.load(data, complete)
 
-            if (that.load_poll_id == load_poll_id){
-                setTimeout(poll, poll_interval)
+            var load_complete = function(data, text_status, jq_xhr){
+
+                if (complete){
+                    complete(data, text_status, jq_xhr)
+                }
+
+                if (that.load_poll_id == load_poll_id){
+                    setTimeout(poll, poll_interval)
+                }
             }
+
+            that.load(data, load_complete)
         }
 
         poll()
