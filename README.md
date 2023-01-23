@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v139`:
+  - Bugfix for `kbde.django.pipeline.middleware`.
 - `v138`:
   - Updates to `kbde.automotive`.
   - Adds new `kbde.django.pipeline` module for handling embedded Sass and JS. This will replace `kbde.django.sass`.
