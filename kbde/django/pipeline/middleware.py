@@ -89,12 +89,10 @@ class EmbeddedSassMiddleware(MiddlewareBase):
 
         response = self.get_response(request)
 
-        if not response.content:
-            return response
-
         if (
             "text/html" not in response.get("content-type", "").lower()
             or not hasattr(response, "content")
+            or not response.content
         ):
             return response
 
@@ -159,12 +157,10 @@ class EmbeddedJavascriptMiddleware(MiddlewareBase):
     def __call__(self, request):
         response = self.get_response(request)
 
-        if not response.content:
-            return response
-
         if (
             "text/html" not in response.get("content-type", "").lower()
             or not hasattr(response, "content")
+            or not response.content
         ):
             return response
 
