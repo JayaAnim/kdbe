@@ -1,7 +1,6 @@
 {%include "django/forms/widgets/datetime.html"%}
 
 <script>
-(function(){
     flatpickr("#{{widget.attrs.id}}", {{widget.options|safe}});
-    })()
 </script>
+
