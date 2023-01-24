@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v140`:
+  - JS fix for Flatpickr widget.
 - `v139`:
   - Bugfix for `kbde.django.pipeline.middleware`.
 - `v138`:
