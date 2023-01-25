@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v141`:
+  - Removes HEAD requests from mixins.
 - `v140`:
   - JS fix for Flatpickr widget.
 - `v139`:
