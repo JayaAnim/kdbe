@@ -416,16 +416,6 @@ class RelatedObjectMixin:
     related_orm_path = None
     related_slug_field = "slug"
 
-    def head(self, *args, **kwargs):
-        super_head = getattr(super(), "head", None)
-
-        if super_head is None:
-            return self.get(*args, **kwargs)
-
-        self.related_object = self.get_related_object()
-
-        return super().head(*args, **kwargs)
-
     def get(self, *args, **kwargs):
         self.related_object = self.get_related_object()
         return super().get(*args, **kwargs)
@@ -953,16 +943,6 @@ class RequiredKwargsMixin:
     Merges all required kwargs into context_data.
     """
     required_kwarg_keys = None
-
-    def head(self, *args, **kwargs):
-        super_head = getattr(super(), "head", None)
-
-        if super_head is None:
-            return self.get(*args, **kwargs)
-
-        self.required_kwargs = self.get_required_kwargs()
-
-        return super().head(*args, **kwargs)
 
     def get(self, *args, **kwargs):
         self.required_kwargs = self.get_required_kwargs()
