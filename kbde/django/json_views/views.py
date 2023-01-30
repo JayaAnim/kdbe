@@ -9,6 +9,9 @@ from kbde.django.json import encoder as kbde_encoder
 import json
 
 
+NOT_FOUND = object()
+
+
 class JsonResponseMixin(kbde_views.UrlPathMixin,
                         kbde_views.PermissionsMixin,
                         views.generic.base.ContextMixin):
@@ -181,9 +184,35 @@ class SingleObjectMixin:
 
     def get_object_data(self, obj):
         return {
-            field_name: getattr(obj, field_name)
+            field_name: self.get_value_from_object(obj, field_name)
             for field_name in self.get_fields()
         }
+
+    def get_value_from_object(self, obj, field):
+        # Try to get with a getter method
+        get_method_name = f"get_{field}"
+
+        # Try to use the getter method on this class
+        get_method = getattr(self, get_method_name, NOT_FOUND)
+
+        if get_method != NOT_FOUND:
+            return get_method(obj)
+
+        # Try to use the getter method on the object
+        obj_get_method = getattr(obj, get_method_name, NOT_FOUND)
+
+        if obj_get_method != NOT_FOUND:
+            return obj_get_method()
+
+        # Get explicit value from the object
+        explicit_value = getattr(obj, field, NOT_FOUND)
+
+        if explicit_value != NOT_FOUND:
+            return explicit_value
+
+        assert False, (
+            f"Could not get value for field `{field}` on object `{obj}`"
+        )
 
 
 class DetailView(SingleObjectMixin,
