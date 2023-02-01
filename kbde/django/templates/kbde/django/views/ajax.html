@@ -208,13 +208,10 @@ var AjaxView = function(element, action_url, handle_post){
             return null
         }
 
-        var set_html = function(){
-            that.$element.html(data)
-        }
-        setTimeout(set_html, 0)
+        that.$element.html(data)
 
         if (window.kbde && window.kbde.novalidate_forms){
-            setTimeout(kbde.novalidate_forms(), 0)
+            kbde.novalidate_forms()
         }
 
         that.setup()
