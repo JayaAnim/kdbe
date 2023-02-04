@@ -16,44 +16,42 @@ var AjaxView = function(element, action_url, handle_post){
 
     this.head_id = null
     this.head_poll_id = null
-    this.head_poll_interval = null
-    this.head_poll_data = null
 
     this.load_id = null
     this.load_poll_id = null
-    this.load_poll_interval = null
-    this.load_poll_data = null
 
     this.post_id = null
 
     this.head_poll = function(poll_interval, data){
-
-        if (
-            that.head_poll_id
-            && poll_interval == that.head_poll_interval
-            && data == that.head_poll_data
-        ){
-            return null
-        }
-
-        if (!that.head_poll_id){
-            that.$element.on(
-                "head_complete",
-                function(e, response_data, text_status, jq_xhr){
-                    setTimeout(poll, poll_interval)
-                }
-            )
-        }
-
         var head_poll_id = Math.random()
         that.head_poll_id = head_poll_id
-        that.head_poll_interval = poll_interval
-        that.head_poll_data = data
+
+        var callback = function(response_data, text_status, jq_xhr){
+            setTimeout(poll, poll_interval)
+        }
 
         var poll = function(){
             
             if (that.head_poll_id == head_poll_id){
-                that.head(data)
+                that.head(data, callback)
+            }
+        }
+
+        poll()
+    }
+
+    this.load_poll = function(poll_interval, data){
+        var load_poll_id = Math.random()
+        that.load_poll_id = load_poll_id
+
+        var callback = function(response_data, text_status, jq_xhr){
+            setTimeout(poll, poll_interval)
+        }
+
+        var poll = function(){
+            
+            if (that.load_poll_id == load_poll_id){
+                that.load(data, callback)
             }
         }
 
@@ -62,40 +60,6 @@ var AjaxView = function(element, action_url, handle_post){
 
     this.stop_head_poll = function(){
         that.head_poll_id = null
-    }
-
-    this.load_poll = function(poll_interval, data){
-
-        if (
-            that.load_poll_id
-            && poll_interval == that.load_poll_interval
-            && data == that.load_poll_data
-        ){
-            return null
-        }
-
-        if (!that.load_poll_id){
-            that.$element.on(
-                "load_complete",
-                function(e, response_data, text_status, jq_xhr){
-                    setTimeout(poll, poll_interval)
-                }
-            )
-        }
-
-        var load_poll_id = Math.random()
-        that.load_poll_id = load_poll_id
-        that.load_poll_interval = poll_interval
-        that.load_poll_data = data
-
-        var poll = function(){
-            
-            if (that.load_poll_id == load_poll_id){
-                that.load(data)
-            }
-        }
-
-        poll()
     }
 
     this.stop_load_poll = function(){
@@ -111,7 +75,7 @@ var AjaxView = function(element, action_url, handle_post){
         that.post(form_data)
     }
 
-    this.head = function(data){
+    this.head = function(data, callback){
 
         // Check to see if the element is still in the dom
         if (!that.check_element_exists()){
@@ -122,23 +86,31 @@ var AjaxView = function(element, action_url, handle_post){
         var head_id = Math.random()
         that.head_id = head_id
 
-        var callback = function(data, text_status, jq_xhr){
+        var success = function(response_data, text_status, jq_xhr){
+
             if (that.head_id != head_id){
                 return null
             }
 
-            that.$element.trigger("head_complete", [data, text_status, jq_xhr])
+            if (callback){
+                callback(response_data, text_status, jq_xhr)
+            }
+
+            that.$element.trigger(
+                "ajax-head-complete",
+                [response_data, text_status, jq_xhr]
+            )
         }
 
         $.ajax({
             "method": "HEAD",
             "url": this.action_url,
             "data": data,
-            "success": callback,
+            "success": success
         })
     }
 
-    this.load = function(data){
+    this.load = function(data, callback){
         // https://api.jquery.com/load/
 
         // Check to see if the element is still in the dom
@@ -150,20 +122,31 @@ var AjaxView = function(element, action_url, handle_post){
         var load_id = Math.random()
         that.load_id = load_id
 
-        var callback = function(data, text_status, jq_xhr){
+        var success = function(response_data, text_status, jq_xhr){
 
             if (that.load_id != load_id){
                 return null
             }
 
-            that.handle_response(data, text_status, jq_xhr)
-            that.$element.trigger("load_complete", [data, text_status, jq_xhr])
+            var handle = function(){
+                that.handle_response(response_data, text_status, jq_xhr)
+
+                if (callback){
+                    callback(response_data, text_status, jq_xhr)
+                }
+
+                that.$element.trigger(
+                    "ajax-load-complete",
+                    [response_data, text_status, jq_xhr]
+                )
+            }
+            setTimeout(handle, 0)
         }
 
-        $.get(that.action_url, data, callback)
+        $.get(that.action_url, data, success)
     }
 
-    this.post = function(data){
+    this.post = function(data, callback){
         // https://api.jquery.com/jQuery.post/
 
         // Check to see if the element is still in the dom
@@ -175,14 +158,25 @@ var AjaxView = function(element, action_url, handle_post){
         var post_id = Math.random()
         that.post_id = post_id
 
-        var callback = function(data, text_status, jq_xhr){
+        var success = function(response_data, text_status, jq_xhr){
             
             if (that.post_id != post_id){
                 return null
             }
 
-            that.handle_response(data, text_status, jq_xhr)
-            that.$element.trigger("post_complete", [data, text_status, jq_xhr])
+            var handle = function(){
+                that.handle_response(response_data, text_status, jq_xhr)
+                
+                if (callback){
+                    callback(response_data, text_status, jq_xhr)
+                }
+
+                that.$element.trigger(
+                    "ajax-post-complete",
+                    [response_data, text_status, jq_xhr]
+                )
+            }
+            setTimeout(handle, 0)
         }
 
         $.ajax({
@@ -191,7 +185,7 @@ var AjaxView = function(element, action_url, handle_post){
             "data": data,
             "processData": false,
             "contentType": false,
-            "success": callback
+            "success": success
         })
     }
 
@@ -266,6 +260,7 @@ var AjaxViews = function(){
 
 
 window.ajax_views = window.ajax_views || new AjaxViews()
+
 </script>
 
 
