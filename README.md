@@ -33,6 +33,9 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v143`:
+  - Updates to `kbde.django.views.AjaxView`.
+  - AWS S3 copy operation updated to include mimetype.
 - `v142`:
   - Changes `kbde.django.views.AjaxView` to use event handlers instead of callback functions.
   - Adds functionality to `kbde.django.json_views` so that single object values can be fetched by view methods, similarly to how it is done in `kbde.django.views.TableView`.
