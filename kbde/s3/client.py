@@ -1,4 +1,4 @@
-import boto3, tempfile, os, posixpath, multiprocessing, sys
+import boto3, tempfile, os, posixpath, multiprocessing, sys, mimetypes
 
 
 class Client:
@@ -109,6 +109,14 @@ class Client:
                     dry_run=True):
         src_client = self.get_client(**src_client_config)
         dest_client = self.get_client(**dest_client_config)
+
+        mimetype, encoding = mimetypes.guess_type(dest_key)
+
+        if mimetype:
+            upload_extra_args["ContentType"] = mimetype
+        
+        if encoding:
+            upload_extra_args["ContentEncoding"] = encoding
 
         if not dry_run:
 
