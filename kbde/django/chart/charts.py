@@ -4,6 +4,8 @@ from kbde.django import utils as kbde_utils
 class Chart:
     x_key = None
     title_text = None
+    responsive = True
+    maintain_aspect_ratio = False
     
     def __init__(self, queryset):
         self.queryset = queryset
@@ -59,6 +61,8 @@ class Chart:
         return {
             "scales": self.get_scales(),
             "plugins": self.get_plugins(),
+            "responsive": self.get_responsive(),
+            "maintainAspectRatio": self.get_maintain_aspect_ratio(),
         }
 
     def get_scales(self):
@@ -79,6 +83,12 @@ class Chart:
 
     def get_title_text(self):
         return self.title_text
+
+    def get_responsive(self):
+        return self.responsive
+
+    def get_maintain_aspect_ratio(self):
+        return self.maintain_aspect_ratio
 
 
 class Dataset:
