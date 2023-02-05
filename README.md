@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v144`:
+  - Makes charts responsive in `kbde.django.chart`.
 - `v143`:
   - Updates to `kbde.django.views.AjaxView`.
   - AWS S3 copy operation updated to include mimetype.
