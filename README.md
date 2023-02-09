@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v145`:
+  - Updates to `kbde.automotive`.
 - `v144`:
   - Makes charts responsive in `kbde.django.chart`.
 - `v143`:
