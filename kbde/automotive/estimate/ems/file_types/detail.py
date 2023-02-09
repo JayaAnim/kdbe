@@ -112,6 +112,21 @@ class SubletAmount(fields.Field):
     kbde_field_name = "sublet_amount"
 
 
+class PartTaxFlag(fields.Field):
+    cieca_field_name = "TAX_PART"
+    kbde_field_name = "part_tax_flag"
+
+
+class SubletTaxFlag(fields.Field):
+    cieca_field_name = "MISC_TAX"
+    kbde_field_name = "sublet_tax_flag"
+
+
+class LaborTaxFlag(fields.Field):
+    cieca_field_name = "LBR_TAX"
+    kbde_field_name = "labor_tax_flag"
+
+
 class LinDbfReader(dbf.DbfReader):
     field_list = [
         LineNumber,
@@ -132,6 +147,9 @@ class LinDbfReader(dbf.DbfReader):
         LaborIncludedIndicator,
         SubletFlag,
         SubletAmount,
+        PartTaxFlag,
+        SubletTaxFlag,
+        LaborTaxFlag,
     ]
     file_extension = "lin"
 

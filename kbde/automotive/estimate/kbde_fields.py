@@ -64,6 +64,10 @@ LIST = [
     "sublet_flag",
     "sublet_amount",
 
+    "part_tax_flag",
+    "sublet_tax_flag",
+    "labor_tax_flag",
+
     "material_type_code",
     "material_labor_rate",
 
