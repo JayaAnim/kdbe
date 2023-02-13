@@ -4,6 +4,7 @@ LIST = [
 
     "claim_number",
     "insurance_company_name",
+    "supplement_number",
 
     "owner_first_name",
     "owner_last_name",
@@ -51,6 +52,7 @@ LIST = [
     "labor_operation",
     
     "line_number",
+    "line_indicator",
     "unique_sequence_number",
     "line_description",
 

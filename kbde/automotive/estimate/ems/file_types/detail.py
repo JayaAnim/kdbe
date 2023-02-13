@@ -12,6 +12,11 @@ class UniqueSequenceNumber(fields.Field):
     kbde_field_name = kbde_fields.UNIQUE_SEQUENCE_NUMBER
 
 
+class LineIndicator(fields.Field):
+    cieca_field_name = "LINE_IND"
+    kbde_field_name = kbde_fields.LINE_INDICATOR
+
+
 class LineDescription(fields.Field):
     cieca_field_name = "LINE_DESC"
     kbde_field_name = kbde_fields.LINE_DESCRIPTION
@@ -131,6 +136,7 @@ class LinDbfReader(dbf.DbfReader):
     field_list = [
         LineNumber,
         UniqueSequenceNumber,
+        LineIndicator,
         LineDescription,
         OemPartNumber,
         AltPartNumber,
