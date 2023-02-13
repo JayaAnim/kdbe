@@ -17,11 +17,17 @@ class EstimatingSystem(fields.Field):
     kbde_field_name = kbde_fields.ESTIMATING_SYSTEM
 
 
+class SupplementNumber(fields.Field):
+    cieca_field_name = 'SUPP_NO'
+    kbde_field_name = kbde_fields.SUPPLEMENT_NUMBER
+
+
 class DbfReader(dbf.DbfReader):
     field_list = [
         RepairOrderId,
         EstimateFileId,
         EstimatingSystem,
+        SupplementNumber,
     ]
     file_extension = "env"
 
