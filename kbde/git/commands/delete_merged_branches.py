@@ -13,7 +13,13 @@ class Command(command.Command):
     current_branch_prefix = "*"
     
     def handle(self):
-        import git
+        try:
+            import git
+        except ImportError:
+            assert False, (
+                "This function requires that GitPython is installed: "
+                "https://github.com/gitpython-developers/GitPython"
+            )
 
         repo = git.Repo(os.getcwd())
 
