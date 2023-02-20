@@ -20,6 +20,7 @@ class Command(command.Command):
         parser.add_argument("--acl", type=str)
         parser.add_argument("--thread-count", type=int, default=1)
         parser.add_argument("--dry-run", action="store_true")
+        parser.add_argument("--overwrite", action="store_true")
 
     def handle(self,
                source_path,
@@ -34,7 +35,8 @@ class Command(command.Command):
                destination_endpoint_url,
                acl,
                thread_count,
-               dry_run):
+               dry_run,
+               overwrite):
         from kbde.s3 import client
 
         s3_client = client.Client(
@@ -67,5 +69,6 @@ class Command(command.Command):
             dest_bucket=destination_bucket_name,
             dest_client_config=dest_client_config,
             dry_run=dry_run,
+            overwrite=overwrite,
             **upload_extra_args,
         )
