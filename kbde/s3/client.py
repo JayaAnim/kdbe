@@ -1,4 +1,4 @@
-import boto3, tempfile, os, posixpath, multiprocessing, sys, mimetypes
+import boto3, botocore, tempfile, os, posixpath, multiprocessing, sys, mimetypes
 
 
 class Client:
@@ -30,6 +30,7 @@ class Client:
                        dest_bucket=None,
                        dest_client_config=None,
                        dry_run=True,
+                       overwrite=False,
                        **upload_extra_args):
         
         dest_bucket = dest_bucket or self.bucket_name
@@ -50,6 +51,7 @@ class Client:
             dest_prefix,
             upload_extra_args,
             dry_run,
+            overwrite,
             keys,
         )
 
@@ -84,6 +86,7 @@ class Client:
                       dest_prefix,
                       upload_extra_args,
                       dry_run,
+                      overwrite,
                       keys):
 
         for key in keys:
@@ -96,6 +99,7 @@ class Client:
                 os.path.join(dest_prefix, key),
                 upload_extra_args,
                 dry_run,
+                overwrite,
             ]
 
     def copy_object(self,
@@ -106,7 +110,8 @@ class Client:
                     dest_bucket,
                     dest_key,
                     upload_extra_args,
-                    dry_run=True):
+                    dry_run=True,
+                    overwrite=False):
         src_client = self.get_client(**src_client_config)
         dest_client = self.get_client(**dest_client_config)
 
@@ -118,7 +123,16 @@ class Client:
         if encoding:
             upload_extra_args["ContentEncoding"] = encoding
 
-        if not dry_run:
+        if overwrite:
+            needs_copy = True
+        else:
+            needs_copy = not self.check_key_exists(
+                dest_client,
+                dest_bucket,
+                dest_key,
+            )
+
+        if not dry_run and needs_copy:
 
             with tempfile.TemporaryFile() as temp:
                 # Download the src file
@@ -134,7 +148,22 @@ class Client:
                     ExtraArgs=upload_extra_args,
                 )
 
-        sys.stdout.write(f"copied {src_bucket}:{src_key} to {dest_bucket}:{dest_key}\n")
+        if needs_copy:
+            sys.stdout.write(f"copied {src_bucket}:{src_key} to {dest_bucket}:{dest_key}\n")
+        else:
+            sys.stdout.write(f"skipped {src_bucket}:{src_key} to {dest_bucket}:{dest_key}\n")
+
+    def check_key_exists(self, client, bucket, key):
+        try:
+            client.head_object(Bucket=bucket, Key=key)
+            return True
+
+        except botocore.exceptions.ClientError as e:
+
+            if e.response['Error']['Code'] == "404":
+                return False
+
+            raise
 
     def get_client(self, **kwargs):
         config = self.get_client_config(**kwargs)
