@@ -1,0 +1,5 @@
+<p>Your authentication code is: {{ raw_key }}</p>
+
+{% if object.time_valid %}
+    <p>This code will expire in {{ object.get_time_valid_minutes }} minutes</p>
+{% endif %}
