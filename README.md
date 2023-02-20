@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v147`:
+  - Improvements to the S3 recursive copy operation.
 - `v146`:
   - Updates to `kbde.automotive`.
 - `v145`:
