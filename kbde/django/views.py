@@ -17,7 +17,7 @@ from urllib import parse
 import math, uuid, inspect, importlib
 
 
-not_found = object()
+NOT_FOUND = object()
 
 
 class ViewIdMixin:
@@ -547,6 +547,35 @@ class SuccessUrlNextRequiredMixin(SuccessUrlNextMixin):
         return next_url
 
 
+class ValueFromObjectMixin:
+
+    def get_value_from_object(self, obj, field):
+        # Try to get with a getter method
+        get_method_name = f"get_{field}"
+
+        # Try to use the getter method on this class
+        get_method = getattr(self, get_method_name, NOT_FOUND)
+
+        if get_method != NOT_FOUND:
+            return get_method(obj)
+
+        # Try to use the getter method on the object
+        obj_get_method = getattr(obj, get_method_name, NOT_FOUND)
+
+        if obj_get_method != NOT_FOUND:
+            return obj_get_method()
+
+        # Get explicit value from the object
+        explicit_value = getattr(obj, field, NOT_FOUND)
+
+        if explicit_value != NOT_FOUND:
+            return explicit_value
+
+        assert False, (
+            f"Could not get value for field `{field}` on object `{obj}`"
+        )
+
+
 class View(BaseMixin, views.generic.View):
     pass
 
@@ -768,7 +797,7 @@ class MarkdownView(TemplateView):
         return self.markdown_extensions.copy()
 
 
-class TableView(ListView):
+class TableView(ValueFromObjectMixin, ListView):
     template_name = "kbde/django/views/Table.html"
     table_empty_message = None
     fields = None
@@ -823,32 +852,6 @@ class TableView(ListView):
             self.get_value_from_object(obj, field)
             for field in self.get_fields()
         ]
-
-    def get_value_from_object(self, obj, field):
-        # Try to get with a getter method
-        get_method_name = f"get_{field}"
-
-        # Try to use the getter method on this class
-        get_method = getattr(self, get_method_name, not_found)
-
-        if get_method != not_found:
-            return get_method(obj)
-
-        # Try to use the getter method on the object
-        obj_get_method = getattr(obj, get_method_name, not_found)
-
-        if obj_get_method != not_found:
-            return obj_get_method()
-
-        # Get explicit value from the object
-        explicit_value = getattr(obj, field, not_found)
-
-        if explicit_value != not_found:
-            return explicit_value
-
-        assert False, (
-            f"Could not get value for field `{field}` on object `{obj}`"
-        )
 
     def get_row_tag_attrs(self, obj):
         return {}
@@ -977,7 +980,7 @@ class RequiredKwargsMixin:
         for key in required_kwarg_keys:
             value = self.get_required_kwarg_value(key)
 
-            assert value != not_found, (
+            assert value != NOT_FOUND, (
                 f"{self.__class__} missing required kwarg `{key}`"
             )
 
@@ -986,7 +989,7 @@ class RequiredKwargsMixin:
         return required_kwargs
 
     def get_required_kwarg_value(self, key):
-        return self.kwargs.get(key, not_found)
+        return self.kwargs.get(key, NOT_FOUND)
 
     def get_required_kwarg_keys(self):
         assert self.required_kwarg_keys is not None, (
@@ -1001,12 +1004,12 @@ class RequiredGetKwargsMixin(RequiredKwargsMixin):
     def get_required_kwarg_value(self, key):
         value = super().get_required_kwarg_value(key)
 
-        if value != not_found:
+        if value != NOT_FOUND:
             return value
 
-        value = self.request.GET.get(key, not_found)
+        value = self.request.GET.get(key, NOT_FOUND)
 
-        if value == not_found:
+        if value == NOT_FOUND:
             raise exceptions.SuspiciousOperation(
                 f"Missing argument `{key}`"
             )
