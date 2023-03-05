@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v149`:
+  - Adds `kbde.django.views.ValueFromObjectMixin`.
 - `v148`:
   - Adds beta version of the `kbde.django.verification` app.
 - `v147`:
