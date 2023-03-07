@@ -35,7 +35,6 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v149`:
   - Adds `kbde.django.views.ValueFromObjectMixin`.
-  - Removes stripped-down version of bootstrap.scss in `kbde.django.bootstrap`. Developers can use `bootstrap/scss/bootstrap.scss` instead of `kbde/django/bootstrap/bootstrap.scss`.
 - `v148`:
   - Adds beta version of the `kbde.django.verification` app.
 - `v147`:
