@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v150`:
+  - Adds a `get_user_update_queryset()` method for `kbde.django.verification.models`.
 - `v149`:
   - Adds `kbde.django.views.ValueFromObjectMixin`.
 - `v148`:
