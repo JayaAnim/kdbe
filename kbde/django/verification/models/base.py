@@ -48,6 +48,10 @@ class Verification(poly_models.PolymorphicModel):
             f"{cls} must define .form_fields"
         )
 
+    @classmethod
+    def get_user_update_queryset(cls, user):
+        return cls.objects.all()
+
     def save(self, *args, **kwargs):
 
         if self.expire_time is None and self.time_valid is not None:
