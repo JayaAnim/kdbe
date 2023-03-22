@@ -127,8 +127,10 @@ class EmbeddedSassMiddleware(MiddlewareBase):
 
     def get_css(self, sass_document):
 
-        def compile_sass(string):
-            return sass.compile(string=string)
+        def compile_sass(sass_string):
+            css_string = sass.compile(string=sass_string)
+            css_string = css_string.replace("\n", " ")
+            return css_string
 
         if self.CACHE_EMBEDDED_SASS:
             import memoize
