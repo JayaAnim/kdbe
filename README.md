@@ -33,6 +33,11 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v151`:
+  - Removes default `LOGIN_URL` from `kbde.django.settings`.
+  - Improvements to `kbde.django.bg_process.models.AbstractBgProcess`.
+    - Tracks tracebacks from underlying queue process.
+    - Failed bg process tasks in RQ will only stick around for 10 min (by default), rather than stacking up in the failed job registry.
 - `v150`:
   - Adds a `get_user_update_queryset()` method for `kbde.django.verification.models`.
 - `v149`:

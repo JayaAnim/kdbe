@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="kbde",
-    version="150",
+    version="151",
     url="https://gitlab.com/kb_git/kbde",
     author="kbuilds, LLC",
     author_email="k@kbuilds.com",
