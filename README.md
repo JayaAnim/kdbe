@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v152`:
+  - Updates to `kbde.django.views.TableView`.
 - `v151`:
   - Removes default `LOGIN_URL` from `kbde.django.settings`.
   - Improvements to `kbde.django.bg_process.models.AbstractBgProcess`.
