@@ -812,40 +812,31 @@ class TableView(ValueFromObjectMixin, ListView):
         return context_data
 
     def get_table(self, object_list):
-        label_list = self.get_label_list()
+        row_list = [self.get_row(obj) for obj in object_list]
 
-        row_list = []
-
-        for obj in object_list:
-            row = {
-                "object": obj,
-            }
-
-            if self.include_row_data:
-                row_data = self.get_row_data_from_object(obj)
-
-                assert len(row_data) == len(label_list), (
-                    f"{self.__class__}: get_row_data_from_object() must "
-                    f"return a list of values that has the same number of "
-                    f"entries as the label list ({len(label_list)})"
-                )
-
-                row["data"] = row_data
-
-            row["tag_attrs"] = self.get_row_tag_attrs(obj)
-
-            row_list.append(row)
-
-        return {
-            "labels": label_list,
+        table = {
+            "labels": self.get_label_list(),
             "rows": row_list,
             "empty_message": self.get_table_empty_message(),
         }
+
+        return table
 
     def get_label_list(self):
         fields = self.get_fields()
         labels = self.get_labels()
         return [labels[field] for field in fields]
+
+    def get_row(self, obj):
+        row = {
+            "object": obj,
+            "tag_attrs": self.get_row_tag_attrs(obj),
+        }
+
+        if self.include_row_data:
+            row["data"] = self.get_row_data_from_object(obj)
+
+        return row
 
     def get_row_data_from_object(self, obj):
         return [
