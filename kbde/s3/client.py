@@ -40,7 +40,19 @@ class Client:
         if not dest_client_config:
             dest_client_config = src_client_config
 
-        keys = self.get_source_keys(src_prefix)
+        src_keys = self.get_source_keys(src_prefix)
+
+        if overwrite:
+            keys = src_keys
+        else:
+            dest_keys = self.get_keys(
+                dest_client_config,
+                dest_bucket,
+                dest_prefix,
+            )
+            keys = list(
+                set(src_keys) - set(dest_keys)
+            )
 
         copy_arg_list = self.map_copy_args(
             src_client_config,
@@ -51,7 +63,6 @@ class Client:
             dest_prefix,
             upload_extra_args,
             dry_run,
-            overwrite,
             keys,
         )
 
@@ -59,7 +70,10 @@ class Client:
             pool.starmap(self.copy_object, copy_arg_list)
 
     def get_source_keys(self, prefix):
-        client = self.get_client()
+        return self.get_keys({}, self.bucket_name, prefix)
+
+    def get_keys(self, client_config, bucket_name, prefix):
+        client = self.get_client(**client_config)
 
         # The prefix needs to end with a slash, but if the root is empty,
         # leave it.
@@ -67,7 +81,7 @@ class Client:
             prefix += '/'
 
         paginator = client.get_paginator("list_objects")
-        pages = paginator.paginate(Bucket=self.bucket_name, Prefix=prefix)
+        pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
 
         for page in pages:
             
@@ -86,7 +100,6 @@ class Client:
                       dest_prefix,
                       upload_extra_args,
                       dry_run,
-                      overwrite,
                       keys):
 
         for key in keys:
@@ -99,7 +112,6 @@ class Client:
                 os.path.join(dest_prefix, key),
                 upload_extra_args,
                 dry_run,
-                overwrite,
             ]
 
     def copy_object(self,
@@ -110,8 +122,7 @@ class Client:
                     dest_bucket,
                     dest_key,
                     upload_extra_args,
-                    dry_run=True,
-                    overwrite=False):
+                    dry_run=True):
         src_client = self.get_client(**src_client_config)
         dest_client = self.get_client(**dest_client_config)
 
@@ -123,16 +134,7 @@ class Client:
         if encoding:
             upload_extra_args["ContentEncoding"] = encoding
 
-        if overwrite:
-            needs_copy = True
-        else:
-            needs_copy = not self.check_key_exists(
-                dest_client,
-                dest_bucket,
-                dest_key,
-            )
-
-        if not dry_run and needs_copy:
+        if not dry_run:
 
             with tempfile.TemporaryFile() as temp:
                 # Download the src file
@@ -148,10 +150,9 @@ class Client:
                     ExtraArgs=upload_extra_args,
                 )
 
-        if needs_copy:
-            sys.stdout.write(f"copied {src_bucket}:{src_key} to {dest_bucket}:{dest_key}\n")
-        else:
-            sys.stdout.write(f"skipped {src_bucket}:{src_key} to {dest_bucket}:{dest_key}\n")
+        sys.stdout.write(
+            f"copied {src_bucket}:{src_key} to {dest_bucket}:{dest_key}\n"
+        )
 
     def check_key_exists(self, client, bucket, key):
         try:
