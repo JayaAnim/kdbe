@@ -33,6 +33,8 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 # Release notes
 
+- `v153`:
+  - Performance improvements to s3 module.
 - `v152`:
   - Updates to `kbde.django.views.TableView`.
 - `v151`:
