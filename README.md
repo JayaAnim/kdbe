@@ -35,6 +35,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v153`:
   - Performance improvements to s3 module.
+  - Adds missing migration for `kbde.django.bg_process`.
 - `v152`:
   - Updates to `kbde.django.views.TableView`.
 - `v151`:
