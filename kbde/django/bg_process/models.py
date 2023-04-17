@@ -22,7 +22,7 @@ class AbstractBgProcess(models.Model):
     )
 
     bg_process_queue_name = "default"
-    bg_process_failure_ttl = 60 * 60 * 10  # 10 minutes
+    bg_process_failure_ttl = 60 * 60  # 1 hour
     bg_process_refresh_from_db = True
 
     slug = models.UUIDField(default=uuid.uuid4)
