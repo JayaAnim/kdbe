@@ -1,4 +1,4 @@
-from kbde.data import serialize
+from kbde.data import mixins
 
 import cv2
 import numpy as np
@@ -14,7 +14,7 @@ MODEL_FILE = os.path.join(DIR_PATH, "opencv_face_detector_uint8.pb")
 CONFIG_FILE = os.path.join(DIR_PATH, "opencv_face_detector.pbtxt")
 
 
-class Image(serialize.Serializable):
+class Image(mixins.Serialize):
 
     @classmethod
     def from_opencv_image(cls, opencv_image, image_box=None):
@@ -208,7 +208,7 @@ class Image(serialize.Serializable):
         cv2.imwrite(file_path, self.get_opencv_image())
 
 
-class ImageBox(serialize.Serializable):
+class ImageBox(mixins.Serialize):
     
     def __init__(self, x, y, w, h):
         self.x = x
