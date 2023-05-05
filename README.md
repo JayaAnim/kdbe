@@ -35,6 +35,7 @@ See [KBDE CLI](kbde/kbde_cli/README.md) for more information.
 
 - `v154`:
   - Fixed failed job ttl in `kbde.django.bg_process`. Changed it to 1 hour.
+  - Fixes references in `kbde.cv`.
 - `v153`:
   - Performance improvements to s3 module.
   - Adds missing migration for `kbde.django.bg_process`.
