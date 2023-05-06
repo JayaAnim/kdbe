@@ -84,7 +84,8 @@ def send_email(to_email_list,
 
         if bcc_email_list:
             message.bcc = message.to
-
+    print(f'Full message sent is {message}')
+    print(f'Email from address is {message.from_email}')
     message.send()
 
     return message
