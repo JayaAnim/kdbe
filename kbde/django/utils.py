@@ -71,7 +71,7 @@ def send_email(to_email_list,
 
     message.to = to_email_list
     message.subject = subject
-    message.from_email = from_email or message.from_email
+    message.from_email = settings.SENDGRID_FROM_EMAIL
     message.cc = cc_email_list
     message.bcc = bcc_email_list
 
@@ -84,8 +84,12 @@ def send_email(to_email_list,
 
         if bcc_email_list:
             message.bcc = message.to
-    print(f'Full message sent is {message}')
-    print(f'Email from address is {message.from_email}')
+    print(f'Sending verification email')
+    print(f'Email to is {message.to}')
+    print(f'Message subject is {message.subject}')
+    print(f'Message from email is {message.from_email}')
+    print(f'Message cc is {message.cc}')
+    print(f'Message bcc is {message.bcc}')
     message.send()
 
     return message
