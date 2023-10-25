@@ -84,12 +84,8 @@ def send_email(to_email_list,
 
         if bcc_email_list:
             message.bcc = message.to
-    print(f'Sending verification email')
-    print(f'Email to is {message.to}')
-    print(f'Message subject is {message.subject}')
-    print(f'Message from email is {message.from_email}')
-    print(f'Message cc is {message.cc}')
-    print(f'Message bcc is {message.bcc}')
+
+    print(f'Email to {message.to}')
     message.send()
 
     return message
