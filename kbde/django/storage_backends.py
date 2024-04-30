@@ -5,7 +5,7 @@ import posixpath
 
 
 class MediaStorage(S3Boto3Storage):
-    location = f"{settings.APP_NAME}/media"
+    location = "media"
     file_overwrite = False
 
     def get_all_keys(self, name):
